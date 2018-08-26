@@ -93,9 +93,30 @@ namespace Comet.Network.Sockets
             }
         }
 
+        /// <summary>
+        /// Receiving receives bytes from the accepted client socket when bytes become
+        /// available. While the client is connected and the server hasn't issued the 
+        /// shutdown signal, bytes will be received in a loop.
+        /// </summary>
+        /// <param name="state">Created actor around the accepted client socket</param>
+        /// <returns>Returns task details for fault tolerance processing.</returns>
         private async Task Receiving(object state)
         {
-            TcpServerActor actor = state as TcpServerActor;
+            // Initialize multiple receive variables
+            var actor = state as TcpServerActor;
+            int consumed = 0, examined = 0;
+
+            while (actor.Socket.Connected)
+            {
+                // Receive data and write to the buffer as a single operation
+                examined += await actor.Socket.ReceiveAsync(actor.Buffer.Slice(examined), 
+                    SocketFlags.None, this.ShutdownToken.Token);
+                while (consumed < examined)
+                {
+
+                }
+                
+            }
         }
     }
 }
