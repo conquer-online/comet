@@ -16,3 +16,4 @@ test:
   stage: test
   script:
     - "dotnet test tests/Comet.Core.Tests"
+    - "dotnet test tests/Comet.Network.Tests"
