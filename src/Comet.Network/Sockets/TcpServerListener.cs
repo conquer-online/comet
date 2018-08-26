@@ -2,6 +2,7 @@ namespace Comet.Network.Sockets
 {
     using System;
     using System.Collections.Concurrent;
+    using System.Collections.Generic;
     using System.Net;
     using System.Net.Sockets;
     using System.Threading;
@@ -105,18 +106,30 @@ namespace Comet.Network.Sockets
             // Initialize multiple receive variables
             var actor = state as TcpServerActor;
             int consumed = 0, examined = 0;
-
-            while (actor.Socket.Connected)
+            while (actor.Socket.Connected && !this.ShutdownToken.IsCancellationRequested)
             {
                 // Receive data and write to the buffer as a single operation
                 examined += await actor.Socket.ReceiveAsync(actor.Buffer.Slice(examined), 
                     SocketFlags.None, this.ShutdownToken.Token);
-                while (consumed < examined)
-                {
-
-                }
-                
+                var packets = this.Splitting(actor, ref consumed, ref examined);
             }
+        }
+
+        /// <summary>
+        /// Splitting splits the actor's receive buffer into multiple packets that can
+        /// then be processed by Received individually. The default behavior of this method
+        /// unless otherwise overridden is to split packets from the buffer.
+        /// </summary>
+        /// <param name="actor">Actor for receiving data from the connected client</param>
+        /// <param name="consumed">Number of consumed bytes by the split reader</param>
+        /// <param name="examined">Number of examined bytes from the receive</param>
+        /// <returns>Returns a list of packets to be processed</returns>
+        protected virtual List<ReadOnlyMemory<byte>> Splitting(
+            TcpServerActor actor, 
+            ref int consumed, 
+            ref int examined)
+        {
+            return null;
         }
     }
 }
