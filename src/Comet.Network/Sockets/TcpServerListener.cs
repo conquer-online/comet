@@ -1,6 +1,7 @@
 namespace Comet.Network.Sockets
 {
     using System;
+    using System.Buffers;
     using System.Collections.Concurrent;
     using System.Collections.Generic;
     using System.Net;
@@ -111,25 +112,32 @@ namespace Comet.Network.Sockets
                 // Receive data and write to the buffer as a single operation
                 examined += await actor.Socket.ReceiveAsync(actor.Buffer.Slice(examined), 
                     SocketFlags.None, this.ShutdownToken.Token);
-                var packets = this.Splitting(actor, ref consumed, ref examined);
+                this.Splitting(actor, examined, ref consumed);
             }
         }
 
         /// <summary>
         /// Splitting splits the actor's receive buffer into multiple packets that can
         /// then be processed by Received individually. The default behavior of this method
-        /// unless otherwise overridden is to split packets from the buffer.
+        /// unless otherwise overridden is to split packets from the buffer using an unsigned
+        /// short packet header for the length of each packet.
         /// </summary>
-        /// <param name="actor">Actor for receiving data from the connected client</param>
-        /// <param name="consumed">Number of consumed bytes by the split reader</param>
+        /// <param name="buffer">Actor for consuming bytes from the buffer</param>
         /// <param name="examined">Number of examined bytes from the receive</param>
-        /// <returns>Returns a list of packets to be processed</returns>
-        protected virtual List<ReadOnlyMemory<byte>> Splitting(
-            TcpServerActor actor, 
-            ref int consumed, 
-            ref int examined)
+        /// <param name="consumed">Number of consumed bytes by the split reader</param>
+        protected virtual void Splitting(TcpServerActor actor, int examined, ref int consumed)
         {
-            return null;
+            // Consume packets from the socket buffer
+            var buffer = actor.Buffer.Span;
+            while (consumed + 2 < examined)
+            {
+                var length = BitConverter.ToUInt16(buffer.Slice(consumed, 2));
+                if (consumed + length > examined) break;
+                
+                var packet = buffer.Slice(consumed, length);
+                this.Received(actor, packet);
+                consumed += length;
+            }
         }
     }
 }
