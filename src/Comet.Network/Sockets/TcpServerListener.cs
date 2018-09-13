@@ -139,8 +139,7 @@ namespace Comet.Network.Sockets
             {
                 var length = BitConverter.ToUInt16(buffer.Slice(consumed, 2));
                 if (consumed + length > examined) break;
-                var packet = buffer.Slice(consumed, length);
-                this.Received(actor, packet);
+                this.Received(actor, buffer.Slice(consumed, length));
                 consumed += length;
             }
         }
