@@ -106,13 +106,18 @@ namespace Comet.Network.Sockets
         {
             // Initialize multiple receive variables
             var actor = state as TcpServerActor;
-            int consumed = 0, examined = 0;
+            int consumed = 0, examined;
             while (actor.Socket.Connected && !this.ShutdownToken.IsCancellationRequested)
             {
-                // Receive data and write to the buffer as a single operation
-                examined += await actor.Socket.ReceiveAsync(actor.Buffer.Slice(examined), 
-                    SocketFlags.None, this.ShutdownToken.Token);
+                // Receive data from the client socket
+                examined = await actor.Socket.ReceiveAsync(
+                    actor.Buffer.Slice(consumed), 
+                    SocketFlags.None, 
+                    this.ShutdownToken.Token);
+
+                // Handle splitting and processing of data
                 this.Splitting(actor, examined, ref consumed);
+                actor.Buffer.Slice(consumed).CopyTo(actor.Buffer);
             }
         }
 
@@ -128,12 +133,12 @@ namespace Comet.Network.Sockets
         protected virtual void Splitting(TcpServerActor actor, int examined, ref int consumed)
         {
             // Consume packets from the socket buffer
+            consumed = 0;
             var buffer = actor.Buffer.Span;
             while (consumed + 2 < examined)
             {
                 var length = BitConverter.ToUInt16(buffer.Slice(consumed, 2));
                 if (consumed + length > examined) break;
-                
                 var packet = buffer.Slice(consumed, length);
                 this.Received(actor, packet);
                 consumed += length;
