@@ -124,6 +124,9 @@ namespace Comet.Network.Sockets
                 this.Splitting(actor, examined, ref consumed);
                 actor.Buffer.Slice(consumed).CopyTo(actor.Buffer);
             }
+
+            // Disconnect the client
+            this.Disconnecting(actor);
         }
 
         /// <summary>
@@ -147,6 +150,23 @@ namespace Comet.Network.Sockets
                 this.Received(actor, buffer.Slice(consumed, length));
                 consumed += length;
             }
+        }
+
+        /// <summary>
+        /// Disconnecting is called when the client is disconnecting from the server. Allows
+        /// the server to handle client events post-disconnect, and reclaim resources first
+        /// leased to the client on accept.
+        /// </summary>
+        /// <param name="actor">Actor being disconnected</param>
+        private void Disconnecting(TcpServerActor actor)
+        {
+            // Reclaim resources and release back to server pools
+            actor.Buffer.Span.Clear();
+            this.BufferPool.Push(actor.Buffer);
+            this.AcceptanceSemaphore.Release();
+            
+            // Complete processing for disconnect
+            this.Disconnected(actor);
         }
     }
 }
