@@ -3,17 +3,19 @@ namespace Comet.Network.Sockets
     using System;
     using System.Net.Sockets;
     using System.Threading.Tasks;
+    using Comet.Network.Security;
 
     /// <summary>
     /// Actors are assigned to accepted client sockets to give connected clients a state
     /// across socket operations. This allows the server to handle multiple receive writes
     /// across single processing reads, and keep a buffer alive for faster operations.
     /// </summary>
-    public class TcpServerActor
+    public abstract class TcpServerActor
     {
         // Fields and Properties
         public readonly Memory<byte> Buffer;
         public readonly Socket Socket;
+        public readonly ICipher Cipher;
 
         /// <summary>
         /// Instantiates a new instance of <see cref="TcpServerActor"/> using an accepted
@@ -21,10 +23,12 @@ namespace Comet.Network.Sockets
         /// </summary>
         /// <param name="socket">Accepted client socket</param>
         /// <param name="buffer">Preallocated buffer for socket receive operations</param>
-        public TcpServerActor(Socket socket, Memory<byte> buffer)
+        /// <param name="cipher">Cipher for handling client encipher operations</param>
+        public TcpServerActor(Socket socket, Memory<byte> buffer, ICipher cipher)
         {
             this.Buffer = buffer;
             this.Socket = socket;
+            this.Cipher = cipher;
         }
 
         // <summary>

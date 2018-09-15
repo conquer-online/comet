@@ -19,10 +19,7 @@ namespace Comet.Network.Sockets
         /// <param name="socket">Accepted client socket from the server socket</param>
         /// <param name="buffer">Preallocated buffer from the server listener</param>
         /// <returns>A new instance of a ServerActor around the client socket</returns>
-        protected virtual TcpServerActor Accepted(Socket socket, Memory<byte> buffer)
-        {
-            return new TcpServerActor(socket, buffer);
-        }
+        protected abstract TcpServerActor Accepted(Socket socket, Memory<byte> buffer);
 
         /// <summary>
         /// Invoked by the server listener's Receiving method to process a completed packet

@@ -115,6 +115,11 @@ namespace Comet.Network.Sockets
                     SocketFlags.None, 
                     this.ShutdownToken.Token);
 
+                // Decrypt traffic
+                actor.Cipher.Decrypt(
+                    actor.Buffer.Slice(examined).Span, 
+                    actor.Buffer.Slice(examined).Span);
+
                 // Handle splitting and processing of data
                 this.Splitting(actor, examined, ref consumed);
                 actor.Buffer.Slice(consumed).CopyTo(actor.Buffer);
