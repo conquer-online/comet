@@ -117,8 +117,8 @@ namespace Comet.Network.Sockets
 
                 // Decrypt traffic
                 actor.Cipher.Decrypt(
-                    actor.Buffer.Slice(examined).Span, 
-                    actor.Buffer.Slice(examined).Span);
+                    actor.Buffer.Slice(0, examined).Span, 
+                    actor.Buffer.Slice(0, examined).Span);
 
                 // Handle splitting and processing of data
                 this.Splitting(actor, examined, ref consumed);

@@ -2,6 +2,7 @@ namespace Comet.Network.Sockets
 {
     using System;
     using System.Net.Sockets;
+    using Comet.Network.Packets;
 
     /// <summary>
     /// TcpServerEvents provides default socket events handlers for server event handling,
@@ -31,7 +32,8 @@ namespace Comet.Network.Sockets
         /// <param name="packet">Packet bytes to be processed</param>
         protected virtual void Received(TcpServerActor actor, ReadOnlySpan<byte> packet)
         {
-
+            Console.WriteLine("Received {0} bytes", packet.Length);
+            Console.WriteLine(PacketDump.Hex(packet));
         }
 
         /// <summary>
@@ -40,6 +42,8 @@ namespace Comet.Network.Sockets
         /// from other actors and server collections.
         /// </summary>
         /// <param name="actor">Server actor that represents the remote client</param>
-        protected abstract void Disconnected(TcpServerActor actor);
+        protected virtual void Disconnected(TcpServerActor actor) 
+        {
+        }
     }
 }

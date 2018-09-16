@@ -5,18 +5,26 @@
    "version": "0.2.0",
    "configurations": [
         {
-            "name": ".NET Core Launch (console)",
+            "name": "Account Server",
             "type": "coreclr",
             "request": "launch",
             "preLaunchTask": "build",
-            // If you have changed target frameworks, make sure to update the program path.
             "program": "${workspaceFolder}/src/Comet.Account/bin/Debug/netcoreapp2.1/Comet.Account.dll",
             "args": [],
             "cwd": "${workspaceFolder}/src/Comet.Account",
-            // For more information about the 'console' field, see https://github.com/OmniSharp/omnisharp-vscode/blob/master/debugger-launchjson.md#console-terminal-window
-            "console": "internalConsole",
+            "console": "externalTerminal",
             "stopAtEntry": false,
-            "internalConsoleOptions": "openOnSessionStart"
+        },
+        {
+            "name": "Game Server",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "build",
+            "program": "${workspaceFolder}/src/Comet.Game/bin/Debug/netcoreapp2.1/Comet.Game.dll",
+            "args": [],
+            "cwd": "${workspaceFolder}/src/Comet.Game",
+            "console": "externalTerminal",
+            "stopAtEntry": false,
         },
         {
             "name": ".NET Core Attach",
