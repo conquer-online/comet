@@ -4,8 +4,13 @@
     <ProjectReference Include="..\Comet.Core\Comet.Core.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <PackageReference Include="System.Threading.Channels" Version="4.5.0" />
+  </ItemGroup>
+
   <PropertyGroup>
     <TargetFramework>netcoreapp2.1</TargetFramework>
+    <LangVersion>7.2</LangVersion> 
   </PropertyGroup>
 
 </Project>
