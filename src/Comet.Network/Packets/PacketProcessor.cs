@@ -47,7 +47,7 @@ namespace Comet.Network.Packets
             // Create threads for reading from the channel
             count = count == 0 ? Environment.ProcessorCount : count;
             for (int i = 0; i < count; i++)
-                this.Tasks.Add(Task.Run(this.Dequeue));
+                this.Tasks.Add(this.Dequeue());
         }
 
         /// <summary>

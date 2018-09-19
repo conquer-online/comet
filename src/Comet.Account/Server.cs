@@ -22,7 +22,8 @@ namespace Comet.Account
         /// <see cref="PacketProcessor"/> for processing packets from the players using 
         /// channels and worker threads. Initializes the TCP server listener.
         /// </summary>
-        public Server() : base()
+        /// <param name="config">The server's read configuration file</param>
+        public Server(ServerConfiguration config) : base(maxConn: config.Network.MaxConn)
         {
             this.Processor = new PacketProcessor(this.Process);
         }

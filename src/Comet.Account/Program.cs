@@ -18,13 +18,18 @@
             // project name and version may be removed or changed.
             Console.Title = "Comet, Account Server";
             Console.WriteLine("Comet, Account Server");
-            Console.WriteLine("Copyright 2017-2018 \"Spirited\"");
+            Console.WriteLine("Copyright 2018 Gareth Jensen, \"Spirited\"");
             Console.WriteLine("Version 1.0.0-alpha1");
             Console.WriteLine();
 
+            // Read configuration file and command-line arguments
+            var config = new ServerConfiguration(args);
+
             // Start the server listener
-            var server = new Server();
-            server.Start(9958);
+            Console.WriteLine("Launching server...");
+            var server = new Server(config);
+            server.Start(config.Network.Port, config.Network.IPAddress);
+            Console.WriteLine("Listening for new connections");
             Console.ReadKey(true);
         }
     }
