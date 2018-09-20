@@ -11,12 +11,28 @@ namespace Comet.Account
     public class ServerConfiguration 
     {
         // Properties and fields
-        public NetworkConfiguration Network { get; protected set; }
+        public DatabaseConfiguration Database { get; set; }
+        public NetworkConfiguration Network { get; set; }
+
+        /// <summary>
+        /// Encapsulates network configuration for the server listener.
+        /// </summary>
         public class NetworkConfiguration
         {
             public string IPAddress { get; set; }
             public int Port { get; set; }
             public int MaxConn { get; set; }
+        }
+
+        /// <summary>
+        /// Encapsulates database configuration for Entity Framework.
+        /// </summary>
+        public class DatabaseConfiguration
+        {
+            public string Hostname { get; set; }
+            public string Schema { get; set; }
+            public string Username { get; set; }
+            public string Password { get; set; }
         }
 
         /// <summary>
@@ -33,5 +49,10 @@ namespace Comet.Account
                 .Build()
                 .Bind(this);
         }
+
+        /// <summary>
+        /// Returns true if the server configuration is valid after reading.
+        /// </summary>
+        public bool Valid => this.Database != null && this.Network != null;
     }
 }
