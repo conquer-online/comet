@@ -1,4 +1,4 @@
-namespace Comet.Account.Tests
+namespace Comet.Account.Database.Tests
 {
     using System;
     using Xunit;
