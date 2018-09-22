@@ -1,7 +1,7 @@
 image: microsoft/dotnet:latest
 
 services:
-  - mysql:latest
+  - mysql:5.7
 
 variables:
   MYSQL_ROOT_PASSWORD: password
