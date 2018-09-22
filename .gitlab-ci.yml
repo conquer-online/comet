@@ -4,7 +4,7 @@ services:
   - mysql:5.7
 
 variables:
-  MYSQL_ROOT_PASSWORD: password
+  MYSQL_ROOT_PASSWORD: "password"
 
 stages:
   - build
@@ -12,7 +12,7 @@ stages:
 
 before_script:
   - apt-get update -q && apt-get install -qqy --no-install-recommends mysql-client
-  - mysql --user=root --password=\"$MYSQL_ROOT_PASSWORD\" --host=mysql < sql/comet.account.sql
+  - mysql --user=root --password="$MYSQL_ROOT_PASSWORD" --host=mysql < sql/comet.account.sql
   - dotnet restore
 
 build:
