@@ -1,11 +1,12 @@
 namespace Comet.Account.Database
 {
     using Microsoft.EntityFrameworkCore;
+    using Pomelo.EntityFrameworkCore.MySql.Infrastructure;
 
     /// <summary>
     /// Server database client context implemented using Entity Framework Core, an open
     /// source object-relational mapping framework for ADO.NET. Substitutes in MySQL 
-    /// support through a third-party framework provided by Oracle.
+    /// support through a third-party framework provided by Pomelo Foundation.
     /// </summary>
     public sealed class ServerDbContext : DbContext
     {
@@ -21,7 +22,7 @@ namespace Comet.Account.Database
         /// <param name="optionsBuilder">Builder to create the context</param>
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseMySQL(string.Format(
+            optionsBuilder.UseMySql(string.Format(
                 "server={0};database={1};user={2};password={3}",
                 Configuration.Hostname, Configuration.Schema,
                 Configuration.Username, Configuration.Password));
