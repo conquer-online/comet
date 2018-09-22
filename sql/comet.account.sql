@@ -26,12 +26,12 @@ DROP TABLE IF EXISTS `account`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `account` (
   `AccountID` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `Username` varchar(70) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
-  `Password` varchar(70) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL,
+  `Username` varchar(70) NOT NULL,
+  `Password` varchar(70) DEFAULT NULL,
   `AuthorityID` smallint(6) unsigned NOT NULL DEFAULT '1',
   `StatusID` smallint(6) unsigned NOT NULL DEFAULT '1',
-  `Name` varchar(70) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL,
-  `Email` varchar(70) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL,
+  `Name` varchar(70) DEFAULT NULL,
+  `Email` varchar(70) DEFAULT NULL,
   `IPAddress` varchar(45) DEFAULT NULL,
   `Registered` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`AccountID`),
@@ -41,7 +41,7 @@ CREATE TABLE `account` (
   KEY `fk_account_account_status_idx` (`StatusID`),
   CONSTRAINT `fk_account_account_authority` FOREIGN KEY (`AuthorityID`) REFERENCES `account_authority` (`authorityid`),
   CONSTRAINT `fk_account_account_status` FOREIGN KEY (`StatusID`) REFERENCES `account_status` (`StatusID`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -67,7 +67,7 @@ CREATE TABLE `account_authority` (
   PRIMARY KEY (`AuthorityID`),
   UNIQUE KEY `AuthorityID_UNIQUE` (`AuthorityID`),
   UNIQUE KEY `AuthorityName_UNIQUE` (`AuthorityName`)
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -93,7 +93,7 @@ CREATE TABLE `account_status` (
   PRIMARY KEY (`StatusID`),
   UNIQUE KEY `StatusID_UNIQUE` (`StatusID`),
   UNIQUE KEY `StatusName_UNIQUE` (`StatusName`)
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -120,7 +120,7 @@ CREATE TABLE `logins` (
   PRIMARY KEY (`AccountID`,`Timestamp`),
   KEY `fk_logins_account_idx` (`AccountID`),
   CONSTRAINT `fk_logins_account` FOREIGN KEY (`AccountID`) REFERENCES `account` (`accountid`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -149,4 +149,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2018-09-22 14:35:27
+-- Dump completed on 2018-09-22 14:40:58
