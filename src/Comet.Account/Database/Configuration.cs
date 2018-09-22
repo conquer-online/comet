@@ -1,4 +1,4 @@
-namespace Comet.Account
+namespace Comet.Account.Database
 {
     using Microsoft.Extensions.Configuration;
 

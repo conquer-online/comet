@@ -1,6 +1,7 @@
 ﻿namespace Comet.Account
 {
     using System;
+    using Comet.Account.Database;
 
     /// <summary>
     /// The account server accepts clients and authenticates players from the client's 
@@ -18,43 +19,31 @@
             // project name and version may be removed or changed.
             Console.Title = "Comet, Account Server";
             Console.WriteLine();
-            Console.WriteLine("         .:'    Comet, Account Server");
-            Console.WriteLine("     _.::'      Copyright 2018 \"Spirited\"");
-            Console.WriteLine("    (_.'        Version 1.0.0-alpha1");
+            Console.WriteLine("    Comet: Account Server");
+            Console.WriteLine("    Copyright 2018 Gareth Jensen \"Spirited\"");
+            Console.WriteLine("    All Rights Reserved");
             Console.WriteLine();
 
             // Read configuration file and command-line arguments
-            Console.WriteLine("Parsing server configuration...");
-            Console.WriteLine();
             var config = new ServerConfiguration(args);
             if (!config.Valid) 
             {
-                Console.ForegroundColor = ConsoleColor.Red;
                 Console.WriteLine("Invalid server configuration file");
-                Console.ResetColor();
                 return;
             }
-            
-            // Output configuration
-            Console.WriteLine("   Database Server: {0}", config.Database.Hostname);
-            Console.WriteLine("   Database Schema: {0}", config.Database.Schema);
-            Console.WriteLine("   Server Listener: {0}:{1}", 
-                config.Network.IPAddress, 
-                config.Network.Port);
 
+            // Initialize the database
+            ServerDbContext.Configuration = config.Database;
+            
             // Start the server listener
-            Console.WriteLine("\nLaunching server listener...");
+            Console.WriteLine("Launching server listener...");
             var server = new Server(config);
             server.Start(config.Network.Port, config.Network.IPAddress);
 
             // Output all clear and wait for user input
-            Console.ForegroundColor = ConsoleColor.Green;
             Console.WriteLine("Listening for new connections");
-            Console.ResetColor();
             Console.WriteLine();
             Console.ReadKey(true);
         }
-
-        
     }
 }

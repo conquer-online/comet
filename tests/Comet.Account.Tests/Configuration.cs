@@ -2,7 +2,7 @@ namespace Comet.Account.Tests
 {
     using System;
     using Xunit;
-    using Comet.Account;
+    using Comet.Account.Database;
 
     /// <summary>
     /// Validates that the server is configurable using the default configuration file.
