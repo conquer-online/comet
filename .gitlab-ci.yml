@@ -22,7 +22,7 @@ build:
 test:
   stage: test
   script:
-    - mysql -u root -p \"$MYSQL_ROOT_PASSWORD\" -h mysql < sql/comet.account.sql
+    - mysql -u root -p\"$MYSQL_ROOT_PASSWORD\" -h mysql < sql/comet.account.sql
     - dotnet test tests/Comet.Account.Tests
     - dotnet test tests/Comet.Core.Tests
     - dotnet test tests/Comet.Network.Tests
