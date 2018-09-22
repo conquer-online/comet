@@ -1,20 +1,27 @@
 image: microsoft/dotnet:latest
 
+services:
+  - mysql:latest
+
+variables:
+  MYSQL_ROOT_PASSWORD: password
+
 stages:
   - build
   - test
 
 before_script:
-  - "dotnet restore"
+  - dotnet restore
 
 build:
   stage: build
   script:
-    - "dotnet build"
+    - dotnet build
 
 test:
   stage: test
   script:
-    - "dotnet test tests/Comet.Account.Tests"
-    - "dotnet test tests/Comet.Core.Tests"
-    - "dotnet test tests/Comet.Network.Tests"
+    - mysql -u root -p \"$MYSQL_ROOT_PASSWORD\" -h mysql < sql/comet.account.sql
+    - dotnet test tests/Comet.Account.Tests
+    - dotnet test tests/Comet.Core.Tests
+    - dotnet test tests/Comet.Network.Tests

@@ -1,7 +1,9 @@
 ﻿namespace Comet.Account
 {
     using System;
+    using System.Linq;
     using Comet.Account.Database;
+    using Microsoft.EntityFrameworkCore;
 
     /// <summary>
     /// The account server accepts clients and authenticates players from the client's 
