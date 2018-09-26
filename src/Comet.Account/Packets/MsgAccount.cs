@@ -14,6 +14,7 @@ namespace Comet.Account.Packets
     /// </summary>
     public sealed class MsgAccount : MsgBase<Client>
     {
+        // Packet Properties
         public string Username { get; private set; }
         public string Password { get; private set; }
         public string Realm { get; private set; }
@@ -38,16 +39,26 @@ namespace Comet.Account.Packets
         /// <param name="bytes">Bytes from the packet processor or client socket</param>
         public override void Decode(byte[] bytes)
         {
-            var rc5 = new RC5();
-            var password = new byte[16];
-
             var reader = new PacketReader(bytes);
             this.Length = reader.ReadUInt16();
             this.Type = (PacketType)reader.ReadUInt16();
             this.Username = reader.ReadString(16);
-            rc5.Decrypt(reader.ReadBytes(16), password);
-            this.Password = Encoding.ASCII.GetString(password).Trim('\0');
+            this.Password = this.DecryptPassword(reader.ReadBytes(16));
             this.Realm = reader.ReadString(16);
+        }
+
+        /// <summary>
+        /// Decrypts the password from read in packet bytes for the <see cref="Decode"/>
+        /// method. Trims the end of the password string of null terminators.
+        /// </summary>
+        /// <param name="buffer">Bytes from the packet buffer</param>
+        /// <returns>Returns the decrypted password string.</returns>
+        private string DecryptPassword(byte[] buffer)
+        {
+            var rc5 = new RC5();
+            var password = new byte[16];
+            rc5.Decrypt(buffer, password);
+            return Encoding.ASCII.GetString(password).Trim('\0');
         }
     }
 }
