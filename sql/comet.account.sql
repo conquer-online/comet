@@ -28,6 +28,7 @@ CREATE TABLE `account` (
   `AccountID` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `Username` varchar(70) NOT NULL,
   `Password` varchar(70) DEFAULT NULL,
+  `Salt` varchar(45) DEFAULT NULL,
   `AuthorityID` smallint(6) unsigned NOT NULL DEFAULT '1',
   `StatusID` smallint(6) unsigned NOT NULL DEFAULT '1',
   `Name` varchar(70) DEFAULT NULL,
@@ -40,7 +41,7 @@ CREATE TABLE `account` (
   KEY `fk_account_account_authority_idx` (`AuthorityID`),
   KEY `fk_account_account_status_idx` (`StatusID`),
   CONSTRAINT `fk_account_account_authority` FOREIGN KEY (`AuthorityID`) REFERENCES `account_authority` (`authorityid`),
-  CONSTRAINT `fk_account_account_status` FOREIGN KEY (`StatusID`) REFERENCES `account_status` (`StatusID`)
+  CONSTRAINT `fk_account_account_status` FOREIGN KEY (`StatusID`) REFERENCES `account_status` (`statusid`)
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -50,9 +51,39 @@ CREATE TABLE `account` (
 
 LOCK TABLES `account` WRITE;
 /*!40000 ALTER TABLE `account` DISABLE KEYS */;
-INSERT INTO `account` VALUES (1,'Spirited','test',1,1,NULL,NULL,NULL,'2018-09-22 00:56:30');
+INSERT INTO `account` VALUES (1,'Spirited','e25c2503e5e2fd4d77170ee22637ee923e4ef44c','81d416511b6a75aa957c015af391317f',1,1,NULL,NULL,NULL,'2018-09-26 00:08:10');
 /*!40000 ALTER TABLE `account` ENABLE KEYS */;
 UNLOCK TABLES;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8 */ ;
+/*!50003 SET character_set_results = utf8 */ ;
+/*!50003 SET collation_connection  = utf8_general_ci */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,NO_ENGINE_SUBSTITUTION' */ ;
+DELIMITER ;;
+/*!50003 CREATE*/ /*!50017 DEFINER=`root`@`localhost`*/ /*!50003 TRIGGER `account_passwordhash` BEFORE INSERT ON `account` FOR EACH ROW BEGIN
+    --
+	-- Name:   Password Hash
+	-- Author: Gareth Jensen (Spirited)
+	-- Date:   2018-09-25
+	--
+	-- Description:
+	-- When a plain text password without a hash or salt has been inserted into the database 
+	-- along with a new account, then the plain text password will be hashed and a salt will
+	-- be generated from a random MD5 string.
+	-- 
+	IF (NEW.`Salt` IS NULL) THEN
+        SET NEW.`Salt` = MD5(RAND());
+        SET NEW.`Password` = SHA1(CONCAT(NEW.`Password`, NEW.`Salt`));
+    END IF;
+END */;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
 
 --
 -- Table structure for table `account_authority`
@@ -149,4 +180,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2018-09-22 14:40:58
+-- Dump completed on 2018-09-26  0:14:51
