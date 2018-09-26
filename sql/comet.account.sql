@@ -51,7 +51,7 @@ CREATE TABLE `account` (
 
 LOCK TABLES `account` WRITE;
 /*!40000 ALTER TABLE `account` DISABLE KEYS */;
-INSERT INTO `account` VALUES (1,'Spirited','e25c2503e5e2fd4d77170ee22637ee923e4ef44c','81d416511b6a75aa957c015af391317f',1,1,NULL,NULL,NULL,'2018-09-26 00:08:10');
+INSERT INTO `account` VALUES (1,'Spirited','6bbb9dc119596a2397ed7b13ff8d47431ff6c8ef1a9d82d05928daecd7f1d5b8','3c1d7ae9a3080cba8dad6b0bf4d50e2f',1,1,NULL,NULL,NULL,'2018-09-26 00:17:40');
 /*!40000 ALTER TABLE `account` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!50003 SET @saved_cs_client      = @@character_set_client */ ;
@@ -76,7 +76,7 @@ DELIMITER ;;
 	-- 
 	IF (NEW.`Salt` IS NULL) THEN
         SET NEW.`Salt` = MD5(RAND());
-        SET NEW.`Password` = SHA1(CONCAT(NEW.`Password`, NEW.`Salt`));
+        SET NEW.`Password` = SHA2(CONCAT(NEW.`Password`, NEW.`Salt`), 256);
     END IF;
 END */;;
 DELIMITER ;
@@ -180,4 +180,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2018-09-26  0:14:51
+-- Dump completed on 2018-09-26  0:18:18
