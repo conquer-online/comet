@@ -5,7 +5,6 @@ namespace Comet.Network.Packets
     using System.Threading;
     using System.Threading.Channels;
     using System.Threading.Tasks;
-    using Comet.Network.Sockets;
 
     /// <summary>
     /// Packet processor for handling packets in worker threads using unbounded channels.
@@ -13,14 +12,15 @@ namespace Comet.Network.Packets
     /// loop, to write to the channel. Multiple readers then read single messages from
     /// the channel for processing.
     /// </summary>
-    public class PacketProcessor
+    /// <typeparam name="TClient">Type of client being processed with the packet</typeparam>
+    public class PacketProcessor<TClient>
     {
         // Fields and Properties
-        protected readonly Channel<Message> Messages;
-        protected readonly Action<TcpServerActor, byte[]> Process;
-        protected readonly List<Task> Tasks;
         protected CancellationToken CancelReads;
         protected CancellationToken CancelWrites;
+        protected readonly Channel<Message> Messages;
+        protected readonly Action<TClient, byte[]> Process;
+        protected readonly List<Thread> Threads;
 
         /// <summary>
         /// Instantiates a new instance of <see cref="PacketProcessor"/> using a default
@@ -32,7 +32,7 @@ namespace Comet.Network.Packets
         /// <param name="cancelWrites">Token for cancelling writes</param>
         /// <param name="count">Number of threads to be created</param>
         public PacketProcessor(
-            Action<TcpServerActor, byte[]> process, 
+            Action<TClient, byte[]> process, 
             CancellationToken cancelReads = default(CancellationToken),
             CancellationToken cancelWrites = default(CancellationToken),
             int count = 0)
@@ -42,12 +42,16 @@ namespace Comet.Network.Packets
             this.CancelWrites = cancelWrites;
             this.Messages = Channel.CreateUnbounded<Message>();
             this.Process = process;
-            this.Tasks = new List<Task>();
+            this.Threads = new List<Thread>();
 
             // Create threads for reading from the channel
             count = count == 0 ? Environment.ProcessorCount : count;
             for (int i = 0; i < count; i++)
-                this.Tasks.Add(this.Dequeue());
+            {
+                var thread = new Thread(this.Dequeue);
+                this.Threads.Add(thread);
+                thread.Start();
+            }
         }
 
         /// <summary>
@@ -57,7 +61,7 @@ namespace Comet.Network.Packets
         /// </summary>
         /// <param name="actor">Actor requesting packet processing</param>
         /// <param name="packet">Packet bytes to be processed</param>
-        public void Queue(TcpServerActor actor, byte[] packet)
+        public void Queue(TClient actor, byte[] packet)
         {
             if (!this.CancelWrites.IsCancellationRequested)
                 this.Messages.Writer.TryWrite(new Message {
@@ -69,14 +73,15 @@ namespace Comet.Network.Packets
         /// <summary>
         /// Dequeues work in a loop. For as long as the thread is running and work is 
         /// available, work will be dequeued and processed. After dequeuing a message,
-        /// the packet processor's <see cref="Process"/> action will be called. 
+        /// the packet processor's <see cref="Process"/> action will be called.
         /// </summary>
-        private async Task Dequeue()
+        private async void Dequeue()
         {
             while (!this.CancelReads.IsCancellationRequested)
             {
                 var msg = await this.Messages.Reader.ReadAsync(this.CancelReads);
-                this.Process(msg.Actor, msg.Packet);
+                if (msg != null) 
+                    this.Process(msg.Actor, msg.Packet);
             }
         }
 
@@ -98,7 +103,7 @@ namespace Comet.Network.Packets
         /// </summary>
         protected class Message
         {
-            public TcpServerActor Actor;
+            public TClient Actor;
             public byte[] Packet;
         }
     }

@@ -10,7 +10,7 @@ namespace Comet.Account.States
     /// The class should be initialized by the server's Accepted method and returned
     /// to be passed along to the Receive loop and kept alive.
     /// </summary>
-    internal sealed class Client : TcpServerActor
+    public sealed class Client : TcpServerActor
     {
         /// <summary>
         /// Instantiates a new instance of <see cref="Client"/> using the Accepted event's

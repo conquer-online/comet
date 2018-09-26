@@ -2,7 +2,9 @@ namespace Comet.Account
 {
     using System;
     using System.Net.Sockets;
+    using System.Text;
     using Comet.Account.Database;
+    using Comet.Account.Packets;
     using Comet.Account.States;
     using Comet.Network.Packets;
     using Comet.Network.Security;
@@ -16,7 +18,7 @@ namespace Comet.Account
     internal sealed class Server : TcpServerListener
     {
         // Fields and Properties
-        private readonly PacketProcessor Processor;
+        private readonly PacketProcessor<Client> Processor;
 
         /// <summary>
         /// Instantiates a new instance of <see cref="Server"/> by initializing the 
@@ -26,7 +28,7 @@ namespace Comet.Account
         /// <param name="config">The server's read configuration file</param>
         public Server(ServerConfiguration config) : base(maxConn: config.Network.MaxConn)
         {
-            this.Processor = new PacketProcessor(this.Process);
+            this.Processor = new PacketProcessor<Client>(this.Process);
         }
 
         /// <summary>
@@ -51,7 +53,7 @@ namespace Comet.Account
         /// <param name="packet">Packet bytes to be processed</param>
         protected override void Received(TcpServerActor actor, ReadOnlySpan<byte> packet)
         {
-            this.Processor.Queue(actor, packet.ToArray());
+            this.Processor.Queue(actor as Client, packet.ToArray());
         }
 
         /// <summary>
@@ -63,8 +65,37 @@ namespace Comet.Account
         /// <param name="packet">An individual data packet to be processed</param>
         private void Process(TcpServerActor actor, byte[] packet) 
         {
-            Console.WriteLine("Processing {0} bytes", packet.Length);
-            Console.WriteLine(PacketDump.Hex(packet));
+            // Validate connection
+            if (!actor.Socket.Connected)
+                return;
+
+            // Read in TQ's binary header
+            var length = BitConverter.ToUInt16(packet, 0);
+            var type = BitConverter.ToUInt16(packet, 2);
+
+            // Switch on the packet type
+            MsgBase<Client> msg = null;
+            switch ((PacketType)type)
+            {
+                case PacketType.MsgAccount: msg = new MsgAccount(); break;
+
+                default:
+                    Console.WriteLine(
+                        "Missing packet {0}, Length {1}\n{2}", 
+                        type, length, PacketDump.Hex(packet));
+                    return;
+            }
+
+            try
+            {
+                // Decode packet bytes into the structure and process
+                msg.Decode(packet);
+                msg.Process(actor as Client);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+            }
         }
     }
 }

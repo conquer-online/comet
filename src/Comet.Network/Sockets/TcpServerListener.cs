@@ -114,6 +114,7 @@ namespace Comet.Network.Sockets
                     actor.Buffer.Slice(consumed), 
                     SocketFlags.None, 
                     this.ShutdownToken.Token);
+                if (examined == 0) break;
 
                 // Decrypt traffic
                 actor.Cipher.Decrypt(
