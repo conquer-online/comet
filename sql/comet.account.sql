@@ -1,15 +1,15 @@
 CREATE DATABASE  IF NOT EXISTS `comet.account` /*!40100 DEFAULT CHARACTER SET utf8 COLLATE utf8_bin */;
 USE `comet.account`;
--- MySQL dump 10.13  Distrib 5.7.17, for Win64 (x86_64)
+-- MySQL dump 10.13  Distrib 8.0.12, for Win64 (x86_64)
 --
 -- Host: localhost    Database: comet.account
 -- ------------------------------------------------------
--- Server version	8.0.11
+-- Server version	8.0.12
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
 /*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
-/*!40101 SET NAMES utf8 */;
+ SET NAMES utf8 ;
 /*!40103 SET @OLD_TIME_ZONE=@@TIME_ZONE */;
 /*!40103 SET TIME_ZONE='+00:00' */;
 /*!40014 SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0 */;
@@ -23,17 +23,17 @@ USE `comet.account`;
 
 DROP TABLE IF EXISTS `account`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+ SET character_set_client = utf8;
 CREATE TABLE `account` (
   `AccountID` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `Username` varchar(70) NOT NULL,
-  `Password` varchar(70) DEFAULT NULL,
-  `Salt` varchar(45) DEFAULT NULL,
+  `Username` varchar(16) CHARACTER SET utf8 NOT NULL,
+  `Password` varchar(70) CHARACTER SET utf8 NOT NULL,
+  `Salt` varchar(45) CHARACTER SET utf8 DEFAULT NULL,
   `AuthorityID` smallint(6) unsigned NOT NULL DEFAULT '1',
   `StatusID` smallint(6) unsigned NOT NULL DEFAULT '1',
-  `Name` varchar(70) DEFAULT NULL,
-  `Email` varchar(70) DEFAULT NULL,
-  `IPAddress` varchar(45) DEFAULT NULL,
+  `Name` varchar(70) CHARACTER SET utf8 DEFAULT NULL,
+  `Email` varchar(70) CHARACTER SET utf8 DEFAULT NULL,
+  `IPAddress` varchar(45) CHARACTER SET utf8 DEFAULT NULL,
   `Registered` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`AccountID`),
   UNIQUE KEY `AccountID_UNIQUE` (`AccountID`),
@@ -72,9 +72,15 @@ DELIMITER ;;
 	-- Description:
 	-- When a plain text password without a hash or salt has been inserted into the database 
 	-- along with a new account, then the plain text password will be hashed and a salt will
-	-- be generated from a random MD5 string.
+	-- be generated from a random MD5 string. Due to client limitations, passwords cannot be
+    -- longer than 16 characters.
 	-- 
 	IF (NEW.`Salt` IS NULL) THEN
+    
+		IF (LENGTH(NEW.`Password`) > 16) THEN
+			SET NEW.`Password` = NULL;
+        END IF;
+        
         SET NEW.`Salt` = MD5(RAND());
         SET NEW.`Password` = SHA2(CONCAT(NEW.`Password`, NEW.`Salt`), 256);
     END IF;
@@ -91,7 +97,7 @@ DELIMITER ;
 
 DROP TABLE IF EXISTS `account_authority`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+ SET character_set_client = utf8 ;
 CREATE TABLE `account_authority` (
   `AuthorityID` smallint(5) unsigned NOT NULL AUTO_INCREMENT,
   `AuthorityName` varchar(45) NOT NULL,
@@ -117,7 +123,7 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `account_status`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+ SET character_set_client = utf8 ;
 CREATE TABLE `account_status` (
   `StatusID` smallint(5) unsigned NOT NULL AUTO_INCREMENT,
   `StatusName` varchar(45) NOT NULL,
@@ -143,7 +149,7 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `logins`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+ SET character_set_client = utf8 ;
 CREATE TABLE `logins` (
   `Timestamp` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `AccountID` int(10) unsigned NOT NULL,
@@ -180,4 +186,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2018-09-26  0:18:18
+-- Dump completed on 2018-09-26 13:56:58

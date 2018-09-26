@@ -9,4 +9,4 @@ After building Comet, open and modify the configuration files in the Comet.Accou
 ### Common Questions & Answers
 **How do I create an account?**
 
-Accounts can be created by inserting a username and password into the `account` table. On insert, a trigger will automatically replace your plaintext password with a salted SHA-256 hash. The hashed password and salt will be saved in place of the plaintext password. Join with the `account_authority` and `account_status` tables to set account activation status and permissions.
+Accounts can be created by inserting a username and password into the `account` table. On insert, a trigger will automatically replace your plaintext password with a salted SHA-256 hash. The hashed password and salt will be saved in place of the plaintext password. Due to client limitations, passwords must be less than 16 characters long. Join with the `account_authority` and `account_status` tables to set account activation status and permissions.
