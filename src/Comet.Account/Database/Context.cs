@@ -19,6 +19,7 @@ namespace Comet.Account.Database
         public virtual DbSet<AccountAuthority> AccountAuthorities { get; set; }
         public virtual DbSet<AccountStatus> AccountStatuses { get; set; }
         public virtual DbSet<Logins> Logins { get; set; }
+        public virtual DbSet<Realm> Realms { get; set; }
 
         /// <summary>
         /// Configures the database to be used for this context. This method is called
