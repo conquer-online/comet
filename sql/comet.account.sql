@@ -23,17 +23,17 @@ USE `comet.account`;
 
 DROP TABLE IF EXISTS `account`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
- SET character_set_client = utf8;
+ SET character_set_client = utf8mb4 ;
 CREATE TABLE `account` (
   `AccountID` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `Username` varchar(16) CHARACTER SET utf8 NOT NULL,
-  `Password` varchar(70) CHARACTER SET utf8 NOT NULL,
-  `Salt` varchar(45) CHARACTER SET utf8 DEFAULT NULL,
+  `Username` varchar(16) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
+  `Password` varchar(70) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
+  `Salt` varchar(45) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL,
   `AuthorityID` smallint(6) unsigned NOT NULL DEFAULT '1',
   `StatusID` smallint(6) unsigned NOT NULL DEFAULT '1',
-  `Name` varchar(70) CHARACTER SET utf8 DEFAULT NULL,
-  `Email` varchar(70) CHARACTER SET utf8 DEFAULT NULL,
-  `IPAddress` varchar(45) CHARACTER SET utf8 DEFAULT NULL,
+  `Name` varchar(70) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL,
+  `Email` varchar(70) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL,
+  `IPAddress` varchar(45) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL,
   `Registered` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`AccountID`),
   UNIQUE KEY `AccountID_UNIQUE` (`AccountID`),
@@ -97,7 +97,7 @@ DELIMITER ;
 
 DROP TABLE IF EXISTS `account_authority`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
- SET character_set_client = utf8 ;
+ SET character_set_client = utf8mb4 ;
 CREATE TABLE `account_authority` (
   `AuthorityID` smallint(5) unsigned NOT NULL AUTO_INCREMENT,
   `AuthorityName` varchar(45) NOT NULL,
@@ -123,7 +123,7 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `account_status`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
- SET character_set_client = utf8 ;
+ SET character_set_client = utf8mb4 ;
 CREATE TABLE `account_status` (
   `StatusID` smallint(5) unsigned NOT NULL AUTO_INCREMENT,
   `StatusName` varchar(45) NOT NULL,
@@ -149,7 +149,7 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `logins`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
- SET character_set_client = utf8 ;
+ SET character_set_client = utf8mb4 ;
 CREATE TABLE `logins` (
   `Timestamp` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `AccountID` int(10) unsigned NOT NULL,
@@ -170,6 +170,40 @@ LOCK TABLES `logins` WRITE;
 UNLOCK TABLES;
 
 --
+-- Table structure for table `realm`
+--
+
+DROP TABLE IF EXISTS `realm`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+ SET character_set_client = utf8mb4 ;
+CREATE TABLE `realm` (
+  `RealmID` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `Name` varchar(16) COLLATE utf8_bin NOT NULL,
+  `AuthorityID` smallint(6) unsigned NOT NULL DEFAULT '1' COMMENT 'Authority level required',
+  `IPAddress` varchar(45) COLLATE utf8_bin NOT NULL DEFAULT '127.0.0.1',
+  `Port` int(10) unsigned NOT NULL DEFAULT '5816',
+  `CipherAlgorithm` varchar(45) COLLATE utf8_bin DEFAULT NULL,
+  `CipherKey` varchar(128) COLLATE utf8_bin DEFAULT NULL,
+  `CipherIV` varchar(128) COLLATE utf8_bin DEFAULT NULL,
+  PRIMARY KEY (`RealmID`),
+  UNIQUE KEY `RealmID_UNIQUE` (`RealmID`),
+  UNIQUE KEY `Name_UNIQUE` (`Name`),
+  KEY `fk_realm_account_authority_idx` (`AuthorityID`),
+  CONSTRAINT `fk_realm_account_authority` FOREIGN KEY (`AuthorityID`) REFERENCES `account_authority` (`authorityid`)
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `realm`
+--
+
+LOCK TABLES `realm` WRITE;
+/*!40000 ALTER TABLE `realm` DISABLE KEYS */;
+INSERT INTO `realm` VALUES (1,'Comet',1,'127.0.0.1',5816,NULL,NULL,NULL);
+/*!40000 ALTER TABLE `realm` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Dumping events for database 'comet.account'
 --
 
@@ -186,4 +220,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2018-09-26 13:56:58
+-- Dump completed on 2018-09-26 18:34:29
