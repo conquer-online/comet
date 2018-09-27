@@ -1,17 +1,15 @@
 ﻿namespace Comet.Account.Database.Models
 {
     using System;
-    using System.Collections.Generic;
-    using System.ComponentModel.DataAnnotations;
     using System.ComponentModel.DataAnnotations.Schema;
 
     /// <summary>
-    /// Records of successful logins to the account server. These records can be used to
+    /// Record of a successful login to the account server. These records can be used to
     /// debug client connectivity issues, or outline connection patterns used to identify
     /// wrongful logins.
     /// </summary>
     [Table("logins")]
-    public partial class Logins
+    public partial class Login
     {
         // Column Properties
         public DateTime Timestamp { get; set; }

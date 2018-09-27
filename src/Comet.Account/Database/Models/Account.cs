@@ -17,7 +17,7 @@
         /// </summary>
         public Account()
         {
-            Logins = new HashSet<Logins>();
+            Logins = new HashSet<Login>();
         }
 
         // Column Properties
@@ -35,6 +35,6 @@
         // Navigational Properties
         public virtual AccountAuthority Authority { get; set; }
         public virtual AccountStatus Status { get; set; }
-        public virtual ICollection<Logins> Logins { get; set; }
+        public virtual ICollection<Login> Logins { get; set; }
     }
 }

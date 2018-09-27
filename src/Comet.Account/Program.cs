@@ -1,8 +1,11 @@
 ﻿namespace Comet.Account
 {
     using System;
+    using System.Collections.Generic;
     using System.Linq;
+    using System.Threading.Tasks;
     using Comet.Account.Database;
+    using Comet.Account.Database.Repositories;
     using Microsoft.EntityFrameworkCore;
 
     /// <summary>
@@ -35,7 +38,11 @@
             }
 
             // Initialize the database
+            Console.WriteLine("Initializing server...");
+            var tasks = new List<Task>();
             ServerDbContext.Configuration = config.Database;
+            tasks.Add(RealmsRepository.Load());
+            Task.WaitAll(tasks.ToArray());
             
             // Start the server listener
             Console.WriteLine("Launching server listener...");

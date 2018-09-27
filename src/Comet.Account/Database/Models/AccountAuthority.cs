@@ -17,6 +17,7 @@
         public AccountAuthority()
         {
             Account = new HashSet<Account>();
+            Realms = new HashSet<Realm>();
         }
 
         // Column Properties
@@ -25,5 +26,6 @@
 
         // Navigational Properties
         public virtual ICollection<Account> Account { get; set; }
+        public virtual ICollection<Realm> Realms { get; set; }
     }
 }
