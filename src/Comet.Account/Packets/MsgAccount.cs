@@ -1,9 +1,11 @@
 namespace Comet.Account.Packets
 {
     using System.Text;
+    using Comet.Account.Database.Repositories;
     using Comet.Account.States;
     using Comet.Network.Packets;
     using Comet.Network.Security;
+    using static Comet.Account.Packets.MsgConnectEx;
 
     /// <remarks>Packet Type 1051</remarks>
     /// <summary>
@@ -28,7 +30,15 @@ namespace Comet.Account.Packets
         /// <param name="client">Client requesting packet processing</param>
         public override void Process(Client client)
         {
+            // Fetch account info from the database
+            client.Account = AccountsRepository.Get(this.Username);
+            if (client.Account == null)
+            {
+                client.Send(new MsgConnectEx(RejectionCode.InvalidPassword));
+                client.Socket.Disconnect(false);
+            }
 
+            
         }
 
         /// <summary>

@@ -1,5 +1,6 @@
 namespace Comet.Network.Packets
 {
+    using System;
     using System.IO;
     using System.Text;
 
@@ -9,7 +10,7 @@ namespace Comet.Network.Packets
     /// String processing has been overloaded for supporting TQ's byte-length prefixed
     /// strings and fixed strings.
     /// </summary>
-    public sealed class PacketReader : BinaryReader
+    public sealed class PacketReader : BinaryReader, IDisposable
     {
         /// <summary>
         /// Instantiates a new instance of <see cref="PacketReader"/> using a supplied
@@ -46,5 +47,38 @@ namespace Comet.Network.Packets
         {
             return Encoding.ASCII.GetString(base.ReadBytes(fixedLength)).TrimEnd('\0');
         }
+
+        #region IDisposable Support
+        private bool DisposedValue = false; // To detect redundant calls
+
+        /// <summary>
+        /// Called from the Dispose method to dispose of class resources once and only
+        /// once using the Disposable design pattern. Calls into the base dispose method
+        /// after disposing of class resources first.
+        /// </summary>
+        /// <param name="disposing">True if clearing unmanaged and managed resources</param>
+        private new void Dispose(bool disposing)
+        {
+            if (!this.DisposedValue)
+            {
+                if (disposing)
+                {
+                    base.BaseStream.Close();
+                    base.BaseStream.Dispose();
+                }
+
+                base.Dispose(disposing);
+                this.DisposedValue = true;
+            }
+        }
+
+        /// <summary>
+        /// Called to dispose the class. 
+        /// </summary>
+        public new void Dispose()
+        {
+            this.Dispose(true);
+        }
+        #endregion
     }
 }

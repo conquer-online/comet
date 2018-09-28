@@ -7,6 +7,7 @@ namespace Comet.Network.Packets
     /// </summary>
     public enum PacketType : ushort
     {
-        MsgAccount = 1051
+        MsgAccount = 1051,
+        MsgConnectEx = 1055
     }
 }

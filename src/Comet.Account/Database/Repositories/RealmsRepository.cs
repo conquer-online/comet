@@ -19,14 +19,12 @@ namespace Comet.Account.Database.Repositories
         /// of known realm routes. Should be invoked at server startup before the server
         /// listener has been started.
         /// </summary>
-        public static async Task Load()
+        public static async Task LoadAsync()
         {
             using (var db = new ServerDbContext())
-            {
                 Kernel.Realms = await db.Realms
                     .Include(x => x.Authority)
                     .ToDictionaryAsync(x => x.Name);
-            }
         }
     }
 }

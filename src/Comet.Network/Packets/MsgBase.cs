@@ -8,7 +8,7 @@ namespace Comet.Network.Packets
     /// functions for byte slice manipulation. 
     /// </summary>
     /// <typeparam name="TClient">Type of client being processed with the packet</typeparam>
-    public abstract class MsgBase<TClient>
+    public abstract class MsgBase<TClient> : IPacket
     {
         // Base Properties
         public ushort Length { get; protected set; }

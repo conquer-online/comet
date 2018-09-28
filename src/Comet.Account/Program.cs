@@ -41,7 +41,7 @@
             Console.WriteLine("Initializing server...");
             var tasks = new List<Task>();
             ServerDbContext.Configuration = config.Database;
-            tasks.Add(RealmsRepository.Load());
+            tasks.Add(RealmsRepository.LoadAsync());
             Task.WaitAll(tasks.ToArray());
             
             // Start the server listener

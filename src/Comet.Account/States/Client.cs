@@ -2,6 +2,7 @@ namespace Comet.Account.States
 {
     using System;
     using System.Net.Sockets;
+    using Comet.Account.Database.Models;
     using Comet.Network.Security;
     using Comet.Network.Sockets;
 
@@ -12,6 +13,9 @@ namespace Comet.Account.States
     /// </summary>
     public sealed class Client : TcpServerActor
     {
+        // Fields and Properties
+        public Account Account;
+
         /// <summary>
         /// Instantiates a new instance of <see cref="Client"/> using the Accepted event's
         /// resulting socket and preallocated buffer. Initializes all account server

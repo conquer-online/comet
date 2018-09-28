@@ -3,6 +3,7 @@ namespace Comet.Network.Sockets
     using System;
     using System.Net.Sockets;
     using System.Threading.Tasks;
+    using Comet.Network.Packets;
     using Comet.Network.Security;
 
     /// <summary>
@@ -16,6 +17,7 @@ namespace Comet.Network.Sockets
         public readonly Memory<byte> Buffer;
         public readonly Socket Socket;
         public readonly ICipher Cipher;
+        private readonly object SendLock;
 
         /// <summary>
         /// Instantiates a new instance of <see cref="TcpServerActor"/> using an accepted
@@ -29,6 +31,7 @@ namespace Comet.Network.Sockets
             this.Buffer = buffer;
             this.Socket = socket;
             this.Cipher = cipher;
+            this.SendLock = new object();
         }
 
         // <summary>
@@ -49,6 +52,43 @@ namespace Comet.Network.Sockets
             }
 
             return false;
+        }
+
+        /// <summary>
+        /// Sends a packet to the game client after encrypting bytes. This may be called
+        /// as-is, or overridden to provide channel functionality and thread-safety around
+        /// the accepted client socket. By default, this method locks around encryption
+        /// and sending data. 
+        /// </summary>
+        /// <param name="packet">Bytes to be encrypted and sent to the client</param>
+        public virtual void Send(byte[] packet)
+        {
+            var encrypted = new byte[packet.Length];
+            BitConverter.TryWriteBytes(packet, (ushort)packet.Length);
+            lock (SendLock)
+            {
+                try 
+                {
+                    this.Cipher.Encrypt(packet, encrypted);
+                    this.Socket.Send(encrypted, SocketFlags.None);
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Sends a packet to the game client after encrypting bytes. This may be called
+        /// as-is, or overridden to provide channel functionality and thread-safety around
+        /// the accepted client socket. By default, this method locks around encryption
+        /// and sending data. 
+        /// </summary>
+        /// <param name="packet">Packet to be encrypted and sent to the client</param>
+        public virtual void Send(IPacket packet)
+        {
+            this.Send(packet.Encode());
         }
     }    
 }
