@@ -178,13 +178,10 @@ DROP TABLE IF EXISTS `realm`;
  SET character_set_client = utf8mb4 ;
 CREATE TABLE `realm` (
   `RealmID` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `Name` varchar(16) COLLATE utf8_bin NOT NULL,
+  `Name` varchar(16) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL,
   `AuthorityID` smallint(6) unsigned NOT NULL DEFAULT '1' COMMENT 'Authority level required',
-  `IPAddress` varchar(45) COLLATE utf8_bin NOT NULL DEFAULT '127.0.0.1',
+  `IPAddress` varchar(45) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL DEFAULT '127.0.0.1',
   `Port` int(10) unsigned NOT NULL DEFAULT '5816',
-  `CipherAlgorithm` varchar(45) COLLATE utf8_bin DEFAULT NULL,
-  `CipherKey` varchar(128) COLLATE utf8_bin DEFAULT NULL,
-  `CipherIV` varchar(128) COLLATE utf8_bin DEFAULT NULL,
   PRIMARY KEY (`RealmID`),
   UNIQUE KEY `RealmID_UNIQUE` (`RealmID`),
   UNIQUE KEY `Name_UNIQUE` (`Name`),
@@ -199,7 +196,7 @@ CREATE TABLE `realm` (
 
 LOCK TABLES `realm` WRITE;
 /*!40000 ALTER TABLE `realm` DISABLE KEYS */;
-INSERT INTO `realm` VALUES (1,'Comet',1,'127.0.0.1',5816,NULL,NULL,NULL);
+INSERT INTO `realm` VALUES (1,'Comet',1,'127.0.0.1',5816);
 /*!40000 ALTER TABLE `realm` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -220,4 +217,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2018-09-26 18:34:29
+-- Dump completed on 2018-09-29 17:04:05

@@ -36,6 +36,17 @@ namespace Comet.Account.Database
         }
 
         /// <summary>
+        /// Encapsulates authentication settings for configuring JSON-RPC security between
+        /// the account server and all connecting game servers. Key and IV should be the
+        /// same across all game server instances.
+        /// </summary>
+        public class AuthenticationConfiguration
+        {
+            public string Key { get; set; }
+            public string IV { get; set; }
+        }
+
+        /// <summary>
         /// Instantiates a new instance of <see cref="ServerConfiguration"/> with command-line
         /// arguments from the user and a configuration file for the application. Builds the
         /// configuration file and binds to this instance of the ServerConfiguration class.
