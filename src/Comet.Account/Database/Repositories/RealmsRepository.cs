@@ -22,15 +22,18 @@ namespace Comet.Account.Database.Repositories
         /// </summary>
         public static async Task LoadAsync()
         {
+            // Load realm connection information
             using (var db = new ServerDbContext())
                 Kernel.Realms = await db.Realms
                     .Include(x => x.Authority)
                     .ToDictionaryAsync(x => x.Name);
 
+            // Connect to each realm's RPC server
             foreach (var realm in Kernel.Realms.Values)
             {
-                realm.Rpc = new RpcClient(realm.RpcKey, realm.RpcIV);
-                var task = realm.Rpc.Connect(realm.RpcIPAddress, (int)realm.RpcPort);
+                realm.Rpc = new RpcClient();
+                var task = realm.Rpc.Connect(
+                    realm.RpcIPAddress, (int)realm.RpcPort, "Account Server");
             }
         }
     }

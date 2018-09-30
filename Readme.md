@@ -6,7 +6,7 @@ To get started, download and install [.NET Core 2.1.4](https://www.microsoft.com
 
 After building Comet, open and modify the `Comet.Account.config` and `Comet.Game.config` configuration files in the Comet.Account and Comet.Game bin folders. Modify the MySQL connection details to point to your instance. If you don't have MySQL installed, consider [MySQL Community Server](https://dev.mysql.com/downloads/mysql/) (comes with MySQL Workbench). Import scripts are located in the repository's "sql" folder.
 
-Once imported, open `realm` from the `comet.account` database. Enter your external IP address (port forwarding required) or an internal IP address for testing. Security between the realm 's game server and the account server is optional, but highly recommended if not running on one host. You can specify an AES key and IV for RPC security in the `realm` table and `Comet.Game.config` file.
+Once imported, open `realm` from the `comet.account` database. Enter your external IP address (port forwarding required) or an internal IP address for testing. Security between the realm 's game server and the account server is optional, but highly recommended if not running on one host. Check with your host provider for options on security groups or virtual networks between VMs.
 
 ### Common Questions & Answers
 

@@ -35,12 +35,8 @@
             
             // Start the RPC server listener
             Console.WriteLine("Launching server listeners...");
-            var rpcserver = new RpcServerListener(new Remote(), 
-                config.RpcNetwork.Key, 
-                config.RpcNetwork.IV);
-            rpcserver.Start(
-                config.RpcNetwork.Port, 
-                config.RpcNetwork.IPAddress);
+            var rpcserver = new RpcServerListener(new Remote());
+            rpcserver.Start(config.RpcNetwork.Port, config.RpcNetwork.IPAddress);
 
             // Output all clear and wait for user input
             Console.WriteLine("Listening for new connections");

@@ -14,40 +14,25 @@ namespace Comet.Network.RPC
     /// Creates a TCP client to connect to an RPC server listener. RPC is implemented as
     /// JSON-RPC over TCP (a web socket / network stream). Once the client connects, it can
     /// remain connected for the life of the TCP connection or until the server closes.
-    /// The client may be encrypted for wire security, but deally should never be exposed 
-    /// to the naked internet (use security groups or virtual networks if splitting between
-    /// two VMs).
+    /// The client should never be exposed to the naked internet (use security groups or
+    /// virtual networks if splitting between two VMs).
     /// </summary>
     public class RpcClient
     {
         // Fields and Properties
         protected TcpClient BaseClient;
         protected JsonRpc Rpc;
-        private byte[] Key, IV;
-
-        /// <summary>
-        /// Instantiates a new instance of <see cref="RpcClient"/> using an optional AES key
-        /// and IV for JSON-RPC stream security. 
-        /// </summary>
-        /// <param name="key">AES key as a hexadecimal string</param>
-        /// <param name="iv">AES IV as a hexadecimal string</param>
-        public RpcClient(string key = "", string iv = "")
-        {
-            this.Key = new byte[key.Length / 2];
-            this.IV = new byte[iv.Length / 2];
-            ByteEncoding.Hex.ToBytes(key, this.Key);
-            ByteEncoding.Hex.ToBytes(iv, this.IV);
-        }
 
         /// <summary>
         /// Connects the client to a remote TCP host using the specified host name and port
         /// number. Once the client has connected, the stream will be wrapped in a JSON-RPC
-        /// protocol wrapper with AES security.
+        /// protocol wrapper.
         /// </summary>
         /// <param name="address">IP address of the RPC server</param>
         /// <param name="port">Port the RPC server is listening on</param>
+        /// <param name="agent">The name of the client</param>
         /// <returns>Returns a new task for connecting and fault tolerance.</returns>
-        public async Task Connect(string address, int port)
+        public async Task Connect(string address, int port, string agent = "Client")
         {
             while (true)
             {
@@ -57,27 +42,17 @@ namespace Comet.Network.RPC
                     await this.BaseClient.ConnectAsync(address, port);
                     using (var stream = new NetworkStream(this.BaseClient.Client, true))
                     {
-                        // Initialize AES stream security
+                        // Initialize streams
                         Stream input = stream; 
-                        Stream output = stream; 
-                        if (this.Key.Length > 0 && this.IV.Length > 0)
-                        {
-                            var cipher = new AesCryptoServiceProvider();
-                            cipher.Key = this.Key;
-                            cipher.IV = this.IV;
-
-                            var decrypt = cipher.CreateDecryptor(cipher.Key, cipher.IV);
-                            var encrypt = cipher.CreateEncryptor(cipher.Key, cipher.IV);
-                            input = new CryptoStream(stream, decrypt, CryptoStreamMode.Read);
-                            output = new CryptoStream(stream, encrypt, CryptoStreamMode.Write);
-                        }
+                        Stream output = stream;
 
                         // Attach JSON-RPC wrapper
                         this.Rpc = JsonRpc.Attach(output, input);
-                        await this.Rpc.InvokeAsync("Connected", null);
+                        await this.Rpc.InvokeAsync("Connected", agent);
                         await this.Rpc.Completion;
                     }
                 }
+                catch (IOException) { }
                 catch (SocketException) { }
                 catch (Exception e) { Console.WriteLine(e); }
                 Thread.Sleep(5000);

@@ -20,13 +20,12 @@ namespace Comet.Account.Database.Models
         public uint GamePort { get; set; }
         public string RpcIPAddress { get; set; }
         public uint RpcPort { get; set; }
-        public string RpcKey { get; set; }
-        public string RpcIV { get; set; }
 
         // Navigational Properties
         public virtual AccountAuthority Authority { get; set; }
 
         // Application Logic Fields
+        [NotMapped]
         public RpcClient Rpc;
     }
 }

@@ -9,9 +9,9 @@ namespace Comet.Game
     /// </summary>
     public class Remote
     {
-        public void Connected()
+        public void Connected(string name)
         {
-            Console.WriteLine("Client has connected");
+            Console.WriteLine("{0} has connected", name);
         }
 
         public ulong TransferAuth(string ip, uint identity)

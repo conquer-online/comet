@@ -43,8 +43,6 @@ namespace Comet.Game.Database
         {
             public string IPAddress { get; set; }
             public int Port { get; set; }
-            public string Key { get; set; }
-            public string IV { get; set; }
         }
 
         /// <summary>

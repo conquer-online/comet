@@ -3,6 +3,7 @@ namespace Comet.Network.RPC
     using System.IO;
     using System.IO.Pipes;
     using System.Net;
+    using System.Net.Security;
     using System.Net.Sockets;
     using System.Security.Cryptography;
     using System.Threading;
@@ -14,32 +15,25 @@ namespace Comet.Network.RPC
     /// Creates a TCP listener to listen for multiple remote procedure call requests on.
     /// RPC is implemented as JSON-RPC over TCP (the web socket / network stream). Once
     /// connected, clients will continue operating and sending requests for the life of
-    /// the TCP connection or until the client is closed. The RPC network stream may be
-    /// encrypted for wire security, but ideally should never be exposed to the naked
-    /// internet (use security groups or virtual networks if splitting between two VMs).
+    /// the TCP connection or until the client is closed. The RPC network stream should
+    /// never be exposed to the naked internet (use security groups or virtual networks
+    /// if splitting between two VMs).
     /// </summary>
     public class RpcServerListener
     {
         // Fields and Properties
         protected TcpListener BaseListener;
         protected CancellationTokenSource ShutdownToken;
-        private byte[] Key, IV;
         private object Target;
 
         /// <summary>
-        /// Instantiates a new instance of <see cref="RpcServerListener"/> using an
-        /// optional AES key and IV for JSON-RPC stream security. 
+        /// Instantiates a new instance of <see cref="RpcServerListener"/> using a
+        /// target class of remote procedures.
         /// </summary>
         /// <param name="target">Target class for defining the RPC interface</param>
-        /// <param name="key">AES key as a hexadecimal string</param>
-        /// <param name="iv">AES IV as a hexadecimal string</param>
-        public RpcServerListener(object target, string key = "", string iv = "")
+        public RpcServerListener(object target)
         {
             this.Target = target;
-            this.Key = new byte[key.Length / 2];
-            this.IV = new byte[iv.Length / 2];
-            ByteEncoding.Hex.ToBytes(key, this.Key);
-            ByteEncoding.Hex.ToBytes(iv, this.IV);
         }
 
         /// <summary>
@@ -74,9 +68,7 @@ namespace Comet.Network.RPC
         }
 
         /// <summary>
-        /// Receives commands from the RPC client connection. The connected network stream
-        /// will be converted to a cipherstream using AES, and then attached to the JSON-RPC
-        /// protocol wrapper for the connection.
+        /// Receives commands from the RPC client connection.
         /// </summary>
         /// <param name="socket">Accepted client socket</param>
         /// <returns>Returns task details for fault tolerance processing.</returns>
@@ -84,20 +76,9 @@ namespace Comet.Network.RPC
         {
             using (var stream = new NetworkStream(socket, true))
             {
-                // Initialize AES stream security
-                Stream input = stream; 
-                Stream output = stream; 
-                if (this.Key.Length > 0 && this.IV.Length > 0)
-                {
-                    var cipher = new AesCryptoServiceProvider();
-                    cipher.Key = this.Key;
-                    cipher.IV = this.IV;
-
-                    var decrypt = cipher.CreateDecryptor(cipher.Key, cipher.IV);
-                    var encrypt = cipher.CreateEncryptor(cipher.Key, cipher.IV);
-                    input = new CryptoStream(stream, decrypt, CryptoStreamMode.Read);
-                    output = new CryptoStream(stream, encrypt, CryptoStreamMode.Write);
-                }
+                // Initialize streams
+                Stream input = new BufferedStream(stream); 
+                Stream output = new BufferedStream(stream);
 
                 // Attach JSON-RPC wrapper
                 var rpc = JsonRpc.Attach(output, input, this.Target);
