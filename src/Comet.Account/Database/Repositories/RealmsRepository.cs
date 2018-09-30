@@ -5,6 +5,7 @@ namespace Comet.Account.Database.Repositories
     using System.Threading.Tasks;
     using Comet.Account.Database;
     using Comet.Account.Database.Models;
+    using Comet.Network.RPC;
     using Microsoft.EntityFrameworkCore;
 
     /// <summary>
@@ -25,6 +26,12 @@ namespace Comet.Account.Database.Repositories
                 Kernel.Realms = await db.Realms
                     .Include(x => x.Authority)
                     .ToDictionaryAsync(x => x.Name);
+
+            foreach (var realm in Kernel.Realms.Values)
+            {
+                realm.Rpc = new RpcClient(realm.RpcKey, realm.RpcIV);
+                var task = realm.Rpc.Connect(realm.RpcIPAddress, (int)realm.RpcPort);
+            }
         }
     }
 }

@@ -1,9 +1,9 @@
-namespace Comet.Account.Database
+namespace Comet.Game.Database
 {
     using Microsoft.Extensions.Configuration;
 
     /// <summary>
-    /// Defines the configuration file structure for the Account Server. App Configuration 
+    /// Defines the configuration file structure for the Game Server. App Configuration 
     /// files are copied to the build output directory on successful build, containing all
     /// default configuration settings for the server, only if the file is newer than the
     /// file bring replaced.
@@ -12,7 +12,8 @@ namespace Comet.Account.Database
     {
         // Properties and fields
         public DatabaseConfiguration Database { get; set; }
-        public NetworkConfiguration Network { get; set; }
+        public GameNetworkConfiguration GameNetwork { get; set; }
+        public RpcNetworkConfiguration RpcNetwork { get; set; }
 
         /// <summary>
         /// Encapsulates database configuration for Entity Framework.
@@ -26,13 +27,24 @@ namespace Comet.Account.Database
         }
 
         /// <summary>
-        /// Encapsulates network configuration for the server listener.
+        /// Encapsulates network configuration for the game server listener.
         /// </summary>
-        public class NetworkConfiguration
+        public class GameNetworkConfiguration
         {
             public string IPAddress { get; set; }
             public int Port { get; set; }
             public int MaxConn { get; set; }
+        }
+
+        /// <summary>
+        /// Encapsulates network configuration for the RPC server listener.
+        /// </summary>
+        public class RpcNetworkConfiguration
+        {
+            public string IPAddress { get; set; }
+            public int Port { get; set; }
+            public string Key { get; set; }
+            public string IV { get; set; }
         }
 
         /// <summary>
@@ -44,7 +56,7 @@ namespace Comet.Account.Database
         public ServerConfiguration(string[] args)
         {
             new ConfigurationBuilder()
-                .AddJsonFile("Comet.Account.config")
+                .AddJsonFile("Comet.Game.config")
                 .AddCommandLine(args)
                 .Build()
                 .Bind(this);
@@ -55,6 +67,7 @@ namespace Comet.Account.Database
         /// </summary>
         public bool Valid => 
             this.Database != null && 
-            this.Network != null;
+            this.GameNetwork != null &&
+            this.RpcNetwork != null;
     }
 }

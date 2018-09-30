@@ -1,6 +1,7 @@
 namespace Comet.Account.Database.Models
 {
     using System.ComponentModel.DataAnnotations.Schema;
+    using Comet.Network.RPC;
 
     /// <summary>
     /// Realms are configured instances of the game server. This class defines routing 
@@ -15,13 +16,17 @@ namespace Comet.Account.Database.Models
         public uint RealmID { get; set; }
         public string Name { get; set; }
         public ushort AuthorityID { get; set; }
-        public string IPAddress { get; set; }
-        public uint Port { get; set; }
-        public string CipherAlgorithm { get; set; }
-        public string CipherKey { get; set; }
-        public string CipherIV { get; set; }
+        public string GameIPAddress { get; set; }
+        public uint GamePort { get; set; }
+        public string RpcIPAddress { get; set; }
+        public uint RpcPort { get; set; }
+        public string RpcKey { get; set; }
+        public string RpcIV { get; set; }
 
         // Navigational Properties
         public virtual AccountAuthority Authority { get; set; }
+
+        // Application Logic Fields
+        public RpcClient Rpc;
     }
 }

@@ -1,9 +1,11 @@
 namespace Comet.Network.RPC
 {
+    using System;
     using System.IO;
     using System.Net;
     using System.Net.Sockets;
     using System.Security.Cryptography;
+    using System.Threading;
     using System.Threading.Tasks;
     using ByteEncodings;
     using StreamJsonRpc;
@@ -16,25 +18,24 @@ namespace Comet.Network.RPC
     /// to the naked internet (use security groups or virtual networks if splitting between
     /// two VMs).
     /// </summary>
-    public abstract class RpcClient
+    public class RpcClient
     {
         // Fields and Properties
         protected TcpClient BaseClient;
-        private string Key, IV;
-        private object Target;
+        private byte[] Key, IV;
 
         /// <summary>
         /// Instantiates a new instance of <see cref="RpcClient"/> using an optional AES key
         /// and IV for JSON-RPC stream security. 
         /// </summary>
-        /// <param name="target">Target class for defining the RPC interface</param>
         /// <param name="key">AES key as a hexadecimal string</param>
         /// <param name="iv">AES IV as a hexadecimal string</param>
-        public RpcClient(object target, string key = "", string iv = "")
+        public RpcClient(string key = "", string iv = "")
         {
-            this.Target = target;
-            this.Key = key;
-            this.IV = iv;
+            this.Key = new byte[key.Length / 2];
+            this.IV = new byte[iv.Length / 2];
+            ByteEncoding.Hex.ToBytes(key, this.Key);
+            ByteEncoding.Hex.ToBytes(iv, this.IV);
         }
 
         /// <summary>
@@ -47,28 +48,43 @@ namespace Comet.Network.RPC
         /// <returns>Returns a new task for connecting and fault tolerance.</returns>
         public async Task Connect(string address, int port)
         {
-            this.BaseClient = new TcpClient();
-            await this.BaseClient.ConnectAsync(address, port);
-            using (var stream = new NetworkStream(this.BaseClient.Client, true))
+            while (true)
             {
-                // Initialize AES stream security
-                Stream input = stream; 
-                Stream output = stream; 
-                if (!string.IsNullOrEmpty(this.Key) && !string.IsNullOrEmpty(this.IV))
+                try
                 {
-                    var cipher = new AesCryptoServiceProvider();
-                    ByteEncoding.Hex.ToBytes(this.Key, cipher.Key, true);
-                    ByteEncoding.Hex.ToBytes(this.IV, cipher.IV, true);
-                    var decrypt = cipher.CreateDecryptor(cipher.Key, cipher.IV);
-                    var encrypt = cipher.CreateEncryptor(cipher.Key, cipher.IV);
-                    input = new CryptoStream(stream, decrypt, CryptoStreamMode.Read);
-                    output = new CryptoStream(stream, encrypt, CryptoStreamMode.Write);
-                }
+                    this.BaseClient = new TcpClient();
+                    await this.BaseClient.ConnectAsync(address, port);
+                    using (var stream = new NetworkStream(this.BaseClient.Client, true))
+                    {
+                        // Initialize AES stream security
+                        Stream input = stream; 
+                        Stream output = stream; 
+                        if (this.Key.Length > 0 && this.IV.Length > 0)
+                        {
+                            var cipher = new AesCryptoServiceProvider();
+                            cipher.Key = this.Key;
+                            cipher.IV = this.IV;
 
-                // Attach JSON-RPC wrapper
-                var rpc = JsonRpc.Attach(output, input, this.Target);
-                await rpc.Completion;
+                            var decrypt = cipher.CreateDecryptor(cipher.Key, cipher.IV);
+                            var encrypt = cipher.CreateEncryptor(cipher.Key, cipher.IV);
+                            input = new CryptoStream(stream, decrypt, CryptoStreamMode.Read);
+                            output = new CryptoStream(stream, encrypt, CryptoStreamMode.Write);
+                        }
+
+                        // Attach JSON-RPC wrapper
+                        var rpc = JsonRpc.Attach(output, input);
+                        await rpc.Completion;
+                    }
+                }
+                catch (SocketException) { }
+                catch (Exception e) { Console.WriteLine(e); }
+                Thread.Sleep(5000);
             }
         }
+
+        /// <summary>
+        /// Returns true if the RPC server is online and the client is connected.
+        /// </summary>
+        public bool Online => this.BaseClient.Connected;
     }
 }

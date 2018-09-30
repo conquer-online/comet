@@ -7,7 +7,7 @@
             "type": "process",
             "args": [
                 "build",
-                "${workspaceFolder}/src/Comet.Account/Comet.Account.csproj"
+                "${workspaceFolder}/Comet.sln"
             ],
             "problemMatcher": "$msCompile"
         }

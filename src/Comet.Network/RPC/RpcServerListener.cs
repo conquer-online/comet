@@ -17,12 +17,12 @@ namespace Comet.Network.RPC
     /// encrypted for wire security, but ideally should never be exposed to the naked
     /// internet (use security groups or virtual networks if splitting between two VMs).
     /// </summary>
-    public abstract class RpcServerListener
+    public class RpcServerListener
     {
         // Fields and Properties
         protected TcpListener BaseListener;
         protected CancellationTokenSource ShutdownToken;
-        private string Key, IV;
+        private byte[] Key, IV;
         private object Target;
 
         /// <summary>
@@ -35,8 +35,10 @@ namespace Comet.Network.RPC
         public RpcServerListener(object target, string key = "", string iv = "")
         {
             this.Target = target;
-            this.Key = key;
-            this.IV = iv;
+            this.Key = new byte[key.Length / 2];
+            this.IV = new byte[iv.Length / 2];
+            ByteEncoding.Hex.ToBytes(key, this.Key);
+            ByteEncoding.Hex.ToBytes(iv, this.IV);
         }
 
         /// <summary>
@@ -84,11 +86,12 @@ namespace Comet.Network.RPC
                 // Initialize AES stream security
                 Stream input = stream; 
                 Stream output = stream; 
-                if (!string.IsNullOrEmpty(this.Key) && !string.IsNullOrEmpty(this.IV))
+                if (this.Key.Length > 0 && this.IV.Length > 0)
                 {
                     var cipher = new AesCryptoServiceProvider();
-                    ByteEncoding.Hex.ToBytes(this.Key, cipher.Key, true);
-                    ByteEncoding.Hex.ToBytes(this.IV, cipher.IV, true);
+                    cipher.Key = this.Key;
+                    cipher.IV = this.IV;
+
                     var decrypt = cipher.CreateDecryptor(cipher.Key, cipher.IV);
                     var encrypt = cipher.CreateEncryptor(cipher.Key, cipher.IV);
                     input = new CryptoStream(stream, decrypt, CryptoStreamMode.Read);

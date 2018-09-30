@@ -36,9 +36,17 @@ namespace Comet.Account.Packets
             {
                 client.Send(new MsgConnectEx(RejectionCode.InvalidPassword));
                 client.Socket.Disconnect(false);
+                return;
             }
 
-            
+            // Connect to the game server
+            var server = Kernel.Realms[this.Realm];
+            if (!server.Rpc.Online)
+            {
+                client.Send(new MsgConnectEx(RejectionCode.ServerDown));
+                client.Socket.Disconnect(false);
+                return;
+            }
         }
 
         /// <summary>

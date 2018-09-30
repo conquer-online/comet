@@ -6,6 +6,7 @@
     using System.Threading.Tasks;
     using Comet.Account.Database;
     using Comet.Account.Database.Repositories;
+    using Comet.Network.RPC;
     using Microsoft.EntityFrameworkCore;
 
     /// <summary>
