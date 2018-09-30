@@ -23,15 +23,18 @@ namespace Comet.Network.RPC
         protected TcpListener BaseListener;
         protected CancellationTokenSource ShutdownToken;
         private string Key, IV;
+        private object Target;
 
         /// <summary>
         /// Instantiates a new instance of <see cref="RpcServerListener"/> using an
         /// optional AES key and IV for JSON-RPC stream security. 
         /// </summary>
+        /// <param name="target">Target class for defining the RPC interface</param>
         /// <param name="key">AES key as a hexadecimal string</param>
         /// <param name="iv">AES IV as a hexadecimal string</param>
-        public RpcServerListener(string key = "", string iv = "")
+        public RpcServerListener(object target, string key = "", string iv = "")
         {
+            this.Target = target;
             this.Key = key;
             this.IV = iv;
         }
@@ -58,7 +61,7 @@ namespace Comet.Network.RPC
         /// server will start processing requests from the client immediately after.
         /// </summary>
         /// <returns>Returns task details for fault tolerance processing.</returns>
-        public async Task Accepting()
+        private async Task Accepting()
         {
             while (this.BaseListener.Server.IsBound && !this.ShutdownToken.IsCancellationRequested)
             {
@@ -74,23 +77,26 @@ namespace Comet.Network.RPC
         /// </summary>
         /// <param name="socket">Accepted client socket</param>
         /// <returns>Returns task details for fault tolerance processing.</returns>
-        public async Task Receiving(Socket socket)
+        private async Task Receiving(Socket socket)
         {
-            using (var networkStream = new NetworkStream(socket, true))
+            using (var stream = new NetworkStream(socket, true))
             {
                 // Initialize AES stream security
-                Stream stream = networkStream; 
+                Stream input = stream; 
+                Stream output = stream; 
                 if (!string.IsNullOrEmpty(this.Key) && !string.IsNullOrEmpty(this.IV))
                 {
                     var cipher = new AesCryptoServiceProvider();
                     ByteEncoding.Hex.ToBytes(this.Key, cipher.Key, true);
                     ByteEncoding.Hex.ToBytes(this.IV, cipher.IV, true);
-                    var transformer = cipher.CreateDecryptor(cipher.Key, cipher.IV);
-                    stream = new CryptoStream(stream, transformer, CryptoStreamMode.Read);
+                    var decrypt = cipher.CreateDecryptor(cipher.Key, cipher.IV);
+                    var encrypt = cipher.CreateEncryptor(cipher.Key, cipher.IV);
+                    input = new CryptoStream(stream, decrypt, CryptoStreamMode.Read);
+                    output = new CryptoStream(stream, encrypt, CryptoStreamMode.Write);
                 }
 
                 // Attach JSON-RPC wrapper
-                var rpc = JsonRpc.Attach(stream, this);
+                var rpc = JsonRpc.Attach(output, input, this.Target);
                 await rpc.Completion;
             }
         }
