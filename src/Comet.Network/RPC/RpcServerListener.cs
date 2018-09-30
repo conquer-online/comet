@@ -1,14 +1,10 @@
 namespace Comet.Network.RPC
 {
     using System.IO;
-    using System.IO.Pipes;
     using System.Net;
-    using System.Net.Security;
     using System.Net.Sockets;
-    using System.Security.Cryptography;
     using System.Threading;
     using System.Threading.Tasks;
-    using ByteEncodings;
     using StreamJsonRpc;
 
     /// <summary>
@@ -24,14 +20,14 @@ namespace Comet.Network.RPC
         // Fields and Properties
         protected TcpListener BaseListener;
         protected CancellationTokenSource ShutdownToken;
-        private object Target;
+        private IRpcServerTarget Target;
 
         /// <summary>
         /// Instantiates a new instance of <see cref="RpcServerListener"/> using a
         /// target class of remote procedures.
         /// </summary>
         /// <param name="target">Target class for defining the RPC interface</param>
-        public RpcServerListener(object target)
+        public RpcServerListener(IRpcServerTarget target)
         {
             this.Target = target;
         }

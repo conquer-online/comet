@@ -2,12 +2,9 @@ namespace Comet.Network.RPC
 {
     using System;
     using System.IO;
-    using System.Net;
     using System.Net.Sockets;
-    using System.Security.Cryptography;
     using System.Threading;
     using System.Threading.Tasks;
-    using ByteEncodings;
     using StreamJsonRpc;
 
     /// <summary>

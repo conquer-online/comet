@@ -1,7 +1,7 @@
-namespace Comet.Account
+namespace Comet.Game
 {
     using System.Collections.Generic;
-    using Comet.Account.Database.Models;
+    using System.Runtime.Caching;
 
     /// <summary>
     /// Kernel for the server, acting as a central core for pools of models and states
@@ -11,6 +11,6 @@ namespace Comet.Account
     /// </summary>
     public static class Kernel
     {
-        public static Dictionary<string, Realm> Realms;
+        public static MemoryCache Logins = MemoryCache.Default;
     }
 }

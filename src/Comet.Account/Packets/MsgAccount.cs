@@ -33,7 +33,8 @@ namespace Comet.Account.Packets
         {
             // Fetch account info from the database
             client.Account = AccountsRepository.Get(this.Username);
-            if (client.Account == null)
+            if (client.Account == null || !AccountsRepository.CheckPassword(
+                this.Password, client.Account.Password, client.Account.Salt))
             {
                 client.Send(new MsgConnectEx(RejectionCode.InvalidPassword));
                 client.Socket.Disconnect(false);
@@ -49,11 +50,11 @@ namespace Comet.Account.Packets
                 return;
             }
 
-            ulong token;
+            // Get an access token from the server
+            ulong token = 0;
             server.Rpc.Call<ulong>("TransferAuth", client.IPAddress, client.Account.AccountID)
-                .ContinueWith(x => token = x.Result)
-                .Wait();
-
+                .ContinueWith(x => token = x.Result).Wait();
+            client.Send(new MsgConnectEx(server.GameIPAddress, server.GamePort, token));
         }
 
         /// <summary>
