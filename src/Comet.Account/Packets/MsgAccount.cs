@@ -1,6 +1,7 @@
 namespace Comet.Account.Packets
 {
     using System.Text;
+    using System.Threading.Tasks;
     using Comet.Account.Database.Repositories;
     using Comet.Account.States;
     using Comet.Network.Packets;
@@ -47,6 +48,12 @@ namespace Comet.Account.Packets
                 client.Socket.Disconnect(false);
                 return;
             }
+
+            ulong token;
+            server.Rpc.Call<ulong>("TransferAuth", client.IPAddress, client.Account.AccountID)
+                .ContinueWith(x => token = x.Result)
+                .Wait();
+
         }
 
         /// <summary>

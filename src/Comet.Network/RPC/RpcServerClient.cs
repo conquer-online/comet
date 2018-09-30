@@ -22,6 +22,7 @@ namespace Comet.Network.RPC
     {
         // Fields and Properties
         protected TcpClient BaseClient;
+        protected JsonRpc Rpc;
         private byte[] Key, IV;
 
         /// <summary>
@@ -72,8 +73,9 @@ namespace Comet.Network.RPC
                         }
 
                         // Attach JSON-RPC wrapper
-                        var rpc = JsonRpc.Attach(output, input);
-                        await rpc.Completion;
+                        this.Rpc = JsonRpc.Attach(output, input);
+                        await this.Rpc.InvokeAsync("Connected", null);
+                        await this.Rpc.Completion;
                     }
                 }
                 catch (SocketException) { }
@@ -86,5 +88,29 @@ namespace Comet.Network.RPC
         /// Returns true if the RPC server is online and the client is connected.
         /// </summary>
         public bool Online => this.BaseClient.Connected;
+
+        /// <summary>
+        /// Invoke a method on the server and do not wait for a result.
+        /// </summary>
+        /// <param name="method">Name of the remote procedure method</param>
+        /// <param name="arg">Argument to pass with the request</param>
+        /// <typeparam name="T">Type of response returned by the procedure</typeparam>
+        /// <returns>Returns a task of the running RPC invoke.</returns>
+        public async Task<T> Call<T>(string method, object arg)
+        {
+            return await this.Rpc.InvokeAsync<T>(method, arg);
+        }
+
+        /// <summary>
+        /// Invoke a method on the server and do not wait for a result.
+        /// </summary>
+        /// <param name="method">Name of the remote procedure method</param>
+        /// <param name="args">Arguments to pass with the request</param>
+        /// <typeparam name="T">Type of response returned by the procedure</typeparam>
+        /// <returns>Returns a task of the running RPC invoke.</returns>
+        public async Task<T> Call<T>(string method, params object[] args)
+        {
+            return await this.Rpc.InvokeAsync<T>(method, args);
+        }
     }
 }

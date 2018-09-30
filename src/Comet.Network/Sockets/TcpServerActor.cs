@@ -1,6 +1,7 @@
 namespace Comet.Network.Sockets
 {
     using System;
+    using System.Net;
     using System.Net.Sockets;
     using System.Threading.Tasks;
     using Comet.Network.Packets;
@@ -90,5 +91,11 @@ namespace Comet.Network.Sockets
         {
             this.Send(packet.Encode());
         }
+
+        /// <summary>
+        /// Returns the remote IP address of the connected client.
+        /// </summary>
+        public string IPAddress => 
+            (this.Socket.RemoteEndPoint as IPEndPoint).Address.MapToIPv4().ToString();
     }    
 }
