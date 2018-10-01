@@ -4,6 +4,7 @@
     using System.Collections.Generic;
     using System.Threading.Tasks;
     using Comet.Game.Database;
+    using Comet.Game.Packets;
     using Comet.Network.RPC;
 
     /// <summary>
@@ -39,6 +40,7 @@
             Console.WriteLine("Initializing server...");
             var tasks = new List<Task>();
             ServerDbContext.Configuration = config.Database;
+            MsgConnect.StrictAuthentication = config.Authentication.StrictAuthPass;
             Task.WaitAll(tasks.ToArray());
             
             // Start the RPC server listener

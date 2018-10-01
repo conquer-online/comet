@@ -6,6 +6,7 @@ namespace Comet.Account.Packets
     using Comet.Account.States;
     using Comet.Network.Packets;
     using Comet.Network.Security;
+    using Comet.Shared.Models;
     using static Comet.Account.Packets.MsgConnectEx;
 
     /// <remarks>Packet Type 1051</remarks>
@@ -51,9 +52,14 @@ namespace Comet.Account.Packets
             }
 
             // Get an access token from the server
+            var args = new TransferAuthArgs();
+            args.AccountID = client.Account.AccountID;
+            args.AuthorityID = client.Account.AuthorityID;
+            args.AuthorityName = client.Account.Authority.AuthorityName;
+            args.IPAddress = client.IPAddress;
+
             ulong token = 0;
-            server.Rpc.Call<ulong>("TransferAuth", client.IPAddress, client.Account.AccountID)
-                .ContinueWith(x => token = x.Result).Wait();
+            server.Rpc.Call<ulong>("TransferAuth", args).ContinueWith(x => token = x.Result).Wait();
             client.Send(new MsgConnectEx(server.GameIPAddress, server.GamePort, token));
         }
 

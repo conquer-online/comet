@@ -1,6 +1,7 @@
 namespace Comet.Network.Packets
 {
     using System;
+    using System.Collections.Generic;
     using System.IO;
     using System.Text;
 
@@ -45,6 +46,19 @@ namespace Comet.Network.Packets
             var array = new byte[fixedLength];
             Encoding.ASCII.GetBytes(value).CopyTo(array, 0);
             base.Write(array);
+        }
+
+        /// <summary>
+        /// Writes a list of strings to the current stream. The string list is prefixed with
+        /// the amount of strings in the list. Then, each string in the list is prefixed
+        /// with the length of that string and encoded as an ASCII string.
+        /// </summary>
+        /// <param name="strings">List of strings to be written to the stream</param>
+        public void Write(List<string> strings)
+        {
+            base.Write((byte)strings.Count);
+            for (int i = 0; i < strings.Count; i++)
+                base.Write(strings[i]);
         }
 
         /// <summary>

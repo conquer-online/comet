@@ -3,6 +3,7 @@
   <ItemGroup>
     <ProjectReference Include="..\Comet.Core\Comet.Core.csproj" />
     <ProjectReference Include="..\Comet.Network\Comet.Network.csproj" />
+    <ProjectReference Include="..\Comet.Shared\Comet.Shared.csproj" />
   </ItemGroup>
 
   <ItemGroup>

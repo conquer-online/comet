@@ -1,6 +1,7 @@
 namespace Comet.Network.Packets
 {
     using System;
+    using System.Collections.Generic;
     using System.IO;
     using System.Text;
 
@@ -46,6 +47,23 @@ namespace Comet.Network.Packets
         public string ReadString(int fixedLength)
         {
             return Encoding.ASCII.GetString(base.ReadBytes(fixedLength)).TrimEnd('\0');
+        }
+
+        /// <summary>
+        /// Reads a list of strings from the current stream. The string list is prefixed
+        /// with the byte amount of strings in the list. Then, each string in the list is
+        /// prefixed with the length of that string and encoded as an ASCII string. 
+        /// <see cref="EndOfStreamException"/> is thrown if the full string cannot be read
+        /// from the binary reader.
+        /// </summary>
+        /// <returns>Returns the resulting list of strings from the read.</returns>
+        public List<string> ReadStrings()
+        {
+            var strings = new List<string>();
+            var amount = base.ReadByte();
+            for (int i = 0; i < amount; i++)
+                strings.Add(this.ReadString());
+            return strings;
         }
 
         #region IDisposable Support

@@ -4,6 +4,7 @@ namespace Comet.Game
     using System.Runtime.Caching;
     using System.Security.Cryptography;
     using Comet.Network.RPC;
+    using Comet.Shared.Models;
 
     /// <summary>
     /// Remote procedures that can be called from the account server to perform a game 
@@ -28,10 +29,9 @@ namespace Comet.Game
         /// successful client login. The game server will generate a new access token,
         /// and return the token to the account server for client redirection. 
         /// </summary>
-        /// <param name="ip">IP address of the connecting client</param>
-        /// <param name="identity">AccountID of the connecting client</param>
+        /// <param name="args">Authentication details from the account server.</param>
         /// <returns>Returns an access token for the game server.</returns>
-        public ulong TransferAuth(string ip, uint identity)
+        public ulong TransferAuth(TransferAuthArgs args)
         {
             // Generate the access token
             var bytes = new byte[8];
@@ -42,8 +42,7 @@ namespace Comet.Game
             // Store in the login cache with an absolute timeout
             var timeoutPolicy = new CacheItemPolicy();
             timeoutPolicy.AbsoluteExpiration = DateTimeOffset.Now.AddSeconds(10);
-            var cacheItem = new { AccountID = identity, IP = ip };
-            Kernel.Logins.Set(token.ToString(), cacheItem, timeoutPolicy) ;
+            Kernel.Logins.Set(token.ToString(), args, timeoutPolicy) ;
             return token;
         }
     }

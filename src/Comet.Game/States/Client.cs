@@ -14,7 +14,7 @@ namespace Comet.Game.States
     /// </summary>
     public sealed class Client : TcpServerActor
     {
-        // Fields and Properties
+        // Fields and Properties 
         public Character Character;
 
         /// <summary>

@@ -14,6 +14,7 @@ namespace Comet.Game.Database
         public DatabaseConfiguration Database { get; set; }
         public GameNetworkConfiguration GameNetwork { get; set; }
         public RpcNetworkConfiguration RpcNetwork { get; set; }
+        public AuthenticationConfiguration Authentication { get; set; }
 
         /// <summary>
         /// Encapsulates database configuration for Entity Framework.
@@ -46,6 +47,15 @@ namespace Comet.Game.Database
         }
 
         /// <summary>
+        /// Encapsulates authentication settings for client authentication between the
+        /// account server and game server.
+        /// </summary>
+        public class AuthenticationConfiguration
+        {
+            public bool StrictAuthPass { get; set; }
+        }
+
+        /// <summary>
         /// Instantiates a new instance of <see cref="ServerConfiguration"/> with command-line
         /// arguments from the user and a configuration file for the application. Builds the
         /// configuration file and binds to this instance of the ServerConfiguration class.
@@ -66,6 +76,7 @@ namespace Comet.Game.Database
         public bool Valid => 
             this.Database != null && 
             this.GameNetwork != null &&
-            this.RpcNetwork != null;
+            this.RpcNetwork != null &&
+            this.Authentication != null;
     }
 }

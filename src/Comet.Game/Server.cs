@@ -3,6 +3,7 @@ namespace Comet.Game
     using System;
     using System.Net.Sockets;
     using Comet.Game.Database;
+    using Comet.Game.Packets;
     using Comet.Game.States;
     using Comet.Network.Packets;
     using Comet.Network.Sockets;
@@ -74,6 +75,8 @@ namespace Comet.Game
             MsgBase<Client> msg = null;
             switch ((PacketType)type)
             {
+                case PacketType.MsgConnect: msg = new MsgConnect(); break;
+
                 default:
                     Console.WriteLine(
                         "Missing packet {0}, Length {1}\n{2}", 
