@@ -17,11 +17,12 @@ namespace Comet.Network.Security
     public sealed class TQCipher : ICipher
     {
         // Static fields and properties
-        private static byte[] KInit = new byte[0x400];
+        private static byte[] KInit = new byte[0x200];
         
         // Local fields and properties
-        private byte[] K1 = new byte[0x400];
-        private byte[] K2 = new byte[0x400];
+        private byte[] K;
+        private byte[] K1 = new byte[0x200];
+        private byte[] K2 = new byte[0x200];
         private long DecryptCounter, EncryptCounter;
         
         /// <summary>
@@ -41,7 +42,7 @@ namespace Comet.Network.Security
             for (int i = 0; i < 0x100; i++) 
             {
                 TQCipher.KInit[i] = seed[0];
-                TQCipher.KInit[i + 0x200] = seed[4];
+                TQCipher.KInit[i + 0x100] = seed[4];
                 seed[0] = (byte)((seed[1] + (seed[0] * seed[2])) * seed[0] + seed[3]);
                 seed[4] = (byte)((seed[5] - (seed[4] * seed[6])) * seed[4] + seed[7]);
             }
@@ -59,6 +60,7 @@ namespace Comet.Network.Security
             this.Add = this.DefaultIncrement;
             Buffer.BlockCopy(TQCipher.KInit, 0, this.K1, 0, TQCipher.KInit.Length);
             Buffer.BlockCopy(TQCipher.KInit, 0, this.K2, 0, TQCipher.KInit.Length);
+            this.K = this.K1;
         }
 
         /// <summary>
@@ -69,9 +71,22 @@ namespace Comet.Network.Security
         /// <param name="seeds">Array of seeds for generating keys</param>
         public void GenerateKeys(object[] seeds)
         {
-            var a = Convert.ToInt64(seeds[0]);
-            var b = Convert.ToInt64(seeds[1]);
-            throw new NotImplementedException("Not yet implemented");
+            var seed = seeds[0] as ulong?;
+            var a = (uint)(seed >> 32);
+            var b = (uint)(seed);
+            var c = (uint)(((a + b) ^ 0x4321) ^ a);
+            var d = (uint)(c * c);
+
+            var temp1 = BitConverter.GetBytes(c);
+            var temp2 = BitConverter.GetBytes(d);
+            for (int i = 0; i < 0x100; i++)
+            {
+                this.K2[i] = (byte)(this.K1[i] ^ temp1[i % 4]);
+                this.K2[i + 0x100] = (byte)(this.K1[i + 0x100] ^ temp2[i % 4]);
+            }
+
+            this.K = this.K2;
+            this.EncryptCounter = 0;
         }
 
         /// <summary>
@@ -83,7 +98,7 @@ namespace Comet.Network.Security
         /// <param name="dst">Destination span to contain the decrypted result</param>
         public void Decrypt(Span<byte> src, Span<byte> dst)
         {
-            this.XOR(src, dst, this.K2, ref this.DecryptCounter);
+            this.XOR(src, dst, this.K, ref this.DecryptCounter);
         }
 
         /// <summary>
@@ -115,7 +130,7 @@ namespace Comet.Network.Security
                 dst[i] = (byte)(src[i] ^ 0xAB);
                 dst[i] = (byte)(dst[i] >> 4 | dst[i] << 4);
                 dst[i] = (byte)(dst[i] ^ k[x & 0xff]);
-                dst[i] = (byte)(dst[i] ^ k[(x >> 8) + 0x200]);
+                dst[i] = (byte)(dst[i] ^ k[(x >> 8) + 0x100]);
                 x++;
             }
         }

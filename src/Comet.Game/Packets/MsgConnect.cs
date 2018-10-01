@@ -59,6 +59,8 @@ namespace Comet.Game.Packets
                 return;
             }
 
+            // Generate new keys and check for an existing character
+            client.Cipher.GenerateKeys(new object[] { this.Token });
             client.Send(new MsgTalk(0, TalkChannel.Login, MsgTalk.NEWROLE));
         }
     }
