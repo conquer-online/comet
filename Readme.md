@@ -37,3 +37,7 @@ Pic1=servericon33
 ##### Why can't I connect to my server instance?
 
 There are a few reasons why you might not be able to connect. First, check that you can connect locally using a loopback adapter. If you can connect locally, but cannot connect externally, then check your firewall settings and port forwarding settings. If you can connect to the Account server but not the Game server, then check your IP address and port in the `realm` table. Confirm that your firewall allows the port, and that port forwarding is also set up for the Game server (and not just the Account server).
+
+### Feature Requests
+
+Please do not file feature requests in the issue tracker. Requests for new features will be closed. To request a feature, please do so via discussion forums provided by an accompanying Conquer Online game community (such as [Cooldown](https://cooldown.io)). You may also track ongoing progress of features and enhancements through Comet's [Trello storyboard](https://trello.com/b/tb8ChBlF/comet). 

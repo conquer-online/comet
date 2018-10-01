@@ -1,7 +1,7 @@
-namespace Comet.Account.Database
+namespace Comet.Game.Database
 {
     using Microsoft.EntityFrameworkCore;
-    using Comet.Account.Database.Models;
+    using Comet.Game.Database.Models;
 
     /// <summary>
     /// Server database client context implemented using Entity Framework Core, an open
@@ -14,11 +14,7 @@ namespace Comet.Account.Database
         public static ServerConfiguration.DatabaseConfiguration Configuration;
 
         // Table Definitions
-        public virtual DbSet<Account> Accounts { get; set; }
-        public virtual DbSet<AccountAuthority> AccountAuthorities { get; set; }
-        public virtual DbSet<AccountStatus> AccountStatuses { get; set; }
-        public virtual DbSet<Login> Logins { get; set; }
-        public virtual DbSet<Realm> Realms { get; set; }
+        public virtual DbSet<Character> Characters { get; set; }
 
         /// <summary>
         /// Configures the database to be used for this context. This method is called
@@ -45,11 +41,7 @@ namespace Comet.Account.Database
         /// <param name="builder">Builder for creating models in the context</param>
         protected override void OnModelCreating(ModelBuilder builder)
         {
-            builder.Entity<Account>(e => e.HasKey(x => x.AccountID));
-            builder.Entity<AccountAuthority>(e => e.HasKey(x => x.AuthorityID));
-            builder.Entity<AccountStatus>(e => e.HasKey(x => x.StatusID));
-            builder.Entity<Login>(e => e.HasKey(x => new { x.AccountID, x.Timestamp }));
-            builder.Entity<Realm>(e => e.HasKey(x => x.RealmID));
+            builder.Entity<Character>(e => e.HasKey(x => x.CharacterID));
         }
     }
 }

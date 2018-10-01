@@ -1,6 +1,8 @@
 ﻿namespace Comet.Game
 {
     using System;
+    using System.Collections.Generic;
+    using System.Threading.Tasks;
     using Comet.Game.Database;
     using Comet.Network.RPC;
 
@@ -32,11 +34,21 @@
                 Console.WriteLine("Invalid server configuration file");
                 return;
             }
+
+            // Initialize the database
+            Console.WriteLine("Initializing server...");
+            var tasks = new List<Task>();
+            ServerDbContext.Configuration = config.Database;
+            Task.WaitAll(tasks.ToArray());
             
             // Start the RPC server listener
             Console.WriteLine("Launching server listeners...");
             var rpcserver = new RpcServerListener(new Remote());
             rpcserver.Start(config.RpcNetwork.Port, config.RpcNetwork.IPAddress);
+
+            // Start the game server listener
+            var server = new Server(config);
+            server.Start(config.GameNetwork.Port, config.GameNetwork.IPAddress);
 
             // Output all clear and wait for user input
             Console.WriteLine("Listening for new connections");
