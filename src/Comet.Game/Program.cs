@@ -2,6 +2,7 @@
 {
     using System;
     using System.Collections.Generic;
+    using System.Threading;
     using System.Threading.Tasks;
     using Comet.Game.Database;
     using Comet.Game.Packets;
@@ -55,7 +56,7 @@
             // Output all clear and wait for user input
             Console.WriteLine("Listening for new connections");
             Console.WriteLine();
-            Console.ReadKey(true);
+            Thread.Sleep(Timeout.Infinite);
         }
     }
 }

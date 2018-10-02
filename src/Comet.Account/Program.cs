@@ -3,6 +3,7 @@
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Threading;
     using System.Threading.Tasks;
     using Comet.Account.Database;
     using Comet.Account.Database.Repositories;
@@ -53,7 +54,7 @@
             // Output all clear and wait for user input
             Console.WriteLine("Listening for new connections");
             Console.WriteLine();
-            Console.ReadKey(true);
+            Thread.Sleep(Timeout.Infinite);
         }
     }
 }
