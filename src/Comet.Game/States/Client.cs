@@ -15,7 +15,8 @@ namespace Comet.Game.States
     public sealed class Client : TcpServerActor
     {
         // Fields and Properties 
-        public Character Character;
+        public Character Character = null;
+        public Creation Creation = null;
 
         /// <summary>
         /// Instantiates a new instance of <see cref="Client"/> using the Accepted event's

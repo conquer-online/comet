@@ -64,9 +64,9 @@ namespace Comet.Network.Security
         }
 
         /// <summary>
-        /// Generates keys for the game server using the player's character identifier
-        /// and server transfer token as key derivation variables. Invoked after the first
-        /// packet is received on the game server.
+        /// Generates keys for the game server using the player's server access token 
+        /// as a key derivation variable. Invoked after the first packet is received on
+        /// the game server.
         /// </summary>
         /// <param name="seeds">Array of seeds for generating keys</param>
         public void GenerateKeys(object[] seeds)

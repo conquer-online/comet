@@ -12,5 +12,6 @@ namespace Comet.Game
     public static class Kernel
     {
         public static MemoryCache Logins = MemoryCache.Default;
+        public static List<uint> Registration = new List<uint>();
     }
 }

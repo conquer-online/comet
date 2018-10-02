@@ -75,6 +75,7 @@ namespace Comet.Game
             MsgBase<Client> msg = null;
             switch ((PacketType)type)
             {
+                case PacketType.MsgRegister: msg = new MsgRegister(); break;
                 case PacketType.MsgConnect: msg = new MsgConnect(); break;
 
                 default:
@@ -90,10 +91,22 @@ namespace Comet.Game
                 msg.Decode(packet);
                 msg.Process(actor as Client);
             }
-            catch (Exception e)
-            {
-                Console.WriteLine(e);
-            }
+            catch (Exception e) { Console.WriteLine(e); }
+        }
+
+        /// <summary>
+        /// Invoked by the server listener's Disconnecting method to dispose of the actor's
+        /// resources. Gives the server an opportunity to cleanup references to the actor
+        /// from other actors and server collections.
+        /// </summary>
+        /// <param name="actor">Server actor that represents the remote client</param>
+        protected override void Disconnected(TcpServerActor actor) 
+        {
+            var client = actor as Client;
+            if (client == null) return;
+
+            if (client.Creation != null)
+                Kernel.Registration.Remove(client.Creation.Token);
         }
     }
 }

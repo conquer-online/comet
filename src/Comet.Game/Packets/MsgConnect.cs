@@ -61,6 +61,12 @@ namespace Comet.Game.Packets
 
             // Generate new keys and check for an existing character
             client.Cipher.GenerateKeys(new object[] { this.Token });
+
+            // Create a new character
+            client.Creation = new Creation();
+            client.Creation.AccountID = auth.AccountID;
+            client.Creation.Token = (uint)this.Token;
+            Kernel.Registration.Add(client.Creation.Token);
             client.Send(new MsgTalk(0, TalkChannel.Login, MsgTalk.NEWROLE));
         }
     }
