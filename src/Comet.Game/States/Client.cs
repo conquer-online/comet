@@ -2,7 +2,6 @@ namespace Comet.Game.States
 {
     using System;
     using System.Net.Sockets;
-    using Comet.Game.Database.Models;
     using Comet.Network.Security;
     using Comet.Network.Sockets;
 

@@ -9,15 +9,15 @@
     /// from the account table using a foreign key. 
     /// </summary>
     [Table("account_authority")]
-    public partial class AccountAuthority
+    public partial class DbAccountAuthority
     {
         /// <summary>
-        /// Initializes navigational properties for <see cref="AccountAuthority"/>.
+        /// Initializes navigational properties for <see cref="DbAccountAuthority"/>.
         /// </summary>
-        public AccountAuthority()
+        public DbAccountAuthority()
         {
-            Account = new HashSet<Account>();
-            Realms = new HashSet<Realm>();
+            Account = new HashSet<DbAccount>();
+            Realms = new HashSet<DbRealm>();
         }
 
         // Column Properties
@@ -25,7 +25,7 @@
         public string AuthorityName { get; set; }
 
         // Navigational Properties
-        public virtual ICollection<Account> Account { get; set; }
-        public virtual ICollection<Realm> Realms { get; set; }
+        public virtual ICollection<DbAccount> Account { get; set; }
+        public virtual ICollection<DbRealm> Realms { get; set; }
     }
 }

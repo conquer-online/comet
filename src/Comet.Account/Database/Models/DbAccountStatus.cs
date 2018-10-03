@@ -10,14 +10,14 @@
     /// also be banned from the server, and not permitted access.
     /// </summary>
     [Table("account_status")]
-    public partial class AccountStatus
+    public partial class DbAccountStatus
     {
         /// <summary>
-        /// Initializes navigational properties for <see cref="AccountAuthority"/>.
+        /// Initializes navigational properties for <see cref="DbAccountAuthority"/>.
         /// </summary>
-        public AccountStatus()
+        public DbAccountStatus()
         {
-            Account = new HashSet<Account>();
+            Account = new HashSet<DbAccount>();
         }
 
         // Column Properties
@@ -25,6 +25,6 @@
         public string StatusName { get; set; }
 
         // Navigational Properties
-        public virtual ICollection<Account> Account { get; set; }
+        public virtual ICollection<DbAccount> Account { get; set; }
     }
 }

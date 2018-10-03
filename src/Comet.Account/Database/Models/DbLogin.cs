@@ -9,7 +9,7 @@
     /// wrongful logins.
     /// </summary>
     [Table("logins")]
-    public partial class Login
+    public partial class DbLogin
     {
         // Column Properties
         public DateTime Timestamp { get; set; }
@@ -17,6 +17,6 @@
         public string IPAddress { get; set; }
 
         // Navigational Properties
-        public virtual Account Account { get; set; }
+        public virtual DbAccount Account { get; set; }
     }
 }

@@ -10,7 +10,7 @@ namespace Comet.Account.Database.Models
     /// encryption is defined in this class.
     /// </summary>
     [Table("realm")]
-    public partial class Realm
+    public partial class DbRealm
     {
         // Column Properties
         public uint RealmID { get; set; }
@@ -22,7 +22,7 @@ namespace Comet.Account.Database.Models
         public uint RpcPort { get; set; }
 
         // Navigational Properties
-        public virtual AccountAuthority Authority { get; set; }
+        public virtual DbAccountAuthority Authority { get; set; }
 
         // Application Logic Fields
         [NotMapped]

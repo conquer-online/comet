@@ -14,7 +14,7 @@ namespace Comet.Game.Database
         public static ServerConfiguration.DatabaseConfiguration Configuration;
 
         // Table Definitions
-        public virtual DbSet<Character> Characters { get; set; }
+        public virtual DbSet<DbCharacter> Characters { get; set; }
 
         /// <summary>
         /// Configures the database to be used for this context. This method is called
@@ -41,7 +41,7 @@ namespace Comet.Game.Database
         /// <param name="builder">Builder for creating models in the context</param>
         protected override void OnModelCreating(ModelBuilder builder)
         {
-            builder.Entity<Character>(e => e.HasKey(x => x.CharacterID));
+            builder.Entity<DbCharacter>(e => e.HasKey(x => x.CharacterID));
         }
     }
 }

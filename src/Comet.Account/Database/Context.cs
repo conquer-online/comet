@@ -14,11 +14,11 @@ namespace Comet.Account.Database
         public static ServerConfiguration.DatabaseConfiguration Configuration;
 
         // Table Definitions
-        public virtual DbSet<Account> Accounts { get; set; }
-        public virtual DbSet<AccountAuthority> AccountAuthorities { get; set; }
-        public virtual DbSet<AccountStatus> AccountStatuses { get; set; }
-        public virtual DbSet<Login> Logins { get; set; }
-        public virtual DbSet<Realm> Realms { get; set; }
+        public virtual DbSet<DbAccount> Accounts { get; set; }
+        public virtual DbSet<DbAccountAuthority> AccountAuthorities { get; set; }
+        public virtual DbSet<DbAccountStatus> AccountStatuses { get; set; }
+        public virtual DbSet<DbLogin> Logins { get; set; }
+        public virtual DbSet<DbRealm> Realms { get; set; }
 
         /// <summary>
         /// Configures the database to be used for this context. This method is called
@@ -45,11 +45,11 @@ namespace Comet.Account.Database
         /// <param name="builder">Builder for creating models in the context</param>
         protected override void OnModelCreating(ModelBuilder builder)
         {
-            builder.Entity<Account>(e => e.HasKey(x => x.AccountID));
-            builder.Entity<AccountAuthority>(e => e.HasKey(x => x.AuthorityID));
-            builder.Entity<AccountStatus>(e => e.HasKey(x => x.StatusID));
-            builder.Entity<Login>(e => e.HasKey(x => new { x.AccountID, x.Timestamp }));
-            builder.Entity<Realm>(e => e.HasKey(x => x.RealmID));
+            builder.Entity<DbAccount>(e => e.HasKey(x => x.AccountID));
+            builder.Entity<DbAccountAuthority>(e => e.HasKey(x => x.AuthorityID));
+            builder.Entity<DbAccountStatus>(e => e.HasKey(x => x.StatusID));
+            builder.Entity<DbLogin>(e => e.HasKey(x => new { x.AccountID, x.Timestamp }));
+            builder.Entity<DbRealm>(e => e.HasKey(x => x.RealmID));
         }
     }
 }

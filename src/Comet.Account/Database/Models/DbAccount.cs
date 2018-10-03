@@ -10,14 +10,14 @@
     /// server. Passwords are hashed using a salted SHA-256 for user protection.
     /// </summary>
     [Table("account")]
-    public partial class Account
+    public partial class DbAccount
     {
         /// <summary>
-        /// Initializes navigational properties for <see cref="Account"/>.
+        /// Initializes navigational properties for <see cref="DbAccount"/>.
         /// </summary>
-        public Account()
+        public DbAccount()
         {
-            Logins = new HashSet<Login>();
+            Logins = new HashSet<DbLogin>();
         }
 
         // Column Properties
@@ -33,8 +33,8 @@
         public DateTime Registered { get; set; }
 
         // Navigational Properties
-        public virtual AccountAuthority Authority { get; set; }
-        public virtual AccountStatus Status { get; set; }
-        public virtual ICollection<Login> Logins { get; set; }
+        public virtual DbAccountAuthority Authority { get; set; }
+        public virtual DbAccountStatus Status { get; set; }
+        public virtual ICollection<DbLogin> Logins { get; set; }
     }
 }

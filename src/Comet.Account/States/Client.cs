@@ -14,7 +14,7 @@ namespace Comet.Account.States
     public sealed class Client : TcpServerActor
     {
         // Fields and Properties
-        public Account Account;
+        public DbAccount Account;
 
         /// <summary>
         /// Instantiates a new instance of <see cref="Client"/> using the Accepted event's

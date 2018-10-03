@@ -17,11 +17,25 @@ namespace Comet.Game.Database.Repositories
         /// </summary>
         /// <param name="name">Character's name</param>
         /// <returns>Returns character details from the database.</returns>
-        public static Character Get(string name)
+        public static DbCharacter Get(string name)
         {
             using (var db = new ServerDbContext())
                 return db.Characters
                     .Where(x => x.Name == name)
+                    .SingleOrDefault();
+        }
+
+        /// <summary>
+        /// Fetches a character record from the database using the character's associated
+        /// AccountID as a unique key for selecting a single record.
+        /// </summary>
+        /// <param name="accountID">Primary key for fetching character info</param>
+        /// <returns>Returns character details from the database.</returns>
+        public static DbCharacter Get(uint accountID)
+        {
+            using (var db = new ServerDbContext())
+                return db.Characters
+                    .Where(x => x.AccountID == accountID)
                     .SingleOrDefault();
         }
 
@@ -41,7 +55,7 @@ namespace Comet.Game.Database.Repositories
         /// already exists, then character creation will fail. 
         /// </summary>
         /// <param name="character">Character model to be inserted to the database</param>
-        public static void Create(Character character)
+        public static void Create(DbCharacter character)
         {
             using (var db = new ServerDbContext())
             {

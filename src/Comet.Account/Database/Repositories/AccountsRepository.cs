@@ -21,7 +21,7 @@ namespace Comet.Account.Database.Repositories
         /// </summary>
         /// <param name="username">Username to pull account info for</param>
         /// <returns>Returns account details from the database.</returns>
-        public static Account Get(string username)
+        public static DbAccount Get(string username)
         {
             using (var db = new ServerDbContext())
                 return db.Accounts

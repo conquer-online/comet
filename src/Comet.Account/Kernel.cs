@@ -11,6 +11,6 @@ namespace Comet.Account
     /// </summary>
     public static class Kernel
     {
-        public static Dictionary<string, Realm> Realms;
+        public static Dictionary<string, DbRealm> Realms;
     }
 }
