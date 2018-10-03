@@ -26,9 +26,10 @@ DROP TABLE IF EXISTS `character`;
  SET character_set_client = utf8mb4 ;
 CREATE TABLE `character` (
   `CharacterID` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `AccountID` int(11) NOT NULL,
+  `AccountID` int(11) unsigned NOT NULL,
   `Name` varchar(15) COLLATE utf8_bin NOT NULL,
   `Mesh` int(11) unsigned NOT NULL DEFAULT '1003',
+  `Avatar` smallint(5) unsigned NOT NULL DEFAULT '1',
   `Hairstyle` smallint(5) unsigned NOT NULL DEFAULT '535',
   `Silver` int(10) unsigned NOT NULL DEFAULT '1000',
   `Jewels` int(10) unsigned NOT NULL DEFAULT '0',
@@ -37,7 +38,7 @@ CREATE TABLE `character` (
   `Rebirths` tinyint(3) unsigned NOT NULL DEFAULT '0',
   `Level` tinyint(3) unsigned NOT NULL DEFAULT '1',
   `Experience` bigint(20) unsigned NOT NULL DEFAULT '0',
-  `MapID` smallint(5) unsigned NOT NULL DEFAULT '1002',
+  `MapID` int(10) unsigned NOT NULL DEFAULT '1002',
   `X` smallint(5) unsigned NOT NULL DEFAULT '430',
   `Y` smallint(5) unsigned NOT NULL DEFAULT '380',
   `Virtue` int(10) unsigned NOT NULL DEFAULT '0',
@@ -82,4 +83,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2018-09-30 17:44:16
+-- Dump completed on 2018-10-02 19:50:42
