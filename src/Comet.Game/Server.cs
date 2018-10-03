@@ -76,6 +76,7 @@ namespace Comet.Game
             switch ((PacketType)type)
             {
                 case PacketType.MsgRegister: msg = new MsgRegister(); break;
+                case PacketType.MsgItem:     msg = new MsgItem(); break;
                 case PacketType.MsgAction:   msg = new MsgAction(); break;
                 case PacketType.MsgConnect:  msg = new MsgConnect(); break;
 

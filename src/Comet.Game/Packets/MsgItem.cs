@@ -4,21 +4,20 @@ namespace Comet.Game.Packets
     using Comet.Game.States;
     using Comet.Network.Packets;
 
-    /// <remarks>Packet Type 1010</remarks>
+    /// <remarks>Packet Type 1009</remarks>
     /// <summary>
-    /// Message containing a general action being performed by the client. Commonly used
-    /// as a request-response protocol for question and answer like exchanges. For example,
-    /// walk requests are responded to with an answer as to if the step is legal or not.
+    /// Message containing an item action command. Item actions are usually performed to 
+    /// manage player equipment, inventory, money, or item shop purchases and sales. It
+    /// is serves a second purpose for measuring client ping.
     /// </summary>
-    public sealed class MsgAction : MsgBase<Client>
+    public sealed class MsgItem : MsgBase<Client>
     {
         // Packet Properties
-        public uint Timestamp { get; set; }
         public uint CharacterID { get; set; }
         public uint Command { get; set; }
-        public ushort[] Arguments { get; set; }
-        public ushort Direction { get; set; }
-        public ActionType Action { get; set; }
+        public uint Action { get; set; }
+        public uint Timestamp { get; set; }
+        public uint Argument { get; set; }
 
         /// <summary>
         /// Decodes a byte packet into the packet structure defined by this message class. 
@@ -31,14 +30,11 @@ namespace Comet.Game.Packets
             var reader = new PacketReader(bytes);
             this.Length = reader.ReadUInt16();
             this.Type = (PacketType)reader.ReadUInt16();
-            this.Timestamp = reader.ReadUInt32();
             this.CharacterID = reader.ReadUInt32();
             this.Command = reader.ReadUInt32();
-            this.Arguments = new ushort[2];
-            for (int i = 0; i < this.Arguments.Length; i++)
-                this.Arguments[i] = reader.ReadUInt16();
-            this.Direction = reader.ReadUInt16();
-            this.Action = (ActionType)reader.ReadUInt16();
+            this.Action = reader.ReadUInt32();
+            this.Timestamp = reader.ReadUInt32();
+            this.Argument = reader.ReadUInt32();
         }
 
         /// <summary>
@@ -51,13 +47,11 @@ namespace Comet.Game.Packets
         {
             var writer = new PacketWriter();
             writer.Write((ushort)base.Type);
-            writer.Write(this.Timestamp);
             writer.Write(this.CharacterID);
             writer.Write(this.Command);
-            for (int i = 0; i < this.Arguments.Length; i++)
-                writer.Write(this.Arguments[i]);
-            writer.Write(this.Direction);
-            writer.Write((ushort)this.Action);
+            writer.Write((uint)this.Action);
+            writer.Write(this.Timestamp);
+            writer.Write(this.Argument);
             return writer.ToArray();
         }
 
@@ -72,14 +66,6 @@ namespace Comet.Game.Packets
         {
             switch (this.Action)
             {
-                case ActionType.SetLocation:
-                    this.CharacterID = client.Character.CharacterID;
-                    this.Command = client.Character.MapID;
-                    this.Arguments[0] = client.Character.X;
-                    this.Arguments[1] = client.Character.Y;
-                    client.Send(this);
-                    break;
-
                 default:
                     client.Send(this);
                     Console.WriteLine(
@@ -90,18 +76,12 @@ namespace Comet.Game.Packets
         }
 
         /// <summary>
-        /// Defines actions that may be requested by the user, or given to by the server.
-        /// Allows for action handling as a packet subtype.
+        /// Enumeration type for defining item actions that may be requested by the user, 
+        /// or given to by the server. Allows for action handling as a packet subtype.
         /// </summary>
-        public enum ActionType
+        public enum ItemActionType
         {
-            SetLocation = 74,
-            SetInventory = 75,
-            SetAssociates = 76,
-            SetProficiencies = 77,
-            SetMagicSpells = 78,
-            SetDirection = 79,
-            SetAction = 80
+            Ping = 27
         }
     }
 }

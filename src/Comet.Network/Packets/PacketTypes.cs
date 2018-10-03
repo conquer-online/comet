@@ -10,6 +10,7 @@ namespace Comet.Network.Packets
         MsgRegister  = 1001,
         MsgTalk      = 1004,
         MsgUserInfo  = 1006,
+        MsgItem      = 1009,
         MsgAction    = 1010,
         MsgAccount   = 1051,
         MsgConnect   = 1052,
