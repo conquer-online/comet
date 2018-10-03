@@ -32,6 +32,7 @@ namespace Comet.Game.Packets
         public byte CurrentClass { get; set; }
         public byte PreviousClass { get; set; }
         public byte Rebirths { get; set; }
+        public bool HasName { get; set; }
         public string CharacterName { get; set; }
         public string SpouseName { get; set; }
 
@@ -42,8 +43,9 @@ namespace Comet.Game.Packets
         /// <param name="character">Character info from the database</param>
         public MsgUserInfo(DbCharacter character)
         {
+            base.Type = PacketType.MsgUserInfo;
             this.CharacterID = character.CharacterID;
-            this.Mesh = character.Mesh;
+            this.Mesh = (uint)(character.Mesh + (character.Avatar * 10000));
             this.Hairstyle = character.Hairstyle;
             this.Silver = character.Silver;
             this.Jewels = character.Jewels;
@@ -62,6 +64,7 @@ namespace Comet.Game.Packets
             this.Rebirths = character.Rebirths;
             this.CharacterName = character.Name;
             this.SpouseName = "None";
+            this.HasName = true;
         }
 
         /// <summary>
@@ -94,6 +97,7 @@ namespace Comet.Game.Packets
             writer.Write(this.CurrentClass);
             writer.Write(this.PreviousClass);
             writer.Write(this.Rebirths);
+            writer.Write(this.HasName);
             writer.Write(new List<string>{
                 this.CharacterName,
                 this.SpouseName

@@ -78,6 +78,10 @@ namespace Comet.Game.Packets
                     this.Arguments[1] = client.Character.Y;
                     client.Send(this);
                     break;
+
+                default:
+                    client.Send(this);
+                    break;
             }
         }
 

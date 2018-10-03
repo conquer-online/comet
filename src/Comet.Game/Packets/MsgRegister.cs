@@ -19,7 +19,7 @@ namespace Comet.Game.Packets
         public string Username { get; set; }
         public string CharacterName { get; set; }
         public string MaskedPassword { get; set; }
-        public ushort Body { get; set; }
+        public ushort Mesh { get; set; }
         public ushort Class { get; set; }
         public uint Token { get; set; }
 
@@ -37,7 +37,7 @@ namespace Comet.Game.Packets
             this.Username = reader.ReadString(16);
             this.CharacterName = reader.ReadString(16);
             this.MaskedPassword = reader.ReadString(16);
-            this.Body = reader.ReadUInt16();
+            this.Mesh = reader.ReadUInt16();
             this.Class = reader.ReadUInt16();
             this.Token = reader.ReadUInt32();
         }
@@ -70,7 +70,7 @@ namespace Comet.Game.Packets
             }
 
             // Validate character creation input
-            if (!Enum.IsDefined(typeof(BodyType), this.Body) ||
+            if (!Enum.IsDefined(typeof(BodyType), this.Mesh) ||
                 !Enum.IsDefined(typeof(BaseClassType), this.Class))
             {
                 client.Send(new MsgTalk(
@@ -84,7 +84,8 @@ namespace Comet.Game.Packets
             character.AccountID = client.Creation.AccountID;
             character.Name = this.CharacterName;
             character.CurrentClass = (byte)this.Class;
-            character.Mesh = this.Body;
+            character.Mesh = this.Mesh;
+            character.Avatar = 1;
             character.Hairstyle = 535;
             character.Silver = 1000;
             character.Level = 1;
@@ -95,7 +96,12 @@ namespace Comet.Game.Packets
             character.Agility = 6;
             character.Vitality = 12;
             character.Spirit = 0;
-            character.HealthPoints = 12;
+            character.HealthPoints = 
+                (ushort)((character.Strength * 3) 
+                + (character.Agility * 3)
+                + (character.Spirit * 3)
+                + (character.Vitality * 24));
+            character.ManaPoints = (ushort)(character.Spirit * 5);
             character.Registered = DateTime.Now;
 
             try 

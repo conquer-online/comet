@@ -62,8 +62,8 @@ namespace Comet.Game.Packets
 
             // Generate new keys and check for an existing character
             client.Cipher.GenerateKeys(new object[] { this.Token });
-            client.Character = CharactersRepository.Get(auth.AccountID) as Character;
-            if (client.Character == null)
+            var character = CharactersRepository.Get(auth.AccountID);
+            if (character == null)
             {
                 // Create a new character
                 client.Creation = new Creation();
@@ -75,6 +75,7 @@ namespace Comet.Game.Packets
             else
             {
                 // Character already exists
+                client.Character = new Character(character);
                 client.Send(new MsgTalk(0, TalkChannel.Login, MsgTalk.ANSWEROK));
                 client.Send(new MsgUserInfo(client.Character));
             }            
