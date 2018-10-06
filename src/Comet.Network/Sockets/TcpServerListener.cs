@@ -6,6 +6,7 @@ namespace Comet.Network.Sockets
     using System.Collections.Generic;
     using System.Net;
     using System.Net.Sockets;
+    using System.Runtime.InteropServices;
     using System.Threading;
     using System.Threading.Tasks;
 
@@ -37,8 +38,19 @@ namespace Comet.Network.Sockets
         {
             // Initialize and configure server socket
             this.Socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-            this.Socket.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.DontLinger, false);
-            this.Socket.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.NoDelay, !delay);
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows)) 
+            {
+                // Set socket options for Windows
+                var sockOpt = SocketOptionLevel.Socket;
+                this.Socket.SetSocketOption(sockOpt, SocketOptionName.DontLinger, false);
+                this.Socket.SetSocketOption(sockOpt, SocketOptionName.NoDelay, !delay);
+            }
+            else
+            {
+                // Set socket options for Linux or macOS
+                this.Socket.LingerState = new LingerOption(false, 0);
+                this.Socket.NoDelay = !delay;
+            }
 
             // Initialize management mechanisms
             this.AcceptanceSemaphore = new Semaphore(maxConn, maxConn);
