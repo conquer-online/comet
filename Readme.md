@@ -12,7 +12,7 @@ Once imported, open `realm` from the `comet.account` database. Enter your extern
 
 ### Feature Requests
 
-Please do not file feature requests in the issue tracker. Requests for new features will be closed. To request a feature, please do so via discussion forums provided by an accompanying Conquer Online game community (such as [Cooldown](https://cooldown.io)). You may also track ongoing progress of features and enhancements through Comet's [Trello storyboard](https://trello.com/b/tb8ChBlF/comet). 
+Please do not file feature requests in the issue tracker. Requests for new features will be closed. To request a feature, please do so via discussion forums provided by an accompanying Conquer Online game community. You may also track ongoing progress of features and enhancements through Comet's [Trello storyboard](https://trello.com/b/tb8ChBlF/comet). 
 
 ### Common Questions & Answers
 
