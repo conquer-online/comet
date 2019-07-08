@@ -16,7 +16,9 @@ namespace Comet.Network.Sockets
     /// Socket Task Extensions. Inherits from a base class for providing socket operation
     /// event handling to the non-abstract derived class of TcpServerListener.
     /// </summary>
-    public abstract class TcpServerListener : TcpServerEvents
+    /// <typeparam name="TActor">Type of actor passed by the parent project</typeparam>
+    public abstract class TcpServerListener<TActor> : TcpServerEvents<TActor>  
+        where TActor : TcpServerActor
     {
         // Fields and properties
         private readonly Semaphore AcceptanceSemaphore;
@@ -106,7 +108,7 @@ namespace Comet.Network.Sockets
         private async Task Receiving(object state)
         {
             // Initialize multiple receive variables
-            var actor = state as TcpServerActor;
+            var actor = state as TActor;
             int consumed = 0, examined = 0;
             while (actor.Socket.Connected && !this.ShutdownToken.IsCancellationRequested)
             {
@@ -140,7 +142,7 @@ namespace Comet.Network.Sockets
         /// <param name="buffer">Actor for consuming bytes from the buffer</param>
         /// <param name="examined">Number of examined bytes from the receive</param>
         /// <param name="consumed">Number of consumed bytes by the split reader</param>
-        protected virtual void Splitting(TcpServerActor actor, int examined, ref int consumed)
+        protected virtual void Splitting(TActor actor, int examined, ref int consumed)
         {
             // Consume packets from the socket buffer
             consumed = 0;
@@ -160,7 +162,7 @@ namespace Comet.Network.Sockets
         /// leased to the client on accept.
         /// </summary>
         /// <param name="actor">Actor being disconnected</param>
-        private void Disconnecting(TcpServerActor actor)
+        private void Disconnecting(TActor actor)
         {
             // Reclaim resources and release back to server pools
             actor.Buffer.Span.Clear();

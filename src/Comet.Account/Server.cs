@@ -15,7 +15,7 @@ namespace Comet.Account
     /// listening functionality and event handling. This class defines how the server 
     /// listener and invoked events are customized for the account server.
     /// </summary>
-    internal sealed class Server : TcpServerListener
+    internal sealed class Server : TcpServerListener<Client>
     {
         // Fields and Properties
         private readonly PacketProcessor<Client> Processor;
@@ -39,7 +39,7 @@ namespace Comet.Account
         /// <param name="socket">Accepted client socket from the server socket</param>
         /// <param name="buffer">Preallocated buffer from the server listener</param>
         /// <returns>A new instance of a ServerActor around the client socket</returns>
-        protected override TcpServerActor Accepted(Socket socket, Memory<byte> buffer)
+        protected override Client Accepted(Socket socket, Memory<byte> buffer)
         {
             return new Client(socket, buffer);
         }
@@ -51,9 +51,9 @@ namespace Comet.Account
         /// </summary>
         /// <param name="actor">Server actor that represents the remote client</param>
         /// <param name="packet">Packet bytes to be processed</param>
-        protected override void Received(TcpServerActor actor, ReadOnlySpan<byte> packet)
+        protected override void Received(Client actor, ReadOnlySpan<byte> packet)
         {
-            this.Processor.Queue(actor as Client, packet.ToArray());
+            this.Processor.Queue(actor, packet.ToArray());
         }
 
         /// <summary>
@@ -63,7 +63,7 @@ namespace Comet.Account
         /// </summary>
         /// <param name="actor">Actor requesting packet processing</param>
         /// <param name="packet">An individual data packet to be processed</param>
-        private void Process(TcpServerActor actor, byte[] packet) 
+        private void Process(Client actor, byte[] packet) 
         {
             // Validate connection
             if (!actor.Socket.Connected)
@@ -90,7 +90,7 @@ namespace Comet.Account
             {
                 // Decode packet bytes into the structure and process
                 msg.Decode(packet);
-                msg.Process(actor as Client);
+                msg.Process(actor);
             }
             catch (Exception e)
             {

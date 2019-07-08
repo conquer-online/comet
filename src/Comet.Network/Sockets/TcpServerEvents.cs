@@ -10,7 +10,9 @@ namespace Comet.Network.Sockets
     /// actors. This allows a server listener to define unique socket events across 
     /// multiple projects via inheritance.
     /// </summary>
-    public abstract class TcpServerEvents
+    /// <typeparam name="TActor">Type of actor passed by the parent project</typeparam>
+    public abstract class TcpServerEvents<TActor> 
+        where TActor : TcpServerActor
     {
         /// <summary>
         /// Invoked by the server listener's Accepting method to create a new server actor
@@ -19,8 +21,8 @@ namespace Comet.Network.Sockets
         /// </summary>
         /// <param name="socket">Accepted client socket from the server socket</param>
         /// <param name="buffer">Preallocated buffer from the server listener</param>
-        /// <returns>A new instance of a ServerActor around the client socket</returns>
-        protected abstract TcpServerActor Accepted(Socket socket, Memory<byte> buffer);
+        /// <returns>A new instance of a TActor around the client socket</returns>
+        protected abstract TActor Accepted(Socket socket, Memory<byte> buffer);
 
         /// <summary>
         /// Invoked by the server listener's Receiving method to process a completed packet
@@ -30,7 +32,7 @@ namespace Comet.Network.Sockets
         /// </summary>
         /// <param name="actor">Server actor that represents the remote client</param>
         /// <param name="packet">Packet bytes to be processed</param>
-        protected virtual void Received(TcpServerActor actor, ReadOnlySpan<byte> packet)
+        protected virtual void Received(TActor actor, ReadOnlySpan<byte> packet)
         {
             Console.WriteLine("Received {0} bytes", packet.Length);
             Console.WriteLine(PacketDump.Hex(packet));
@@ -42,7 +44,7 @@ namespace Comet.Network.Sockets
         /// from other actors and server collections.
         /// </summary>
         /// <param name="actor">Server actor that represents the remote client</param>
-        protected virtual void Disconnected(TcpServerActor actor) 
+        protected virtual void Disconnected(TActor actor) 
         {
         }
     }
