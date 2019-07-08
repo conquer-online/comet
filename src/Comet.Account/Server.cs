@@ -2,12 +2,10 @@ namespace Comet.Account
 {
     using System;
     using System.Net.Sockets;
-    using System.Text;
     using Comet.Account.Database;
     using Comet.Account.Packets;
     using Comet.Account.States;
     using Comet.Network.Packets;
-    using Comet.Network.Security;
     using Comet.Network.Sockets;
 
     /// <summary>
