@@ -38,19 +38,8 @@ namespace Comet.Network.Sockets
         {
             // Initialize and configure server socket
             this.Socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows)) 
-            {
-                // Set socket options for Windows
-                var sockOpt = SocketOptionLevel.Socket;
-                this.Socket.SetSocketOption(sockOpt, SocketOptionName.DontLinger, false);
-                this.Socket.SetSocketOption(sockOpt, SocketOptionName.NoDelay, !delay);
-            }
-            else
-            {
-                // Set socket options for Linux or macOS
-                this.Socket.LingerState = new LingerOption(false, 0);
-                this.Socket.NoDelay = !delay;
-            }
+            this.Socket.LingerState = new LingerOption(false, 0);
+            this.Socket.NoDelay = !delay;
 
             // Initialize management mechanisms
             this.AcceptanceSemaphore = new Semaphore(maxConn, maxConn);
