@@ -18,8 +18,11 @@ REPEAT STEPS
 2. <Additional steps on repeating the bug>
 ```
 
-### Programming for Comet
-Thank you for your interest in contributing to Comet. All merge requests are reviewed for quality and consistency. If your request is denied, check the comments and see what corrections are recommended. Some things to keep in mind:
+### Forking Comet
+If you'd like to take Comet in a new direction or perform a lot of work, then I highly recommend forking the project. You can fork Comet using the "Fork" button on the front page of the GitLab repository. This copies the project repository and all commits to your own GitLab profile. If you choose to make your fork public, it also allows others to find your modified version of Comet more easily through GitLab.
+
+### Merge Requests
+After creating a merge request from a fork, the request will be reviewed for quality and consistency. While your request is open, you may receive comments before being allowed to merge the code. Here are some things to keep in mind when creating a merge request:
 
 - Database changes result in a new migration script labled as (yyyymmdd-commit).
 - Database changes result in an updated initial deployment script.
