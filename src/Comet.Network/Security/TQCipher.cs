@@ -23,7 +23,7 @@ namespace Comet.Network.Security
         private byte[] K;
         private byte[] K1 = new byte[0x200];
         private byte[] K2 = new byte[0x200];
-        private long DecryptCounter, EncryptCounter;
+        private ushort DecryptCounter, EncryptCounter;
         
         /// <summary>
         /// Add defines how the cipher increments counters. By default, counters are 
@@ -122,7 +122,7 @@ namespace Comet.Network.Security
         /// <param name="dst">Destination span to contain the decrypted result</param>
         /// <param name="k">Keystream to be used for XORing data</param>
         /// <param name="c">Counter for the direction of the cipher operation</param>
-        private void XOR(Span<byte> src, Span<byte> dst, byte[] k, ref long c)
+        private void XOR(Span<byte> src, Span<byte> dst, byte[] k, ref ushort c)
         {
             var x = this.Add(ref c, src.Length);
             for (int i = 0; i < src.Length; i++)
@@ -143,7 +143,7 @@ namespace Comet.Network.Security
         /// <param name="x">Value to be incremented</param>
         /// <param name="n">Amount to increment by</param>
         /// <returns>Returns the previous value.</returns>
-        public delegate long Increment(ref long x, int n);
+        public delegate ushort Increment(ref ushort x, int n);
 
         /// <summary>
         /// Increments without thread-safety for <see cref="TQCipher.Increment"/>
@@ -151,14 +151,7 @@ namespace Comet.Network.Security
         /// <param name="x">Value to be incremented</param>
         /// <param name="n">Amount to increment by</param>
         /// <returns>Returns the previous value.</returns>
-        public long DefaultIncrement(ref long x, int n) => (x = x + n) - n;
-
-        /// <summary>
-        /// Increments with interlocking for <see cref="TQCipher.Increment"/>
-        /// </summary>
-        /// <param name="x">Value to be incremented</param>
-        /// <param name="n">Amount to increment by</param>
-        /// <returns>Returns the previous value.</returns>
-        public long InterlockedIncrement(ref long x, int n) => Interlocked.Add(ref x, n) - n;
+        public ushort DefaultIncrement(ref ushort x, int n) 
+            => (ushort)((x = (ushort)(x + n)) - n);
     }
 }
