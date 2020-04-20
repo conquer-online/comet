@@ -58,7 +58,7 @@ namespace Comet.Network.Sockets
                 try 
                 {
                     this.Cipher.Encrypt(packet, encrypted);
-                    return this.Socket.SendAsync(encrypted, SocketFlags.None);
+                    return this.Socket?.SendAsync(encrypted, SocketFlags.None) ?? Task.CompletedTask;
                 }
                 catch (Exception e)
                 {
@@ -85,7 +85,7 @@ namespace Comet.Network.Sockets
         /// </summary>
         public virtual void Disconnect()
         {
-            this.Socket.Disconnect(false);
+            this.Socket?.Disconnect(false);
         }
 
         /// <summary>
