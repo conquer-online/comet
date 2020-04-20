@@ -1,6 +1,7 @@
 namespace Comet.Game.Packets
 {
     using System;
+    using System.Threading.Tasks;
     using Comet.Game.States;
     using Comet.Network.Packets;
 
@@ -62,12 +63,12 @@ namespace Comet.Game.Packets
         /// <see cref="PacketProcessor"/>.
         /// </summary>
         /// <param name="client">Client requesting packet processing</param>
-        public override void Process(Client client)
+        public override async Task ProcessAsync(Client client)
         {
             switch (this.Action)
             {
                 default:
-                    client.Send(this);
+                    await client.SendAsync(this);
                     Console.WriteLine(
                         "Missing packet {0}, Length {1}\n{2}", 
                         this.Type, this.Length, PacketDump.Hex(this.Encode()));

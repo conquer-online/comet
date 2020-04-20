@@ -1,6 +1,7 @@
 namespace Comet.Network.Packets
 {
     using System;
+    using System.Threading.Tasks;
 
     /// <summary>
     /// Base message class that provides a derived message class with methods and properties
@@ -43,9 +44,9 @@ namespace Comet.Network.Packets
         /// <see cref="PacketProcessor"/>.
         /// </summary>
         /// <param name="client">Client requesting packet processing</param>
-        public virtual void Process(TClient client)
+        public virtual Task ProcessAsync(TClient client)
         {
-            throw new NotImplementedException();
+            return Task.CompletedTask;
         }
     }
 }

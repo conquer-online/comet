@@ -1,62 +1,70 @@
 namespace Comet.Network.Packets
 {
     using System;
-    using System.Collections.Generic;
+    using System.Linq;
     using System.Threading;
     using System.Threading.Channels;
     using System.Threading.Tasks;
+    using Comet.Network.Sockets;
+    using Microsoft.Extensions.Hosting;
 
     /// <summary>
-    /// Packet processor for handling packets in worker threads using unbounded channels.
-    /// Allows for multiple writers, such as each remote client's accepted socket receive
-    /// loop, to write to the channel. Multiple readers then read single messages from
-    /// the channel for processing.
+    /// Packet processor for handling packets in background tasks using unbounded 
+    /// channel. Allows for multiple writers, such as each remote client's accepted socket
+    /// receive loop, to write to an assigned channel. Each reader has an associated 
+    /// channel to guarantee client packet processing order.
     /// </summary>
     /// <typeparam name="TClient">Type of client being processed with the packet</typeparam>
-    public class PacketProcessor<TClient>
+    public class PacketProcessor<TClient> : IHostedService
+        where TClient : TcpServerActor
     {
         // Fields and Properties
+        protected readonly Task[] BackgroundTasks;
+        protected readonly Channel<Message>[] Channels;
+        protected readonly Partition[] Partitions;
+        protected readonly Func<TClient, byte[], Task> Process;
         protected CancellationToken CancelReads;
         protected CancellationToken CancelWrites;
-        protected readonly Channel<Message> Messages;
-        protected readonly Action<TClient, byte[]> Process;
-        protected readonly List<Thread> Threads;
 
         /// <summary>
         /// Instantiates a new instance of <see cref="PacketProcessor"/> using a default
-        /// amount of worker threads to initialize. Creates threads and starts threads
-        /// immediately to read data from the unbounded channel.
+        /// amount of worker tasks to initialize. Tasks will not be started.
         /// </summary>
-        /// <param name="process">Processing action for channel messages</param>
-        /// <param name="cancelReads">Token for cancelling reads</param>
-        /// <param name="cancelWrites">Token for cancelling writes</param>
+        /// <param name="process">Processing task for channel messages</param>
         /// <param name="count">Number of threads to be created</param>
         public PacketProcessor(
-            Action<TClient, byte[]> process, 
-            CancellationToken cancelReads = default(CancellationToken),
-            CancellationToken cancelWrites = default(CancellationToken),
+            Func<TClient, byte[], Task> process,
             int count = 0)
         {
-            // Initialize the channel
-            this.CancelReads = cancelReads;
-            this.CancelWrites = cancelWrites;
-            this.Messages = Channel.CreateUnbounded<Message>();
-            this.Process = process;
-            this.Threads = new List<Thread>();
-
-            // Create threads for reading from the channel
+            // Initialize the channels and tasks as parallel arrays
             count = count == 0 ? Environment.ProcessorCount : count;
-            for (int i = 0; i < count; i++)
-            {
-                var thread = new Thread(this.Dequeue);
-                this.Threads.Add(thread);
-                thread.Start();
-            }
+            this.BackgroundTasks = new Task[count];
+            this.CancelReads = new CancellationToken();
+            this.CancelWrites = new CancellationToken();
+            this.Channels = new Channel<Message>[count];
+            this.Partitions = new Partition[count];
+            this.Process = process;
         }
 
         /// <summary>
-        /// Queues work by writing to the messages channel. Work is queued by a connected
-        /// client, and dequeued by the server's packet processing worker threads. Each
+        /// Triggered when the application host is ready to start the background task for
+        /// dequeuing and processing work from the unbounded channel. Work is queued by a
+        /// connected and assigned client.
+        /// </summary> 
+        public Task StartAsync(CancellationToken cancellationToken)
+        {
+            for (int i = 0; i < this.BackgroundTasks.Length; i++)
+            {
+                this.Partitions[i] = new Partition { ID = (uint)i };
+                this.Channels[i] = Channel.CreateUnbounded<Message>();
+                this.BackgroundTasks[i] = DequeueAsync(this.Channels[i]);
+            }
+            return Task.WhenAll(this.BackgroundTasks);
+        }
+
+        /// <summary>
+        /// Queues work by writing to a message channel. Work is queued by a connected
+        /// client, and dequeued by the server's packet processing worker tasks. Each
         /// work item contains a single packet to be processed.
         /// </summary>
         /// <param name="actor">Actor requesting packet processing</param>
@@ -64,10 +72,11 @@ namespace Comet.Network.Packets
         public void Queue(TClient actor, byte[] packet)
         {
             if (!this.CancelWrites.IsCancellationRequested)
-                this.Messages.Writer.TryWrite(new Message {
+                this.Channels[actor.Partition].Writer.TryWrite(new Message {
                     Actor = actor,
                     Packet = packet
                 });
+
         }
 
         /// <summary>
@@ -75,27 +84,54 @@ namespace Comet.Network.Packets
         /// available, work will be dequeued and processed. After dequeuing a message,
         /// the packet processor's <see cref="Process"/> action will be called.
         /// </summary>
-        private async void Dequeue()
+        /// <param name="channel">Channel to read messages from</param>
+        protected async Task DequeueAsync(Channel<Message> channel)
         {
             while (!this.CancelReads.IsCancellationRequested)
             {
-                var msg = await this.Messages.Reader.ReadAsync(this.CancelReads);
+                var msg = await channel.Reader.ReadAsync(this.CancelReads);
                 if (msg != null) 
-                    this.Process(msg.Actor, msg.Packet);
+                { 
+                    await this.Process(msg.Actor, msg.Packet).ConfigureAwait(false); 
+                }
             }
         }
 
         /// <summary>
-        /// Shuts down reads and then writes for the packet processor, allowing for the
-        /// processing channel to be completely processed before shutting down threads.
+        /// Triggered when the application host is stopping the background task with a
+        /// graceful shutdown. Requests that writes into the channel stop, and then reads
+        /// from the channel stop. 
         /// </summary>
-        public void Shutdown()
+        public async Task StopAsync(CancellationToken cancellationToken)
         {
             this.CancelWrites = new CancellationToken(true);
-            this.Messages.Reader.Completion.Wait();
+            foreach (var channel in this.Channels)
+                await channel.Reader.Completion;
             this.CancelReads = new CancellationToken(true);
         }
-        
+
+        /// <summary>
+        /// Selects a partition for the client actor based on partition weight. The
+        /// partition with the least popluation will be chosen first. After selecting a
+        /// partition, that partition's weight will be increased by one.
+        /// </summary>
+        public uint SelectPartition()
+        {
+            uint partition = this.Partitions.Aggregate((aggr, next) => 
+                next.Weight.CompareTo(aggr.Weight) < 0 ? next : aggr).ID;
+            Interlocked.Increment(ref this.Partitions[partition].Weight);
+            return partition;
+        }
+
+        /// <summary>
+        /// Deslects a partition after the client actor disconnects.
+        /// </summary>
+        /// <param name="partition">The partition id to reduce the weight of</param>
+        public void DeselectPartition(uint partition)
+        {
+            Interlocked.Decrement(ref this.Partitions[partition].Weight);
+        }
+
         /// <summary>
         /// Defines a message for the <see cref="PacketProcessor"/>'s unbounded channel
         /// for queuing packets and actors requesting work. Each message defines a single
@@ -105,6 +141,17 @@ namespace Comet.Network.Packets
         {
             public TClient Actor;
             public byte[] Packet;
+        }
+
+        /// <summary>
+        /// Defines a partition for the <see cref="PacketProcessor"/>. This allows the 
+        /// background service to track partition weight and assign clients to less 
+        /// populated partitions. 
+        /// </summary>
+        protected class Partition
+        {
+            public uint ID;
+            public int Weight;
         }
     }
 }

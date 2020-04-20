@@ -2,6 +2,8 @@ namespace Comet.Account
 {
     using System;
     using System.Net.Sockets;
+    using System.Threading;
+    using System.Threading.Tasks;
     using Comet.Account.Database;
     using Comet.Account.Packets;
     using Comet.Account.States;
@@ -26,7 +28,8 @@ namespace Comet.Account
         /// <param name="config">The server's read configuration file</param>
         public Server(ServerConfiguration config) : base(maxConn: config.Network.MaxConn)
         {
-            this.Processor = new PacketProcessor<Client>(this.Process);
+            this.Processor = new PacketProcessor<Client>(this.ProcessAsync);
+            this.Processor.StartAsync(CancellationToken.None).ConfigureAwait(true);
         }
 
         /// <summary>
@@ -39,7 +42,8 @@ namespace Comet.Account
         /// <returns>A new instance of a ServerActor around the client socket</returns>
         protected override Client Accepted(Socket socket, Memory<byte> buffer)
         {
-            return new Client(socket, buffer);
+            uint partition = this.Processor.SelectPartition();
+            return new Client(socket, buffer, partition);
         }
 
         /// <summary>
@@ -61,11 +65,11 @@ namespace Comet.Account
         /// </summary>
         /// <param name="actor">Actor requesting packet processing</param>
         /// <param name="packet">An individual data packet to be processed</param>
-        private void Process(Client actor, byte[] packet) 
+        private Task ProcessAsync(Client actor, byte[] packet) 
         {
             // Validate connection
             if (!actor.Socket.Connected)
-                return;
+                return Task.CompletedTask;
 
             // Read in TQ's binary header
             var length = BitConverter.ToUInt16(packet, 0);
@@ -81,18 +85,19 @@ namespace Comet.Account
                     Console.WriteLine(
                         "Missing packet {0}, Length {1}\n{2}", 
                         type, length, PacketDump.Hex(packet));
-                    return;
+                return Task.CompletedTask;
             }
 
             try
             {
                 // Decode packet bytes into the structure and process
                 msg.Decode(packet);
-                msg.Process(actor);
+                return msg.ProcessAsync(actor);
             }
             catch (Exception e)
             {
                 Console.WriteLine(e);
+                return Task.CompletedTask;
             }
         }
     }

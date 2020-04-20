@@ -46,7 +46,8 @@
             // Start the server listener
             Console.WriteLine("Launching server listener...");
             var server = new Server(config);
-            server.Start(config.Network.Port, config.Network.IPAddress);
+            server.StartAsync(config.Network.Port, config.Network.IPAddress)
+                .ConfigureAwait(false);
 
             // Output all clear and wait for user input
             Console.WriteLine("Listening for new connections");

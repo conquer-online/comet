@@ -29,7 +29,7 @@ namespace Comet.Network.RPC
         /// <param name="port">Port the RPC server is listening on</param>
         /// <param name="agent">The name of the client</param>
         /// <returns>Returns a new task for connecting and fault tolerance.</returns>
-        public async Task Connect(string address, int port, string agent = "Client")
+        public async Task ConnectAsync(string address, int port, string agent = "Client")
         {
             while (true)
             {
@@ -68,9 +68,9 @@ namespace Comet.Network.RPC
         /// <param name="arg">Argument to pass with the request</param>
         /// <typeparam name="T">Type of response returned by the procedure</typeparam>
         /// <returns>Returns a task of the running RPC invoke.</returns>
-        public async Task<T> Call<T>(string method, object arg)
+        public Task<T> CallAsync<T>(string method, object arg)
         {
-            return await this.Rpc.InvokeAsync<T>(method, arg);
+            return this.Rpc.InvokeAsync<T>(method, arg);
         }
 
         /// <summary>
@@ -80,9 +80,9 @@ namespace Comet.Network.RPC
         /// <param name="args">Arguments to pass with the request</param>
         /// <typeparam name="T">Type of response returned by the procedure</typeparam>
         /// <returns>Returns a task of the running RPC invoke.</returns>
-        public async Task<T> Call<T>(string method, params object[] args)
+        public Task<T> CallAsync<T>(string method, params object[] args)
         {
-            return await this.Rpc.InvokeAsync<T>(method, args);
+            return this.Rpc.InvokeAsync<T>(method, args);
         }
     }
 }

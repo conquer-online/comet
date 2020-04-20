@@ -30,23 +30,23 @@ namespace Comet.Account.Packets
         /// <see cref="PacketProcessor"/>.
         /// </summary>
         /// <param name="client">Client requesting packet processing</param>
-        public override void Process(Client client)
+        public override async Task ProcessAsync(Client client)
         {
             // Fetch account info from the database
             client.Account = AccountsRepository.Get(this.Username);
             if (client.Account == null || !AccountsRepository.CheckPassword(
                 this.Password, client.Account.Password, client.Account.Salt))
             {
-                client.Send(new MsgConnectEx(RejectionCode.InvalidPassword));
+                await client.SendAsync(new MsgConnectEx(RejectionCode.InvalidPassword));
                 client.Socket.Disconnect(false);
                 return;
             }
 
             // Connect to the game server
-            var server = Kernel.Realms[this.Realm];
-            if (!server.Rpc.Online)
+            Database.Models.DbRealm server;
+            if (!Kernel.Realms.TryGetValue(this.Realm, out server) || !server.Rpc.Online)
             {
-                client.Send(new MsgConnectEx(RejectionCode.ServerDown));
+                await client.SendAsync(new MsgConnectEx(RejectionCode.ServerDown));
                 client.Socket.Disconnect(false);
                 return;
             }
@@ -58,9 +58,8 @@ namespace Comet.Account.Packets
             args.AuthorityName = client.Account.Authority.AuthorityName;
             args.IPAddress = client.IPAddress;
 
-            ulong token = 0;
-            server.Rpc.Call<ulong>("TransferAuth", args).ContinueWith(x => token = x.Result).Wait();
-            client.Send(new MsgConnectEx(server.GameIPAddress, server.GamePort, token));
+            ulong token = await server.Rpc.CallAsync<ulong>("TransferAuth", args);
+            await client.SendAsync(new MsgConnectEx(server.GameIPAddress, server.GamePort, token));
         }
 
         /// <summary>

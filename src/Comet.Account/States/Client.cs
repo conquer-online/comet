@@ -23,8 +23,9 @@ namespace Comet.Account.States
         /// </summary>
         /// <param name="socket">Accepted remote client socket</param>
         /// <param name="buffer">Preallocated buffer from the server listener</param>
-        public Client(Socket socket, Memory<byte> buffer) 
-            : base(socket, buffer, new TQCipher())
+        /// <param name="partition">Packet processing partition</param>
+        public Client(Socket socket, Memory<byte> buffer, uint partition) 
+            : base(socket, buffer, new TQCipher(), partition)
         {
             
         }

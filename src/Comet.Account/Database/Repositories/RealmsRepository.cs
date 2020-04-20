@@ -32,7 +32,7 @@ namespace Comet.Account.Database.Repositories
             foreach (var realm in Kernel.Realms.Values)
             {
                 realm.Rpc = new RpcClient();
-                var task = realm.Rpc.Connect(
+                var task = realm.Rpc.ConnectAsync(
                     realm.RpcIPAddress, (int)realm.RpcPort, "Account Server");
             }
         }

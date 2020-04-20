@@ -60,11 +60,11 @@ namespace Comet.Network.Sockets
         /// <param name="address">Interface IPv4 address the server will bind to</param>
         /// <param name="backlog">Maximum connections backlogged for acceptance</param>
         /// <returns>Returns a new task for accepting new connections.</returns>
-        public Task Start(int port, string address = "0.0.0.0", int backlog = 100)
+        public Task StartAsync(int port, string address = "0.0.0.0", int backlog = 100)
         {
             this.Socket.Bind(new IPEndPoint(IPAddress.Parse(address), port));
             this.Socket.Listen(backlog);
-            return this.Accepting();
+            return this.AcceptingAsync();
         }
 
         /// <summary>
@@ -73,7 +73,7 @@ namespace Comet.Network.Sockets
         /// a receive task. The accepted socket event will be called after accept.
         /// </summary>
         /// <returns>Returns task details for fault tolerance processing.</returns>
-        private async Task Accepting()
+        private async Task AcceptingAsync()
         {
             while (this.Socket.IsBound && !this.ShutdownToken.IsCancellationRequested)
             {
@@ -89,8 +89,8 @@ namespace Comet.Network.Sockets
 
                     // Start receiving data from the client connection
                     var task = this.ReceiveTasks
-                        .StartNew(this.Receiving, actor, this.ShutdownToken.Token)
-                        .ContinueWith(actor.ReceiveFault);
+                        .StartNew(this.ReceivingAsync, actor, this.ShutdownToken.Token)
+                        .ConfigureAwait(false);
                 }
             }
         }
@@ -102,7 +102,7 @@ namespace Comet.Network.Sockets
         /// </summary>
         /// <param name="state">Created actor around the accepted client socket</param>
         /// <returns>Returns task details for fault tolerance processing.</returns>
-        private async Task Receiving(object state)
+        private async Task ReceivingAsync(object state)
         {
             // Initialize multiple receive variables
             var actor = state as TActor;

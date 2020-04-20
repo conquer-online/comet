@@ -1,6 +1,7 @@
 namespace Comet.Game.Packets
 {
     using System;
+    using System.Threading.Tasks;
     using Comet.Game.Database.Repositories;
     using Comet.Game.States;
     using Comet.Network.Packets;
@@ -48,13 +49,13 @@ namespace Comet.Game.Packets
         /// <see cref="PacketProcessor"/>.
         /// </summary>
         /// <param name="client">Client requesting packet processing</param>
-        public override void Process(Client client)
+        public override async Task ProcessAsync(Client client)
         {
             // Validate access token
             var auth = Kernel.Logins.Get(this.Token.ToString()) as TransferAuthArgs;
             if (auth == null || (StrictAuthentication && auth.IPAddress == client.IPAddress))
             {
-                client.Send(new MsgTalk(0, TalkChannel.Login, 
+                await client.SendAsync(new MsgTalk(0, TalkChannel.Login, 
                     "Authentication transfer failed. Please try again."));
                 client.Socket.Disconnect(false);
                 return;
@@ -70,14 +71,14 @@ namespace Comet.Game.Packets
                 client.Creation.AccountID = auth.AccountID;
                 client.Creation.Token = (uint)this.Token;
                 Kernel.Registration.Add(client.Creation.Token);
-                client.Send(new MsgTalk(0, TalkChannel.Login, MsgTalk.NEWROLE));
+                await client.SendAsync(new MsgTalk(0, TalkChannel.Login, MsgTalk.NEWROLE));
             }
             else
             {
                 // Character already exists
                 client.Character = new Character(character);
-                client.Send(new MsgTalk(0, TalkChannel.Login, MsgTalk.ANSWEROK));
-                client.Send(new MsgUserInfo(client.Character));
+                await client.SendAsync(new MsgTalk(0, TalkChannel.Login, MsgTalk.ANSWEROK));
+                await client.SendAsync(new MsgUserInfo(client.Character));
             }            
         }
     }

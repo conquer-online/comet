@@ -40,12 +40,12 @@ namespace Comet.Network.RPC
         /// <param name="port">Port number the server will bind to</param>
         /// <param name="address">Interface IPv4 address the server will bind to</param>
         /// <returns>Returns a new task for accepting new connections.</returns>
-        public Task Start(int port, string address = "0.0.0.0")
+        public Task StartAsync(int port, string address = "0.0.0.0")
         {
             this.ShutdownToken = new CancellationTokenSource();
             this.BaseListener = new TcpListener(IPAddress.Parse(address), port);
             this.BaseListener.Start();
-            return this.Accepting();
+            return this.AcceptingAsync();
         }
 
         /// <summary>
@@ -54,12 +54,12 @@ namespace Comet.Network.RPC
         /// server will start processing requests from the client immediately after.
         /// </summary>
         /// <returns>Returns task details for fault tolerance processing.</returns>
-        private async Task Accepting()
+        private async Task AcceptingAsync()
         {
             while (this.BaseListener.Server.IsBound && !this.ShutdownToken.IsCancellationRequested)
             {
                 var socket = await this.BaseListener.AcceptSocketAsync();
-                var task = Task.Run(() => this.Receiving(socket));
+                var task = Task.Run(() => this.ReceivingAsync(socket));
             }
         }
 
@@ -68,7 +68,7 @@ namespace Comet.Network.RPC
         /// </summary>
         /// <param name="socket">Accepted client socket</param>
         /// <returns>Returns task details for fault tolerance processing.</returns>
-        private async Task Receiving(Socket socket)
+        private async Task ReceivingAsync(Socket socket)
         {
             using (var stream = new NetworkStream(socket, true))
             {

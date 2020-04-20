@@ -1,6 +1,7 @@
 namespace Comet.Game.Packets
 {
     using System;
+    using System.Threading.Tasks;
     using Comet.Game.Database.Models;
     using Comet.Game.Database.Repositories;
     using Comet.Game.States;
@@ -49,13 +50,13 @@ namespace Comet.Game.Packets
         /// <see cref="PacketProcessor"/>.
         /// </summary>
         /// <param name="client">Client requesting packet processing</param>
-        public override void Process(Client client)
+        public override async Task ProcessAsync(Client client)
         {
             // Validate that the player has access to character creation
             if (client.Creation == null || this.Token != client.Creation.Token || 
                 !Kernel.Registration.Contains(this.Token))
             {
-                client.Send(new MsgTalk(this.Token, TalkChannel.Create, "Access Denied"));
+                await client.SendAsync(new MsgTalk(this.Token, TalkChannel.Create, "Access Denied"));
                 client.Socket.Disconnect(false);
                 return;
             }
@@ -63,7 +64,7 @@ namespace Comet.Game.Packets
             // Check character name availability
             if (CharactersRepository.Exists(this.CharacterName))
             {
-                client.Send(new MsgTalk(
+                await client.SendAsync(new MsgTalk(
                     this.Token, TalkChannel.Create, 
                     "Character name taken."));
                 return;
@@ -73,7 +74,7 @@ namespace Comet.Game.Packets
             if (!Enum.IsDefined(typeof(BodyType), this.Mesh) ||
                 !Enum.IsDefined(typeof(BaseClassType), this.Class))
             {
-                client.Send(new MsgTalk(
+                await client.SendAsync(new MsgTalk(
                     this.Token, TalkChannel.Create, 
                     "Invalid class or body type."));
                 return;
@@ -109,11 +110,11 @@ namespace Comet.Game.Packets
                 // Save the character and continue with login
                 CharactersRepository.Create(character); 
                 Kernel.Registration.Remove(client.Creation.Token);
-                client.Send(new MsgTalk(0, TalkChannel.Create, MsgTalk.ANSWEROK));
+                await client.SendAsync(new MsgTalk(0, TalkChannel.Create, MsgTalk.ANSWEROK));
             }
             catch 
             { 
-                client.Send(new MsgTalk(0, TalkChannel.Create, "Error, please try later")); 
+                await client.SendAsync(new MsgTalk(0, TalkChannel.Create, "Error, please try later")); 
             }
         }
     }

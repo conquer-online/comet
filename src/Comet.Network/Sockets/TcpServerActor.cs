@@ -16,8 +16,9 @@ namespace Comet.Network.Sockets
     {
         // Fields and Properties
         public readonly Memory<byte> Buffer;
-        public readonly Socket Socket;
         public readonly ICipher Cipher;
+        public readonly Socket Socket;
+        public readonly uint Partition;
         private readonly object SendLock;
 
         /// <summary>
@@ -27,32 +28,18 @@ namespace Comet.Network.Sockets
         /// <param name="socket">Accepted client socket</param>
         /// <param name="buffer">Preallocated buffer for socket receive operations</param>
         /// <param name="cipher">Cipher for handling client encipher operations</param>
-        public TcpServerActor(Socket socket, Memory<byte> buffer, ICipher cipher)
+        /// <param name="partition">Packet processing partition, default is disabled</param>
+        public TcpServerActor(
+            Socket socket, 
+            Memory<byte> buffer, 
+            ICipher cipher, 
+            uint partition = 0)
         {
             this.Buffer = buffer;
-            this.Socket = socket;
             this.Cipher = cipher;
+            this.Socket = socket;
+            this.Partition = partition;
             this.SendLock = new object();
-        }
-
-        // <summary>
-        /// Allows the system to process faults from the receive task for a remote client
-        /// connection. Gives the server the ability to perform a graceful shutdown or 
-        /// receive retry, depending on the status of the connection and server.
-        /// </summary>
-        /// <param name="task">The faulted receiving task associated with this client</param>
-        /// <returns>False if the fault cannot be recovered from</returns>
-        public virtual bool ReceiveFault(Task task)
-        {
-            if (task.Exception != null)
-            {
-                Console.WriteLine(
-                    "Receive task faulted, status: {0}, exception: {1}",
-                    task.Status.ToString(),
-                    task.Exception.ToString());
-            }
-
-            return false;
         }
 
         /// <summary>
@@ -62,7 +49,7 @@ namespace Comet.Network.Sockets
         /// and sending data. 
         /// </summary>
         /// <param name="packet">Bytes to be encrypted and sent to the client</param>
-        public virtual void Send(byte[] packet)
+        public virtual Task SendAsync(byte[] packet)
         {
             var encrypted = new byte[packet.Length];
             BitConverter.TryWriteBytes(packet, (ushort)packet.Length);
@@ -71,11 +58,12 @@ namespace Comet.Network.Sockets
                 try 
                 {
                     this.Cipher.Encrypt(packet, encrypted);
-                    this.Socket.Send(encrypted, SocketFlags.None);
+                    return this.Socket.SendAsync(encrypted, SocketFlags.None);
                 }
                 catch (Exception e)
                 {
                     Console.WriteLine(e);
+                    return Task.CompletedTask;
                 }
             }
         }
@@ -87,9 +75,17 @@ namespace Comet.Network.Sockets
         /// and sending data. 
         /// </summary>
         /// <param name="packet">Packet to be encrypted and sent to the client</param>
-        public virtual void Send(IPacket packet)
+        public virtual Task SendAsync(IPacket packet)
         {
-            this.Send(packet.Encode());
+            return this.SendAsync(packet.Encode());
+        }
+
+        /// <summary>
+        /// Force closes the client connection.
+        /// </summary>
+        public virtual void Disconnect()
+        {
+            this.Socket.Disconnect(false);
         }
 
         /// <summary>
