@@ -11,7 +11,7 @@ stages:
   - test
 
 before_script:
-  - apt-get update -q && apt-get install -qqy --no-install-recommends mysql-client
+  - apt-get update && apt-get install -y git curl libmcrypt-dev default-mysql-client
   - mysql --user=root --password="$MYSQL_ROOT_PASSWORD" --host=mysql < sql/comet.account.sql
   - dotnet restore
 
