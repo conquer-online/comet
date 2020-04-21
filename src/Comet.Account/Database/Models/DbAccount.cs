@@ -7,7 +7,7 @@
     /// <summary>
     /// Account information for a registered player. The account server uses this information
     /// to authenticate the player on login, and track permissions and player access to the
-    /// server. Passwords are hashed using a salted SHA-256 for user protection.
+    /// server. Passwords are hashed using a salted SHA-1 for user protection.
     /// </summary>
     [Table("account")]
     public partial class DbAccount

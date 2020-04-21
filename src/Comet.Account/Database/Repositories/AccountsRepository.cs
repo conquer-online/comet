@@ -33,7 +33,7 @@ namespace Comet.Account.Database.Repositories
 
         /// <summary>
         /// Validates the user's inputted password, which has been decrypted from the client
-        /// request decode method, and is ready to be hashed and compared with the SHA-256
+        /// request decode method, and is ready to be hashed and compared with the SHA-1
         /// hash in the database.
         /// </summary>
         /// <param name="input">Inputted password from the client's request</param>
@@ -43,8 +43,8 @@ namespace Comet.Account.Database.Repositories
         public static bool CheckPassword(string input, string hash, string salt)
         {
             byte[] inputHashed;
-            using (var sha256 = SHA256.Create())
-                inputHashed = sha256.ComputeHash(Encoding.ASCII.GetBytes(input + salt));
+            using (var sha1 = SHA1.Create())
+                inputHashed = sha1.ComputeHash(Encoding.ASCII.GetBytes(input + salt));
             var final = Hex.ToHexString(inputHashed);
             return final.Equals(hash);
         }

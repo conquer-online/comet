@@ -51,7 +51,7 @@ CREATE TABLE `account` (
 
 LOCK TABLES `account` WRITE;
 /*!40000 ALTER TABLE `account` DISABLE KEYS */;
-INSERT INTO `account` VALUES (1,'Spirited','6bbb9dc119596a2397ed7b13ff8d47431ff6c8ef1a9d82d05928daecd7f1d5b8','3c1d7ae9a3080cba8dad6b0bf4d50e2f',1,1,NULL,NULL,NULL,'2018-09-26 00:17:40');
+INSERT INTO `account` VALUES (1,'Spirited','9ef5afd9eb73933ffc8ecd558014d94d8fb4b8ae','83d6f3dec10a59b07b16a330c9e5522c',1,1,NULL,NULL,NULL,'2018-09-26 00:17:40');
 /*!40000 ALTER TABLE `account` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!50003 SET @saved_cs_client      = @@character_set_client */ ;
@@ -64,25 +64,25 @@ UNLOCK TABLES;
 /*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
 /*!50003 CREATE*/ /*!50017 DEFINER=`root`@`localhost`*/ /*!50003 TRIGGER `account_passwordhash` BEFORE INSERT ON `account` FOR EACH ROW BEGIN
-    --
-	-- Name:   Password Hash
-	-- Author: Gareth Jensen (Spirited)
-	-- Date:   2018-09-25
-	--
-	-- Description:
-	-- When a plain text password without a hash or salt has been inserted into the database 
-	-- along with a new account, then the plain text password will be hashed and a salt will
-	-- be generated from a random MD5 string. Due to client limitations, passwords cannot be
-    -- longer than 16 characters.
-	-- 
-	IF (NEW.`Salt` IS NULL) THEN
-    
-		IF (LENGTH(NEW.`Password`) > 16) THEN
-			SET NEW.`Password` = NULL;
+  --
+  -- Name:   Password Hash
+  -- Author: Gareth Jensen (Spirited)
+  -- Date:   2018-09-25
+  --
+  -- Description:
+  -- When a plain text password without a hash or salt has been inserted into the database 
+  -- along with a new account, then the plain text password will be SHA1 hashed using a 
+  -- generated salt from a random string. Due to client limitations, passwords cannot be
+  -- longer than 16 characters.
+  -- 
+  IF (NEW.`Salt` IS NULL) THEN
+
+    IF (LENGTH(NEW.`Password`) > 16) THEN
+      SET NEW.`Password` = NULL;
         END IF;
-        
+
         SET NEW.`Salt` = MD5(RAND());
-        SET NEW.`Password` = SHA2(CONCAT(NEW.`Password`, NEW.`Salt`), 256);
+        SET NEW.`Password` = SHA(CONCAT(NEW.`Password`, NEW.`Salt`));
     END IF;
 END */;;
 DELIMITER ;
