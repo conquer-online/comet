@@ -48,12 +48,12 @@
             Console.WriteLine("Launching server listeners...");
             var rpcserver = new RpcServerListener(new Remote());
             rpcserver.StartAsync(config.RpcNetwork.Port, config.RpcNetwork.IPAddress)
-                .ConfigureAwait(true);
+                .ConfigureAwait(false);
 
             // Start the game server listener
             var server = new Server(config);
             server.StartAsync(config.GameNetwork.Port, config.GameNetwork.IPAddress)
-                .ConfigureAwait(true);
+                .ConfigureAwait(false);
 
             // Output all clear and wait for user input
             Console.WriteLine("Listening for new connections");

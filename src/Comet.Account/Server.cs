@@ -29,7 +29,7 @@ namespace Comet.Account
         public Server(ServerConfiguration config) : base(maxConn: config.Network.MaxConn)
         {
             this.Processor = new PacketProcessor<Client>(this.ProcessAsync);
-            this.Processor.StartAsync(CancellationToken.None).ConfigureAwait(true);
+            this.Processor.StartAsync(CancellationToken.None).ConfigureAwait(false);
         }
 
         /// <summary>
