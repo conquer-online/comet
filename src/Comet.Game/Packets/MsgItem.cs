@@ -16,9 +16,9 @@ namespace Comet.Game.Packets
         // Packet Properties
         public uint CharacterID { get; set; }
         public uint Command { get; set; }
-        public uint Action { get; set; }
         public uint Timestamp { get; set; }
         public uint Argument { get; set; }
+        public ItemActionType Action { get; set; }
 
         /// <summary>
         /// Decodes a byte packet into the packet structure defined by this message class. 
@@ -33,7 +33,7 @@ namespace Comet.Game.Packets
             this.Type = (PacketType)reader.ReadUInt16();
             this.CharacterID = reader.ReadUInt32();
             this.Command = reader.ReadUInt32();
-            this.Action = reader.ReadUInt32();
+            this.Action = (ItemActionType)reader.ReadUInt32();
             this.Timestamp = reader.ReadUInt32();
             this.Argument = reader.ReadUInt32();
         }
@@ -67,11 +67,15 @@ namespace Comet.Game.Packets
         {
             switch (this.Action)
             {
+                case ItemActionType.ClientPing:
+                    await client.SendAsync(this);
+                    break;
+
                 default:
                     await client.SendAsync(this);
                     Console.WriteLine(
-                        "Missing packet {0}, Length {1}\n{2}", 
-                        this.Type, this.Length, PacketDump.Hex(this.Encode()));
+                        "Missing packet {0}, action {1}, Length {2}\n{3}", 
+                        this.Type, this.Action, this.Length, PacketDump.Hex(this.Encode()));
                     break;
             }
         }
@@ -82,7 +86,30 @@ namespace Comet.Game.Packets
         /// </summary>
         public enum ItemActionType
         {
-            Ping = 27
+            ShopPurchase = 1,
+            ShopSell,
+            InventoryRemove,
+            InventoryEquip,
+            EquipmentWear,
+            EquipmentRemove,
+            EquipmentSplit,
+            EquipmentCombine,
+            BankQuery,
+            BankDeposit,
+            BankWithdraw,
+            InventoryDropSilver,
+            EquipmentRepair = 14,
+            EquipmentRepairAll,
+            EquipmentImprove = 19,
+            EquipmentLevelUp,
+            BoothQuery,
+            BoothSell,
+            BoothRemove,
+            BoothPurchase,
+            EquipmentAmount,
+            ClientPing = 27,
+            EquipmentEnchant,
+            BoothSellPoints
         }
     }
 }
