@@ -55,8 +55,7 @@ namespace Comet.Game.Packets
             var auth = Kernel.Logins.Get(this.Token.ToString()) as TransferAuthArgs;
             if (auth == null || (StrictAuthentication && auth.IPAddress == client.IPAddress))
             {
-                await client.SendAsync(new MsgTalk(0, TalkChannel.Login, 
-                    "Authentication transfer failed. Please try again."));
+                await client.SendAsync(MsgTalk.LoginInvalid);
                 client.Socket.Disconnect(false);
                 return;
             }
@@ -71,13 +70,13 @@ namespace Comet.Game.Packets
                 client.Creation.AccountID = auth.AccountID;
                 client.Creation.Token = (uint)this.Token;
                 Kernel.Registration.Add(client.Creation.Token);
-                await client.SendAsync(new MsgTalk(0, TalkChannel.Login, MsgTalk.NEWROLE));
+                await client.SendAsync(MsgTalk.LoginNewRole);
             }
             else
             {
                 // Character already exists
                 client.Character = new Character(character);
-                await client.SendAsync(new MsgTalk(0, TalkChannel.Login, MsgTalk.ANSWEROK));
+                await client.SendAsync(MsgTalk.LoginOk);
                 await client.SendAsync(new MsgUserInfo(client.Character));
             }            
         }

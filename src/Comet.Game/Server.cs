@@ -73,26 +73,28 @@ namespace Comet.Game
 
             // Read in TQ's binary header
             var length = BitConverter.ToUInt16(packet, 0);
-            var type = BitConverter.ToUInt16(packet, 2);
-
-            // Switch on the packet type
-            MsgBase<Client> msg = null;
-            switch ((PacketType)type)
-            {
-                case PacketType.MsgRegister: msg = new MsgRegister(); break;
-                case PacketType.MsgItem:     msg = new MsgItem(); break;
-                case PacketType.MsgAction:   msg = new MsgAction(); break;
-                case PacketType.MsgConnect:  msg = new MsgConnect(); break;
-
-                default:
-                    Console.WriteLine(
-                        "Missing packet {0}, Length {1}\n{2}", 
-                        type, length, PacketDump.Hex(packet));
-                    return Task.CompletedTask;
-            }
+            PacketType type = (PacketType)BitConverter.ToUInt16(packet, 2);
 
             try
             {
+                // Switch on the packet type
+                MsgBase<Client> msg = null;
+                switch (type)
+                {
+                    case PacketType.MsgRegister: msg = new MsgRegister(); break;
+                    case PacketType.MsgItem:     msg = new MsgItem(); break;
+                    case PacketType.MsgAction:   msg = new MsgAction(); break;
+                    case PacketType.MsgConnect:  msg = new MsgConnect(); break;
+
+                    default:
+                        Console.WriteLine(
+                            "Missing packet {0}, Length {1}\n{2}", 
+                            type, length, PacketDump.Hex(packet));
+                        return actor.SendAsync(new MsgTalk(actor.ID, MsgTalk.TalkChannel.Service,
+                            String.Format("Missing packet {0}, Length {1}",
+                            type, length)));
+                }
+
                 // Decode packet bytes into the structure and process
                 msg.Decode(packet);
                 return msg.ProcessAsync(actor);

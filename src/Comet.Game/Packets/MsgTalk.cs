@@ -15,12 +15,6 @@ namespace Comet.Game.Packets
     /// </summary>
     public sealed class MsgTalk : MsgBase<Client>
     {
-        // Constants
-        public const string SYSTEM = "SYSTEM";
-        public const string ALLUSERS = "ALLUSERS";
-        public const string ANSWEROK = "ANSWER_OK";
-        public const string NEWROLE = "NEW_ROLE";
-
         // Packet Properties
         public Color Color { get; set; }
         public TalkChannel Channel { get; set; }
@@ -154,6 +148,17 @@ namespace Comet.Game.Packets
             });
             return writer.ToArray();
         }
+
+        // Static messages
+        public const string SYSTEM = "SYSTEM";
+        public const string ALLUSERS = "ALLUSERS";
+        public readonly static MsgTalk LoginOk = new MsgTalk(0, TalkChannel.Login, "ANSWER_OK");
+        public readonly static MsgTalk LoginInvalid = new MsgTalk(0, TalkChannel.Login, "Invalid login");
+        public readonly static MsgTalk LoginNewRole = new MsgTalk(0, TalkChannel.Login, "NEW_ROLE");
+        public readonly static MsgTalk RegisterOk = new MsgTalk(0, TalkChannel.Register, "ANSWER_OK");
+        public readonly static MsgTalk RegisterInvalid = new MsgTalk(0, TalkChannel.Register, "Invalid character");
+        public readonly static MsgTalk RegisterNameTaken = new MsgTalk(0, TalkChannel.Register, "Character name taken");
+        public readonly static MsgTalk RegisterTryAgain = new MsgTalk(0, TalkChannel.Register, "Error, please try later");
         
         /// <summary>
         /// Enumeration for defining the channel text is printed to. Can also print to
@@ -162,37 +167,37 @@ namespace Comet.Game.Packets
         /// </summary>
         public enum TalkChannel : ushort
         {
-            Talk        = 2000,
-            Whisper     = 2001,
-            Action      = 2002,
-            Team        = 2003,
-            Guild       = 2004,
-            Spouse      = 2006,
-            System      = 2007,
-            Yell        = 2008,
-            Friend      = 2009,
-            Center      = 2011,
-            TopLeft     = 2012,
-            Ghost       = 2013,
-            Service     = 2014,
-            Tip         = 2015,
-            World       = 2021,
-            Create      = 2100,
-            Login       = 2101,
-            Shop        = 2102,
-            Vendor      = 2104,
-            Website     = 2105,
-            Right1      = 2108,
-            Right2      = 2109,
-            Offline     = 2110,
-            Announce    = 2111,
-            TradeBoard  = 2201,
-            FriendBoard = 2202,
-            TeamBoard   = 2203,
-            GuildBoard  = 2204,
-            OthersBoard = 2205,
-            Broadcast   = 2500,
-            Monster     = 2600
+            Talk = 2000,
+            Whisper,
+            Action,
+            Team,
+            Guild,
+            Spouse = 2006,
+            System,
+            Yell,
+            Friend,
+            Center = 2011,
+            TopLeft,
+            Ghost,
+            Service,
+            Tip,
+            World = 2021,
+            Register = 2100,
+            Login,
+            Shop,
+            Vendor = 2104,
+            Website,
+            GuildWarRight1 = 2108,
+            GuildWarRight2,
+            Offline,
+            Announce,
+            TradeBoard = 2201,
+            FriendBoard,
+            TeamBoard,
+            GuildBoard,
+            OthersBoard,
+            Broadcast = 2500,
+            Monster = 2600
         }
 
         /// <summary>

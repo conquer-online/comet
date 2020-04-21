@@ -17,6 +17,9 @@ namespace Comet.Game.States
         public Character Character = null;
         public Creation Creation = null;
 
+        // Client unique identifier
+        public uint ID => Character?.CharacterID ?? 0;
+
         /// <summary>
         /// Instantiates a new instance of <see cref="Client"/> using the Accepted event's
         /// resulting socket and preallocated buffer. Initializes all account server

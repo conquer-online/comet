@@ -75,21 +75,21 @@ namespace Comet.Account
             var length = BitConverter.ToUInt16(packet, 0);
             var type = BitConverter.ToUInt16(packet, 2);
 
-            // Switch on the packet type
-            MsgBase<Client> msg = null;
-            switch ((PacketType)type)
-            {
-                case PacketType.MsgAccount: msg = new MsgAccount(); break;
-
-                default:
-                    Console.WriteLine(
-                        "Missing packet {0}, Length {1}\n{2}", 
-                        type, length, PacketDump.Hex(packet));
-                return Task.CompletedTask;
-            }
-
             try
             {
+                // Switch on the packet type
+                MsgBase<Client> msg = null;
+                switch ((PacketType)type)
+                {
+                    case PacketType.MsgAccount: msg = new MsgAccount(); break;
+
+                    default:
+                        Console.WriteLine(
+                            "Missing packet {0}, Length {1}\n{2}", 
+                            type, length, PacketDump.Hex(packet));
+                    return Task.CompletedTask;
+                }
+
                 // Decode packet bytes into the structure and process
                 msg.Decode(packet);
                 return msg.ProcessAsync(actor);

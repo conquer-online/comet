@@ -56,17 +56,15 @@ namespace Comet.Game.Packets
             if (client.Creation == null || this.Token != client.Creation.Token || 
                 !Kernel.Registration.Contains(this.Token))
             {
-                await client.SendAsync(new MsgTalk(this.Token, TalkChannel.Create, "Access Denied"));
-                client.Socket.Disconnect(false);
+                await client.SendAsync(MsgTalk.RegisterInvalid);
+                client.Disconnect();
                 return;
             }
 
             // Check character name availability
             if (CharactersRepository.Exists(this.CharacterName))
             {
-                await client.SendAsync(new MsgTalk(
-                    this.Token, TalkChannel.Create, 
-                    "Character name taken."));
+                await client.SendAsync(MsgTalk.RegisterNameTaken);
                 return;
             }
 
@@ -74,9 +72,7 @@ namespace Comet.Game.Packets
             if (!Enum.IsDefined(typeof(BodyType), this.Mesh) ||
                 !Enum.IsDefined(typeof(BaseClassType), this.Class))
             {
-                await client.SendAsync(new MsgTalk(
-                    this.Token, TalkChannel.Create, 
-                    "Invalid class or body type."));
+                await client.SendAsync(MsgTalk.RegisterInvalid);
                 return;
             }
 
@@ -110,11 +106,11 @@ namespace Comet.Game.Packets
                 // Save the character and continue with login
                 CharactersRepository.Create(character); 
                 Kernel.Registration.Remove(client.Creation.Token);
-                await client.SendAsync(new MsgTalk(0, TalkChannel.Create, MsgTalk.ANSWEROK));
+                await client.SendAsync(MsgTalk.RegisterOk);
             }
             catch 
             { 
-                await client.SendAsync(new MsgTalk(0, TalkChannel.Create, "Error, please try later")); 
+                await client.SendAsync(MsgTalk.RegisterTryAgain); 
             }
         }
     }
