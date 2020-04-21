@@ -15,7 +15,7 @@ namespace Comet.Network.Packets
     /// channel to guarantee client packet processing order.
     /// </summary>
     /// <typeparam name="TClient">Type of client being processed with the packet</typeparam>
-    public class PacketProcessor<TClient> : IHostedService
+    public class PacketProcessor<TClient> : BackgroundService
         where TClient : TcpServerActor
     {
         // Fields and Properties
@@ -47,11 +47,20 @@ namespace Comet.Network.Packets
         }
 
         /// <summary>
-        /// Triggered when the application host is ready to start the background task for
-        /// dequeuing and processing work from the unbounded channel. Work is queued by a
+        /// Instantiates a new instance of <see cref="PacketProcessor"/>. Returns not
+        /// implemented.
+        /// </summary>
+        public PacketProcessor()
+        {
+            throw new NotImplementedException();
+        }
+
+        /// <summary>
+        /// Triggered when the application host is ready to execute background tasks for
+        /// dequeuing and processing work from unbounded channels. Work is queued by a
         /// connected and assigned client.
-        /// </summary> 
-        public Task StartAsync(CancellationToken cancellationToken)
+        /// </summary>
+        protected override Task ExecuteAsync(CancellationToken stoppingToken)
         {
             for (int i = 0; i < this.BackgroundTasks.Length; i++)
             {
@@ -59,6 +68,7 @@ namespace Comet.Network.Packets
                 this.Channels[i] = Channel.CreateUnbounded<Message>();
                 this.BackgroundTasks[i] = DequeueAsync(this.Channels[i]);
             }
+            
             return Task.WhenAll(this.BackgroundTasks);
         }
 
@@ -102,12 +112,13 @@ namespace Comet.Network.Packets
         /// graceful shutdown. Requests that writes into the channel stop, and then reads
         /// from the channel stop. 
         /// </summary>
-        public async Task StopAsync(CancellationToken cancellationToken)
+        public new async Task StopAsync(CancellationToken cancellationToken)
         {
             this.CancelWrites = new CancellationToken(true);
             foreach (var channel in this.Channels)
                 await channel.Reader.Completion;
             this.CancelReads = new CancellationToken(true);
+            await base.StopAsync(cancellationToken);
         }
 
         /// <summary>
