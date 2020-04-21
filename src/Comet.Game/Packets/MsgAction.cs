@@ -73,7 +73,7 @@ namespace Comet.Game.Packets
         {
             switch (this.Action)
             {
-                case ActionType.SetLocation:
+                case ActionType.LoginSpawn:
                     this.CharacterID = client.Character.CharacterID;
                     this.Command = client.Character.MapID;
                     this.Arguments[0] = client.Character.X;
@@ -81,28 +81,67 @@ namespace Comet.Game.Packets
                     await client.SendAsync(this);
                     break;
 
+                case ActionType.LoginComplete:
+                    await client.SendAsync(this);
+                    break;
+
                 default:
                     await client.SendAsync(this);
                     Console.WriteLine(
-                        "Missing packet {0}, Length {1}\n{2}", 
-                        this.Type, this.Length, PacketDump.Hex(this.Encode()));
+                        "Missing packet {0}, Action {1}, Length {2}\n{3}", 
+                        this.Type, this.Action, this.Length, PacketDump.Hex(this.Encode()));
                     break;
             }
         }
 
         /// <summary>
         /// Defines actions that may be requested by the user, or given to by the server.
-        /// Allows for action handling as a packet subtype.
+        /// Allows for action handling as a packet subtype. Enums should be named by the 
+        /// action they provide to a system in the context of the player actor.
         /// </summary>
         public enum ActionType
         {
-            SetLocation = 74,
-            SetInventory = 75,
-            SetAssociates = 76,
-            SetProficiencies = 77,
-            SetMagicSpells = 78,
-            SetDirection = 79,
-            SetAction = 80
+            LoginSpawn = 74,
+            LoginInventory,
+            LoginRelationships,
+            LoginProficiencies,
+            LoginSpells,
+            MapDirection,
+            MapEmote = 81,
+            MapPortal = 85,
+            MapTeleport,
+            CharacterLevelUp = 92,
+            SpellAbortXp,
+            CharacterRevive,
+            CharacterDelete,
+            CharacterPkMode,
+            LoginGuild,
+            MapMine = 99,
+            MapTeamLeaderStar = 101,
+            MapQuery,
+            MapSkyColor = 104,
+            MapTeamMemberStar = 106,
+            MapKickBack = 108,
+            SpellRemove,
+            ProficiencyRemove,
+            BoothSpawn,
+            BoothSuspend,
+            BoothResume,
+            BoothLeave,
+            ClientCommand = 116,
+            CharacterObservation,
+            SpellAbortTransform,
+            SpellAbortFlight = 120,
+            MapGold,
+            RelationshipsEnemy = 123,
+            ClientDialog = 126,
+            LoginComplete = 130,
+            MapEffect,
+            LoginOfflineMessages,
+            MapJump,
+            CharacterDead = 137,
+            RelationshipsFriend = 140,
+            CharacterAvatar = 142
         }
     }
 }
