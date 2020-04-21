@@ -85,7 +85,9 @@ namespace Comet.Game.Packets
 
         /// <summary>
         /// Enumeration type for defining item actions that may be requested by the user, 
-        /// or given to by the server. Allows for action handling as a packet subtype.
+        /// or given to by the server. Allows for action handling as a packet subtype. 
+        /// Enums should be named by the action they provide to a system in the context
+        /// of the player item.
         /// </summary>
         public enum ItemActionType
         {
