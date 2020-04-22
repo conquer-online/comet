@@ -1,7 +1,9 @@
 namespace Comet.Game.Database.Repositories
 {
     using System.Linq;
+    using System.Threading.Tasks;
     using Comet.Game.Database.Models;
+    using Microsoft.EntityFrameworkCore;
 
     /// <summary>
     /// Repository for defining data access layer (DAL) logic for the character table. Allows
@@ -17,12 +19,12 @@ namespace Comet.Game.Database.Repositories
         /// </summary>
         /// <param name="name">Character's name</param>
         /// <returns>Returns character details from the database.</returns>
-        public static DbCharacter Get(string name)
+        public static async Task<DbCharacter> FindAsync(string name)
         {
             using (var db = new ServerDbContext())
-                return db.Characters
+                return await db.Characters
                     .Where(x => x.Name == name)
-                    .SingleOrDefault();
+                    .SingleOrDefaultAsync();
         }
 
         /// <summary>
@@ -31,23 +33,23 @@ namespace Comet.Game.Database.Repositories
         /// </summary>
         /// <param name="accountID">Primary key for fetching character info</param>
         /// <returns>Returns character details from the database.</returns>
-        public static DbCharacter Get(uint accountID)
+        public static async Task<DbCharacter> FindAsync(uint accountID)
         {
             using (var db = new ServerDbContext())
-                return db.Characters
+                return await db.Characters
                     .Where(x => x.AccountID == accountID)
-                    .SingleOrDefault();
+                    .SingleOrDefaultAsync();
         }
 
         /// <summary>Checks if a character exists in the database by name.</summary>
         /// <param name="name">Character's name</param>
         /// <returns>Returns true if the character exists.</returns>
-        public static bool Exists(string name)
+        public static async Task<bool> ExistsAsync(string name)
         {
             using (var db = new ServerDbContext())
-                return db.Characters
+                return await db.Characters
                     .Where(x => x.Name == name)
-                    .Any();
+                    .AnyAsync();
         }
 
         /// <summary>
@@ -55,12 +57,12 @@ namespace Comet.Game.Database.Repositories
         /// already exists, then character creation will fail. 
         /// </summary>
         /// <param name="character">Character model to be inserted to the database</param>
-        public static void Create(DbCharacter character)
+        public static async Task CreateAsync(DbCharacter character)
         {
             using (var db = new ServerDbContext())
             {
                 db.Characters.Add(character);
-                db.SaveChanges();
+                await db.SaveChangesAsync();
             }
         }
     } 

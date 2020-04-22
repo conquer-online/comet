@@ -33,7 +33,7 @@ namespace Comet.Account.Packets
         public override async Task ProcessAsync(Client client)
         {
             // Fetch account info from the database
-            client.Account = AccountsRepository.Get(this.Username);
+            client.Account = await AccountsRepository.FindAsync(this.Username).ConfigureAwait(false);
             if (client.Account == null || !AccountsRepository.CheckPassword(
                 this.Password, client.Account.Password, client.Account.Salt))
             {

@@ -51,5 +51,18 @@ namespace Comet.Account.Database
             builder.Entity<DbLogin>(e => e.HasKey(x => new { x.AccountID, x.Timestamp }));
             builder.Entity<DbRealm>(e => e.HasKey(x => x.RealmID));
         }
+
+        /// <summary>
+        /// Tests that the database connection is alive and configured.
+        /// </summary>
+        public static bool Ping()
+        {
+            try 
+            {
+                using (ServerDbContext ctx = new ServerDbContext())
+                    return ctx.Database.CanConnect();
+            }
+            catch { return false; }
+        }
     }
 }

@@ -65,11 +65,11 @@ namespace Comet.Account
         /// </summary>
         /// <param name="actor">Actor requesting packet processing</param>
         /// <param name="packet">An individual data packet to be processed</param>
-        private Task ProcessAsync(Client actor, byte[] packet) 
+        private async Task ProcessAsync(Client actor, byte[] packet) 
         {
             // Validate connection
             if (!actor.Socket.Connected)
-                return Task.CompletedTask;
+                return;
 
             // Read in TQ's binary header
             var length = BitConverter.ToUInt16(packet, 0);
@@ -87,17 +87,16 @@ namespace Comet.Account
                         Console.WriteLine(
                             "Missing packet {0}, Length {1}\n{2}", 
                             type, length, PacketDump.Hex(packet));
-                    return Task.CompletedTask;
+                    return;
                 }
 
                 // Decode packet bytes into the structure and process
                 msg.Decode(packet);
-                return msg.ProcessAsync(actor);
+                await msg.ProcessAsync(actor);
             }
             catch (Exception e)
             {
                 Console.WriteLine(e);
-                return Task.CompletedTask;
             }
         }
     }

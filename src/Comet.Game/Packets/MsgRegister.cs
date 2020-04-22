@@ -62,7 +62,7 @@ namespace Comet.Game.Packets
             }
 
             // Check character name availability
-            if (CharactersRepository.Exists(this.CharacterName))
+            if (await CharactersRepository.ExistsAsync(this.CharacterName))
             {
                 await client.SendAsync(MsgTalk.RegisterNameTaken);
                 return;
@@ -104,7 +104,7 @@ namespace Comet.Game.Packets
             try 
             { 
                 // Save the character and continue with login
-                CharactersRepository.Create(character); 
+                await CharactersRepository.CreateAsync(character); 
                 Kernel.Registration.Remove(client.Creation.Token);
                 await client.SendAsync(MsgTalk.RegisterOk);
             }

@@ -24,9 +24,9 @@
             // project name and version may be removed or changed.
             Console.Title = "Comet, Game Server";
             Console.WriteLine();
-            Console.WriteLine("    Comet: Game Server");
-            Console.WriteLine("    Copyright 2018 Gareth Jensen \"Spirited\"");
-            Console.WriteLine("    All Rights Reserved");
+            Console.WriteLine("  Comet: Game Server");
+            Console.WriteLine("  Copyright 2018 Gareth Jensen \"Spirited\"");
+            Console.WriteLine("  All Rights Reserved");
             Console.WriteLine();
 
             // Read configuration file and command-line arguments
@@ -39,9 +39,16 @@
 
             // Initialize the database
             Console.WriteLine("Initializing server...");
-            var tasks = new List<Task>();
-            ServerDbContext.Configuration = config.Database;
             MsgConnect.StrictAuthentication = config.Authentication.StrictAuthPass;
+            ServerDbContext.Configuration = config.Database;
+            if (!ServerDbContext.Ping())
+            {
+                Console.WriteLine("Invalid database configuration");
+                return;
+            }
+
+            // Recover caches from the database
+            var tasks = new List<Task>();
             Task.WaitAll(tasks.ToArray());
             
             // Start the RPC server listener

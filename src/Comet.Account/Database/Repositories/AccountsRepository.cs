@@ -1,12 +1,12 @@
 namespace Comet.Account.Database.Repositories
 {
-    using System;
     using System.Linq;
     using Microsoft.EntityFrameworkCore;
     using Comet.Account.Database.Models;
     using System.Security.Cryptography;
     using System.Text;
     using Org.BouncyCastle.Utilities.Encoders;
+    using System.Threading.Tasks;
 
     /// <summary>
     /// Repository for defining data access layer (DAL) logic for the account table. Allows
@@ -21,14 +21,13 @@ namespace Comet.Account.Database.Repositories
         /// </summary>
         /// <param name="username">Username to pull account info for</param>
         /// <returns>Returns account details from the database.</returns>
-        public static DbAccount Get(string username)
+        public static async Task<DbAccount> FindAsync(string username)
         {
             using (var db = new ServerDbContext())
-                return db.Accounts
-                    .Include(x => x.Authority)
+                return await db.Accounts.Include(x => x.Authority)
                     .Include(x => x.Status)
                     .Where(x => x.Username == username)
-                    .SingleOrDefault();
+                    .SingleOrDefaultAsync();
         }
 
         /// <summary>

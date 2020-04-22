@@ -62,7 +62,7 @@ namespace Comet.Game.Packets
 
             // Generate new keys and check for an existing character
             client.Cipher.GenerateKeys(new object[] { this.Token });
-            var character = CharactersRepository.Get(auth.AccountID);
+            var character = await CharactersRepository.FindAsync(auth.AccountID);
             if (character == null)
             {
                 // Create a new character
