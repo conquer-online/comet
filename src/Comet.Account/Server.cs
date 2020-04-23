@@ -73,13 +73,13 @@ namespace Comet.Account
 
             // Read in TQ's binary header
             var length = BitConverter.ToUInt16(packet, 0);
-            var type = BitConverter.ToUInt16(packet, 2);
+            var type = (PacketType)BitConverter.ToUInt16(packet, 2);
 
             try
             {
                 // Switch on the packet type
                 MsgBase<Client> msg = null;
-                switch ((PacketType)type)
+                switch (type)
                 {
                     case PacketType.MsgAccount: msg = new MsgAccount(); break;
 
