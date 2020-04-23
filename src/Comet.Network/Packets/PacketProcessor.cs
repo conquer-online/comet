@@ -47,15 +47,6 @@ namespace Comet.Network.Packets
         }
 
         /// <summary>
-        /// Instantiates a new instance of <see cref="PacketProcessor"/>. Returns not
-        /// implemented.
-        /// </summary>
-        public PacketProcessor()
-        {
-            throw new NotImplementedException();
-        }
-
-        /// <summary>
         /// Triggered when the application host is ready to execute background tasks for
         /// dequeuing and processing work from unbounded channels. Work is queued by a
         /// connected and assigned client.

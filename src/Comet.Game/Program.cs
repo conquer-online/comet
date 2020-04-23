@@ -50,6 +50,11 @@
             // Recover caches from the database
             var tasks = new List<Task>();
             Task.WaitAll(tasks.ToArray());
+
+            // Start background services
+            tasks = new List<Task>();
+            tasks.Add(Kernel.Services.Randomness.StartAsync(CancellationToken.None));
+            Task.WaitAll(tasks.ToArray());
             
             // Start the RPC server listener
             Console.WriteLine("Launching server listeners...");

@@ -24,6 +24,11 @@ namespace Comet.Game.Packets
         public ushort Class { get; set; }
         public uint Token { get; set; }
 
+        // Registration constants
+        private static readonly byte[] Hairstyles = new byte[] {
+            10, 11, 13, 14, 15, 24, 30, 35, 37, 38, 39, 40, 43, 50, 72, 74
+        };
+
         /// <summary>
         /// Decodes a byte packet into the packet structure defined by this message class. 
         /// Should be invoked to structure data from the client for processing. Decoding
@@ -82,13 +87,11 @@ namespace Comet.Game.Packets
             character.Name = this.CharacterName;
             character.CurrentClass = (byte)this.Class;
             character.Mesh = this.Mesh;
-            character.Avatar = 1;
-            character.Hairstyle = 535;
             character.Silver = 1000;
             character.Level = 1;
-            character.MapID = 1002;
-            character.X = 430;
-            character.Y = 380;
+            character.MapID = 1010;
+            character.X = 61;
+            character.Y = 109;
             character.Strength = 4;
             character.Agility = 6;
             character.Vitality = 12;
@@ -100,6 +103,14 @@ namespace Comet.Game.Packets
                 + (character.Vitality * 24));
             character.ManaPoints = (ushort)(character.Spirit * 5);
             character.Registered = DateTime.Now;
+
+            // Generate a random look for the character
+            character.Avatar = (ushort)(character.Mesh < 1005 
+                ? await Kernel.NextAsync(1, 49) 
+                : await Kernel.NextAsync(201, 249));
+            character.Hairstyle = (ushort)(
+                (await Kernel.NextAsync(3, 9) * 100) + MsgRegister.Hairstyles[
+                 await Kernel.NextAsync(0, MsgRegister.Hairstyles.Length)]);
 
             try 
             { 
