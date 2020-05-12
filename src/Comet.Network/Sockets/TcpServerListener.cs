@@ -106,24 +106,25 @@ namespace Comet.Network.Sockets
         {
             // Initialize multiple receive variables
             var actor = state as TActor;
-            int consumed = 0, examined = 0;
+            int consumed = 0, examined = 0, remaining = 0;
             while (actor.Socket.Connected && !this.ShutdownToken.IsCancellationRequested)
             {
                 // Receive data from the client socket
                 examined = await actor.Socket.ReceiveAsync(
-                    actor.Buffer.Slice(examined - consumed), 
+                    actor.Buffer.Slice(remaining), 
                     SocketFlags.None, 
                     this.ShutdownToken.Token);
                 if (examined == 0) break;
 
                 // Decrypt traffic
                 actor.Cipher.Decrypt(
-                    actor.Buffer.Slice(0, examined).Span, 
-                    actor.Buffer.Slice(0, examined).Span);
+                    actor.Buffer.Slice(remaining, examined).Span, 
+                    actor.Buffer.Slice(remaining, examined).Span);
 
                 // Handle splitting and processing of data
                 this.Splitting(actor, examined, ref consumed);
-                actor.Buffer.Slice(consumed, examined).CopyTo(actor.Buffer);
+                remaining = examined - consumed;
+                actor.Buffer.Slice(consumed, remaining).CopyTo(actor.Buffer);
             }
 
             // Disconnect the client
