@@ -5,7 +5,7 @@
    "version": "0.2.0",
    "configurations": [
         {
-            "name": "Account Server",
+            "name": "Launch Account",
             "type": "coreclr",
             "request": "launch",
             "preLaunchTask": "build",
@@ -16,7 +16,7 @@
             "stopAtEntry": false,
         },
         {
-            "name": "Game Server",
+            "name": "Launch Game",
             "type": "coreclr",
             "request": "launch",
             "preLaunchTask": "build",
@@ -31,6 +31,12 @@
             "type": "coreclr",
             "request": "attach",
             "processId": "${command:pickProcess}"
+        },
+    ],
+    "compounds": [
+        {
+            "name": "Launch Comet",
+            "configurations": ["Launch Account", "Launch Game"],
         }
-    ,]
+    ]
 }
