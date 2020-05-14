@@ -1,6 +1,8 @@
 # Comet
 Comet is a Conquer Online server project containing an account server and game server. The account server authenticates players, while the game server services players in the game world. This simple two-server architecture acts as a good introduction into server programming and networking. The server is interoperable with the Conquer Online game client, patch 5017 (not provided by this project). 
 
+You can ask questions and provide feedback on [Cooldown](https://cooldown.io/topic/32-comet-open-source-conquer-online-server/) (a game programming forum).
+
 ![Example Picture](/img/example.jpg)
 
 ### Getting Started
