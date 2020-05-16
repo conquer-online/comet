@@ -108,7 +108,7 @@ namespace Comet.Network.Security
             // Pad the buffer
             var length = src.Length / 8;
             if (src.Length % 8 > 0) length = length + 1;
-            dst = new byte[length];
+            dst = new byte[length * 8];
             src.CopyTo(dst.Slice(0, src.Length));
 
             // Decrypt the buffer
