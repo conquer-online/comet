@@ -14,7 +14,7 @@ namespace Comet.Network.Sockets
     /// event handling to the non-abstract derived class of TcpServerListener.
     /// </summary>
     /// <typeparam name="TActor">Type of actor passed by the parent project</typeparam>
-    public abstract class TcpServerListener<TActor> : TcpServerEvents<TActor>  
+    public abstract class TcpServerListener<TActor> : TcpServerEvents<TActor>
         where TActor : TcpServerActor
     {
         // Fields and properties
@@ -111,19 +111,19 @@ namespace Comet.Network.Sockets
             {
                 // Receive data from the client socket
                 examined = await actor.Socket.ReceiveAsync(
-                    actor.Buffer.Slice(remaining), 
-                    SocketFlags.None, 
+                    actor.Buffer.Slice(remaining),
+                    SocketFlags.None,
                     this.ShutdownToken.Token);
                 if (examined == 0) break;
 
                 // Decrypt traffic
                 actor.Cipher.Decrypt(
-                    actor.Buffer.Slice(remaining, examined).Span, 
+                    actor.Buffer.Slice(remaining, examined).Span,
                     actor.Buffer.Slice(remaining, examined).Span);
 
                 // Handle splitting and processing of data
-                this.Splitting(actor, examined, ref consumed);
-                remaining = examined - consumed;
+                this.Splitting(actor, examined + remaining, ref consumed);
+                remaining = examined + remaining - consumed;
                 actor.Buffer.Slice(consumed, remaining).CopyTo(actor.Buffer);
             }
 
@@ -166,7 +166,7 @@ namespace Comet.Network.Sockets
             actor.Buffer.Span.Clear();
             this.BufferPool.Push(actor.Buffer);
             this.AcceptanceSemaphore.Release();
-            
+
             // Complete processing for disconnect
             this.Disconnected(actor);
         }
