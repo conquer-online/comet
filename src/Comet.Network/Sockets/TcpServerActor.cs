@@ -60,10 +60,12 @@ namespace Comet.Network.Sockets
                     this.Cipher.Encrypt(packet, encrypted);
                     return this.Socket?.SendAsync(encrypted, SocketFlags.None) ?? Task.CompletedTask;
                 }
-                catch (Exception e)
+                catch (SocketException e)
                 {
-                    Console.WriteLine(e);
-                    return Task.CompletedTask;
+                    if (e.SocketErrorCode < SocketError.ConnectionAborted ||
+                        e.SocketErrorCode > SocketError.Shutdown)
+                        Console.WriteLine(e);
+                    return Task.FromException(e);
                 }
             }
         }
