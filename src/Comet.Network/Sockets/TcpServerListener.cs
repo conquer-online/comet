@@ -109,12 +109,22 @@ namespace Comet.Network.Sockets
             int consumed = 0, examined = 0, remaining = 0;
             while (actor.Socket.Connected && !this.ShutdownToken.IsCancellationRequested)
             {
-                // Receive data from the client socket
-                examined = await actor.Socket.ReceiveAsync(
-                    actor.Buffer.Slice(remaining),
-                    SocketFlags.None,
-                    this.ShutdownToken.Token);
-                if (examined == 0) break;
+                try
+                {
+                    // Receive data from the client socket
+                    examined = await actor.Socket.ReceiveAsync(
+                        actor.Buffer.Slice(remaining),
+                        SocketFlags.None,
+                        this.ShutdownToken.Token);
+                    if (examined == 0) break;
+                }
+                catch (SocketException e)
+                {
+                    if (e.SocketErrorCode < SocketError.ConnectionAborted ||
+                        e.SocketErrorCode > SocketError.Shutdown)
+                        Console.WriteLine(e);
+                    break;
+                }
 
                 // Decrypt traffic
                 actor.Cipher.Decrypt(
