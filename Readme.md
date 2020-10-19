@@ -8,6 +8,8 @@ The project is split between two servers: an account server and game server. The
 
 ## Getting Started
 
+Get started by cloning the repository. Select a branch based on the patch you wish to target.
+
 Before setting up the project, download and install the following:
 
 * [.NET Core 3.1 or higher](https://dotnet.microsoft.com/download) - Primary language compiler
