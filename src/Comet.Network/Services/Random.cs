@@ -1,4 +1,4 @@
-namespace Comet.Game.Routines
+namespace Comet.Network.Services
 {
     using System;
     using System.Threading;
