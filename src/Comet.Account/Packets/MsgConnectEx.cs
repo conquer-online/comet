@@ -67,6 +67,7 @@ namespace Comet.Account.Packets
                 writer.Write(this.Port);
                 writer.Write((ushort)0);
             }
+            
             return writer.ToArray();
         }
 

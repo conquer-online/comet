@@ -1,7 +1,6 @@
 namespace Comet.Network.Security
 {
     using System;
-    using System.Threading;
 
     /// <summary>
     /// TQ Digital Entertainment's in-house asymmetric counter-based XOR-cipher. Counters 
