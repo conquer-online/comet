@@ -37,6 +37,29 @@ namespace Comet.Network.Security
         }
 
         /// <summary>
+        /// Initializes static variables for <see cref="RC5"/> to be interoperable with
+        /// the Conquer Online game client. In later versions of the client, a random
+        /// buffer is used to seed the cipher. This random buffer is sent to the client
+        /// to establish a shared initial key.
+        /// </summary>
+        /// <param name="seed">The initial random seed used for generating keys</param>
+        public RC5(uint seed)
+        {
+            this.Key = new uint[RC5.KeySize];
+            this.Sub = new uint[RC5.SubSize];
+
+            byte[] seeds = new byte[RC5.WordSize];
+            for (int i = 0; i < RC5.WordSize; i++)
+            {
+                seed *= 0x343fd;
+                seed += 0x269ec3;
+                seeds[i] = (byte)((seed >> RC5.WordSize) & 0x7fff);
+            }
+
+            this.GenerateKeys(new object[] { seeds });
+        }
+
+        /// <summary>
         /// Generates keys and the subkey words for RC5 using a shared seed, whether
         /// that seed is shared statically or shared using a method of transport. Though
         /// only one seed is expected to generate keys, multiple may be used. Seed must be

@@ -15,6 +15,7 @@ namespace Comet.Account.States
     {
         // Fields and Properties
         public DbAccount Account;
+        public uint Seed;
 
         /// <summary>
         /// Instantiates a new instance of <see cref="Client"/> using the Accepted event's

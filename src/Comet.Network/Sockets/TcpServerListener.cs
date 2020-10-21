@@ -85,7 +85,7 @@ namespace Comet.Network.Sockets
                     // Pop a preallocated buffer and accept a client
                     this.BufferPool.TryPop(out var buffer);
                     var socket = await this.Socket.AcceptAsync();
-                    var actor = this.Accepted(socket, buffer);
+                    var actor = await this.AcceptedAsync(socket, buffer);
 
                     // Start receiving data from the client connection
                     var task = this.ReceiveTasks

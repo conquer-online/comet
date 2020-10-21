@@ -50,6 +50,11 @@
             tasks.Add(RealmsRepository.LoadAsync());
             Task.WaitAll(tasks.ToArray());
             
+            // Start background services
+            tasks = new List<Task>();
+            tasks.Add(Kernel.Services.Randomness.StartAsync(CancellationToken.None));
+            Task.WaitAll(tasks.ToArray());
+            
             // Start the server listener
             Console.WriteLine("Launching server listener...");
             var server = new Server(config);

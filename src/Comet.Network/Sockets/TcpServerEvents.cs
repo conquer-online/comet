@@ -2,6 +2,7 @@ namespace Comet.Network.Sockets
 {
     using System;
     using System.Net.Sockets;
+    using System.Threading.Tasks;
     using Comet.Network.Packets;
 
     /// <summary>
@@ -22,7 +23,7 @@ namespace Comet.Network.Sockets
         /// <param name="socket">Accepted client socket from the server socket</param>
         /// <param name="buffer">Preallocated buffer from the server listener</param>
         /// <returns>A new instance of a TActor around the client socket</returns>
-        protected abstract TActor Accepted(Socket socket, Memory<byte> buffer);
+        protected abstract Task<TActor> AcceptedAsync(Socket socket, Memory<byte> buffer);
 
         /// <summary>
         /// Invoked by the server listener's Receiving method to process a completed packet

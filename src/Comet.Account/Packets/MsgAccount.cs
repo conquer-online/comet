@@ -1,5 +1,6 @@
 namespace Comet.Account.Packets
 {
+    using System.IO;
     using System.Text;
     using System.Threading.Tasks;
     using Comet.Account.Database.Repositories;
@@ -9,7 +10,7 @@ namespace Comet.Account.Packets
     using Comet.Shared.Models;
     using static Comet.Account.Packets.MsgConnectEx;
 
-    /// <remarks>Packet Type 1051</remarks>
+    /// <remarks>Packet Type 1086</remarks>
     /// <summary>
     /// Message containing login credentials from the login screen. This is the first
     /// packet sent to the account server from the client on login. The server checks the
@@ -20,7 +21,7 @@ namespace Comet.Account.Packets
     {
         // Packet Properties
         public string Username { get; private set; }
-        public string Password { get; private set; }
+        public byte[] Password { get; private set; }
         public string Realm { get; private set; }
 
         /// <summary>
@@ -35,7 +36,7 @@ namespace Comet.Account.Packets
             // Fetch account info from the database
             client.Account = await AccountsRepository.FindAsync(this.Username).ConfigureAwait(false);
             if (client.Account == null || !AccountsRepository.CheckPassword(
-                this.Password, client.Account.Password, client.Account.Salt))
+                this.DecryptPassword(this.Password, client.Seed), client.Account.Password, client.Account.Salt))
             {
                 await client.SendAsync(new MsgConnectEx(RejectionCode.InvalidPassword));
                 client.Socket.Disconnect(false);
@@ -74,7 +75,9 @@ namespace Comet.Account.Packets
             this.Length = reader.ReadUInt16();
             this.Type = (PacketType)reader.ReadUInt16();
             this.Username = reader.ReadString(16);
-            this.Password = this.DecryptPassword(reader.ReadBytes(16));
+            reader.BaseStream.Seek(132, SeekOrigin.Begin);
+            this.Password = reader.ReadBytes(16);
+            reader.BaseStream.Seek(260, SeekOrigin.Begin);
             this.Realm = reader.ReadString(16);
         }
 
@@ -83,12 +86,15 @@ namespace Comet.Account.Packets
         /// method. Trims the end of the password string of null terminators.
         /// </summary>
         /// <param name="buffer">Bytes from the packet buffer</param>
+        /// <param name="seed">Seed for generating RC5 keys</param>
         /// <returns>Returns the decrypted password string.</returns>
-        private string DecryptPassword(byte[] buffer)
+        private string DecryptPassword(byte[] buffer, uint seed)
         {
-            var rc5 = new RC5();
+            var rc5 = new RC5(seed);
+            var scanCodes = new ScanCodeCipher(this.Username);
             var password = new byte[16];
             rc5.Decrypt(buffer, password);
+            scanCodes.Decrypt(password, password);
             return Encoding.ASCII.GetString(password).Trim('\0');
         }
     }
