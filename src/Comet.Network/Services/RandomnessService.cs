@@ -12,21 +12,21 @@ namespace Comet.Network.Services
     /// multiple threads without generating the same number or returning zero. This service
     /// in particular buffers random numbers to a channel to avoid locking.
     /// </summary>
-    public sealed class RandomnessService : BackgroundService
+    public class RandomnessService : BackgroundService
     {
         // Fields and Properties
-        private static Channel<Double> BufferChannel;
-        private static Random Generator;
+        private Channel<Double> BufferChannel;
+        protected Random Generator;
 
         /// <summary>
         /// Instantiates a new instance of <see cref="RandomnessService"/> using a default
         /// capacity to buffer random numbers.
         /// </summary>
         /// <param name="capacity">Capacity of the bounded channel.</param>
-        public RandomnessService(int capacity = 100)
+        public RandomnessService(int capacity = 10000)
         {
-            BufferChannel = Channel.CreateBounded<Double>(capacity);
-            Generator = new Random();
+            this.BufferChannel = Channel.CreateBounded<Double>(capacity);
+            this.Generator = new Random();
         }
 
         /// <summary>
@@ -38,13 +38,13 @@ namespace Comet.Network.Services
         {
             while (!stoppingToken.IsCancellationRequested)
             {
-                await BufferChannel.Writer.WriteAsync(Generator.NextDouble(), stoppingToken);
+                await this.BufferChannel.Writer.WriteAsync(
+                    this.Generator.NextDouble(), 
+                    stoppingToken);
             }
         }
 
-        /// <summary>
-        /// Returns the next random number from the generator.
-        /// </summary>
+        /// <summary>Returns the next random number from the generator.</summary>
         /// <param name="minValue">The least legal value for the Random number.</param>
         /// <param name="maxValue">One greater than the greatest legal return value.</param>
         public async Task<int> NextAsync(int minValue, int maxValue) 
@@ -56,9 +56,17 @@ namespace Comet.Network.Services
             if (range > (long)Int32.MaxValue)
                 throw new ArgumentOutOfRangeException();
 
-            var value = await BufferChannel.Reader.ReadAsync();
+            var value = await this.BufferChannel.Reader.ReadAsync();
             var result = ((int)(value * range) + minValue);
             return result;
+        }
+
+        /// <summary>Writes random numbers from the generator to a buffer.</summary>
+        /// <param name="buffer">Buffer to write bytes to.</param>
+        public async Task NextBytesAsync(byte[] buffer)
+        {
+            for (int i = 0; i < buffer.Length; i++)
+                buffer[i] = (byte)(await this.NextAsync(0, 255));
         }
     }
 }
