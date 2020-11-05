@@ -12,10 +12,10 @@ namespace Comet.Network.Security
     {
         // Constants and static properties
         private const int SeedSize = 16;
+        private static readonly byte[] Key;
 
         // Local fields and properties
-        private static readonly byte[] Key;
-        private readonly byte[] Sub;
+        private byte[] Sub;
 
         /// <summary>
         /// Initializes static variables for <see cref="ScanCodeCipher"/>.
