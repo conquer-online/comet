@@ -52,7 +52,7 @@ namespace Comet.Network.RPC
                 catch (IOException) { }
                 catch (SocketException) { }
                 catch (Exception e) { Console.WriteLine(e); }
-                Thread.Sleep(5000);
+                Thread.Sleep(1000);
             }
         }
 
