@@ -23,6 +23,7 @@ namespace Comet.Game.Database.Models
         public virtual uint Jewels { get; set; }
         public virtual byte CurrentClass { get; set; }
         public virtual byte PreviousClass { get; set; }
+        public virtual byte AncestorClass { get; set; }
         public virtual byte Rebirths { get; set; }
         public virtual byte Level { get; set; }
         public virtual ulong Experience { get; set; }
@@ -38,6 +39,9 @@ namespace Comet.Game.Database.Models
         public virtual ushort HealthPoints { get; set; }
         public virtual ushort ManaPoints { get; set; }
         public virtual ushort KillPoints { get; set; }
+        public virtual ushort EnlightenPoints { get; set; }
+        public virtual uint QuizPoints { get; set; }
+        public virtual uint VIPLevel { get; set; }
         public virtual DateTime Registered { get; set; }
     }
 }

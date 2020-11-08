@@ -9,16 +9,12 @@ namespace Comet.Network.Packets
     {
         MsgRegister = 1001,
         MsgTalk = 1004,
-        MsgWalk,
-        MsgUserInfo,
+        MsgUserInfo = 1006,
         MsgItemInfo = 1008,
         MsgItem,
-        MsgAction,
         MsgTick = 1012,
-        MsgPlayer = 1014,
-        MsgName,
+        MsgName = 1015,
         MsgWeather,
-        MsgUserAttrib,
         MsgFriend = 1019,
         MsgInteract = 1022,
         MsgTeam,
@@ -53,6 +49,10 @@ namespace Comet.Network.Packets
         MsgNpcInfo = 2030,
         MsgNpc,
         MsgTaskDialog,
-        MsgDataArray = 2036
+        MsgDataArray = 2036,
+        MsgWalk = 10005,
+        MsgAction = 10010,
+        MsgPlayer = 10014,
+        MsgUserAttrib = 10017
     }
 }
