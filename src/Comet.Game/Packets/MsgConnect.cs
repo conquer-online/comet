@@ -6,6 +6,7 @@ namespace Comet.Game.Packets
     using Comet.Game.States;
     using Comet.Network.Packets;
     using Comet.Shared.Models;
+    using Org.BouncyCastle.Utilities.Encoders;
     using static Comet.Game.Packets.MsgTalk;
 
     /// <remarks>Packet Type 1052</remarks>
@@ -23,6 +24,7 @@ namespace Comet.Game.Packets
         public ulong Token { get; set; }
         public ushort Patch { get; set; }
         public string Language { get; set; }
+        public string MacAddress { get; set; }
         public int Version { get; set; }
 
         /// <summary>
@@ -38,7 +40,8 @@ namespace Comet.Game.Packets
             this.Type = (PacketType)reader.ReadUInt16();
             this.Token = reader.ReadUInt64();
             this.Patch = reader.ReadUInt16();
-            this.Language = reader.ReadString(10);
+            this.Language = reader.ReadString(2);
+            this.MacAddress = Hex.ToHexString(reader.ReadBytes(8));
             this.Version = Convert.ToInt32(reader.ReadInt32().ToString(), 2);
         }
 
@@ -61,7 +64,6 @@ namespace Comet.Game.Packets
             }
 
             // Generate new keys and check for an existing character
-            client.Cipher.GenerateKeys(new object[] { this.Token });
             var character = await CharactersRepository.FindAsync(auth.AccountID);
             if (character == null)
             {

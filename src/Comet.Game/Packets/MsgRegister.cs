@@ -1,6 +1,7 @@
 namespace Comet.Game.Packets
 {
     using System;
+    using System.IO;
     using System.Threading.Tasks;
     using Comet.Game.Database.Models;
     using Comet.Game.Database.Repositories;
@@ -19,7 +20,6 @@ namespace Comet.Game.Packets
         // Packet Properties
         public string Username { get; set; }
         public string CharacterName { get; set; }
-        public string MaskedPassword { get; set; }
         public ushort Mesh { get; set; }
         public ushort Class { get; set; }
         public uint Token { get; set; }
@@ -42,7 +42,7 @@ namespace Comet.Game.Packets
             this.Type = (PacketType)reader.ReadUInt16();
             this.Username = reader.ReadString(16);
             this.CharacterName = reader.ReadString(16);
-            this.MaskedPassword = reader.ReadString(16);
+            reader.BaseStream.Seek(16, SeekOrigin.Current);
             this.Mesh = reader.ReadUInt16();
             this.Class = reader.ReadUInt16();
             this.Token = reader.ReadUInt32();

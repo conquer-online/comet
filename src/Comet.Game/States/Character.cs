@@ -61,6 +61,7 @@ namespace Comet.Game.States
         Trojan = 10,
         Warrior = 20,
         Archer = 40,
+        Ninja = 50,
         Taoist = 100
     }
 }
