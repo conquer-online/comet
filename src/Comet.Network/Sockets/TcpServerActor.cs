@@ -3,6 +3,7 @@ namespace Comet.Network.Sockets
     using System;
     using System.Net;
     using System.Net.Sockets;
+    using System.Text;
     using System.Threading.Tasks;
     using Comet.Network.Packets;
     using Comet.Network.Security;
@@ -18,6 +19,7 @@ namespace Comet.Network.Sockets
         public readonly Memory<byte> Buffer;
         public readonly ICipher Cipher;
         public readonly Socket Socket;
+        public readonly byte[] PacketFooter;
         public readonly uint Partition;
         private readonly object SendLock;
 
@@ -29,15 +31,18 @@ namespace Comet.Network.Sockets
         /// <param name="buffer">Preallocated buffer for socket receive operations</param>
         /// <param name="cipher">Cipher for handling client encipher operations</param>
         /// <param name="partition">Packet processing partition, default is disabled</param>
+        /// <param name="packetFooter">Length of the packet footer</param>
         public TcpServerActor(
             Socket socket, 
             Memory<byte> buffer, 
             ICipher cipher, 
-            uint partition = 0)
+            uint partition = 0,
+            string packetFooter = "")
         {
             this.Buffer = buffer;
             this.Cipher = cipher;
             this.Socket = socket;
+            this.PacketFooter = Encoding.ASCII.GetBytes(packetFooter);
             this.Partition = partition;
             this.SendLock = new object();
         }
@@ -51,13 +56,17 @@ namespace Comet.Network.Sockets
         /// <param name="packet">Bytes to be encrypted and sent to the client</param>
         public virtual Task SendAsync(byte[] packet)
         {
-            var encrypted = new byte[packet.Length];
-            BitConverter.TryWriteBytes(packet, (ushort)packet.Length);
+            var encrypted = new byte[packet.Length + this.PacketFooter.Length];
+            packet.CopyTo(encrypted, 0);
+
+            BitConverter.TryWriteBytes(encrypted, (ushort)packet.Length);
+            Array.Copy(this.PacketFooter, 0, encrypted, packet.Length, this.PacketFooter.Length);
+
             lock (SendLock)
             {
                 try 
                 {
-                    this.Cipher.Encrypt(packet, encrypted);
+                    this.Cipher.Encrypt(encrypted, encrypted);
                     return this.Socket?.SendAsync(encrypted, SocketFlags.None) ?? Task.CompletedTask;
                 }
                 catch (SocketException e)

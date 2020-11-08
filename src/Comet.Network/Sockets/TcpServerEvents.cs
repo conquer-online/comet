@@ -26,6 +26,18 @@ namespace Comet.Network.Sockets
         protected abstract Task<TActor> AcceptedAsync(Socket socket, Memory<byte> buffer);
 
         /// <summary>
+        /// Invoked by the server listener's Exchanging method to process the client 
+        /// response from the Diffie-Hellman Key Exchange. At this point, the raw buffer 
+        /// from the client has been decrypted and is ready for direct processing.
+        /// </summary>
+        /// <param name="actor">Server actor that represents the remote client</param>
+        /// <param name="buffer">Packet buffer to be processed</param>
+        protected virtual bool Exchanged(TActor actor, ReadOnlySpan<byte> buffer)
+        {
+            throw new NotImplementedException();
+        }
+
+        /// <summary>
         /// Invoked by the server listener's Receiving method to process a completed packet
         /// from the actor's socket pipe. At this point, the packet has been assembled and
         /// split off from the rest of the buffer. Default behavior, if not overridden, is 

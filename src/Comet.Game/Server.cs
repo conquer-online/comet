@@ -8,6 +8,7 @@ namespace Comet.Game
     using Comet.Game.Packets;
     using Comet.Game.States;
     using Comet.Network.Packets;
+    using Comet.Network.Security;
     using Comet.Network.Sockets;
 
     /// <summary>
@@ -26,7 +27,8 @@ namespace Comet.Game
         /// channels and worker threads. Initializes the TCP server listener.
         /// </summary>
         /// <param name="config">The server's read configuration file</param>
-        public Server(ServerConfiguration config) : base(maxConn: config.GameNetwork.MaxConn)
+        public Server(ServerConfiguration config) 
+            : base(maxConn: config.GameNetwork.MaxConn, exchange: true, footerLength: 8)
         {
             this.Processor = new PacketProcessor<Client>(this.ProcessAsync);
             this.Processor.StartAsync(CancellationToken.None).ConfigureAwait(false);
@@ -42,8 +44,53 @@ namespace Comet.Game
         /// <returns>A new instance of a ServerActor around the client socket</returns>
         protected override async Task<Client> AcceptedAsync(Socket socket, Memory<byte> buffer)
         {
-            uint partition = this.Processor.SelectPartition();
-            return new Client(socket, buffer, partition);
+            var partition = this.Processor.SelectPartition();
+            var client = new Client(socket, buffer, partition);
+            await client.DiffieHellman.ComputePublicKeyAsync();
+
+            await Kernel.NextBytesAsync(client.DiffieHellman.DecryptionIV);
+            await Kernel.NextBytesAsync(client.DiffieHellman.EncryptionIV);
+
+            var handshakeRequest = new MsgHandshake(
+                client.DiffieHellman, 
+                client.DiffieHellman.EncryptionIV,
+                client.DiffieHellman.DecryptionIV);
+
+            await handshakeRequest.RandomizeAsync();
+            await client.SendAsync(handshakeRequest);
+            return client;
+        }
+
+        /// <summary>
+        /// Invoked by the server listener's Exchanging method to process the client 
+        /// response from the Diffie-Hellman Key Exchange. At this point, the raw buffer 
+        /// from the client has been decrypted and is ready for direct processing.
+        /// </summary>
+        /// <param name="actor">Server actor that represents the remote client</param>
+        /// <param name="buffer">Packet buffer to be processed</param>
+        protected override bool Exchanged(Client actor, ReadOnlySpan<byte> buffer)
+        {
+            try
+            {
+                MsgHandshake msg = new MsgHandshake();
+                msg.Decode(buffer.ToArray());
+
+                actor.DiffieHellman.ComputePrivateKey(msg.ClientKey);
+
+                actor.Cipher.GenerateKeys(new object[] { 
+                    actor.DiffieHellman.PrivateKey.ToByteArrayUnsigned() });
+                (actor.Cipher as BlowfishCipher).SetIVs(
+                    actor.DiffieHellman.DecryptionIV, 
+                    actor.DiffieHellman.EncryptionIV);
+
+                actor.DiffieHellman = null;
+                return true;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                return false;
+            }
         }
 
         /// <summary>

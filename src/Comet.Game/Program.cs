@@ -7,6 +7,7 @@
     using Comet.Game.Database;
     using Comet.Game.Packets;
     using Comet.Network.RPC;
+    using Comet.Network.Security;
 
     /// <summary>
     /// The game server listens for authentication players with a valid access token from
@@ -54,6 +55,7 @@
             // Start background services
             tasks = new List<Task>();
             tasks.Add(Kernel.Services.Randomness.StartAsync(CancellationToken.None));
+            tasks.Add(DiffieHellman.ProbablePrimes.StartAsync(CancellationToken.None));
             Task.WaitAll(tasks.ToArray());
             
             // Start the RPC server listener
