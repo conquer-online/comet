@@ -4,7 +4,7 @@ Comet is a simple, educational game networking project targeting the Conquer Onl
 
 The project is split between two servers: an account server and game server. The account server authenticates players, while the game server services players in the game world. This simple two-server architecture acts as a good introduction into server programming and concurrency patterns. The server is interoperable with the Conquer Online game client, but a modified client will not be provided.
 
-![Example Picture](/img/example.jpg)
+![Example Picture](/doc/Images/Example.jpg)
 
 ## Getting Started
 
