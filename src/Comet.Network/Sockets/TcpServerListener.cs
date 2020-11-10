@@ -132,7 +132,13 @@ namespace Comet.Network.Sockets
                     actor.Buffer.Slice(remaining, examined).Span);
 
                 // Handle splitting and processing of data
-                this.Splitting(actor, examined + remaining, ref consumed);
+                if (!this.Splitting(actor, examined + remaining, ref consumed))
+                {
+                    actor.Disconnect();
+                    break;
+                }
+
+
                 remaining = examined + remaining - consumed;
                 actor.Buffer.Slice(consumed, remaining).CopyTo(actor.Buffer);
             }
@@ -150,7 +156,7 @@ namespace Comet.Network.Sockets
         /// <param name="buffer">Actor for consuming bytes from the buffer</param>
         /// <param name="examined">Number of examined bytes from the receive</param>
         /// <param name="consumed">Number of consumed bytes by the split reader</param>
-        protected virtual void Splitting(TActor actor, int examined, ref int consumed)
+        protected virtual bool Splitting(TActor actor, int examined, ref int consumed)
         {
             // Consume packets from the socket buffer
             consumed = 0;
@@ -158,10 +164,15 @@ namespace Comet.Network.Sockets
             while (consumed + 2 < examined)
             {
                 var length = BitConverter.ToUInt16(buffer.Slice(consumed, 2));
-                if (consumed + length > examined) break;
+                var expected = consumed + length;
+                if (expected > buffer.Length) return false;
+                if (expected > examined) break;
+
                 this.Received(actor, buffer.Slice(consumed, length));
                 consumed += length;
             }
+
+            return true;
         }
 
         /// <summary>
