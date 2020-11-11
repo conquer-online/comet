@@ -31,7 +31,7 @@ namespace Comet.Network.Packets
         MsgLoadMap,
         MsgConnect = 1052,
         MsgConnectEx = 1055,
-        MsgTrade = 1056,
+        MsgTrade,
         MsgSynpOffer = 1058,
         MsgEncryptCode,
         MsgAccount = 1086,
