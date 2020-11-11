@@ -150,13 +150,18 @@ namespace Comet.Game.Packets
             MapGold,
             RelationshipsEnemy = 123,
             ClientDialog = 126,
-            LoginComplete = 130,
+            LoginComplete = 132,
             MapEffect,
             LoginOfflineMessages,
-            MapJump,
-            CharacterDead = 137,
-            RelationshipsFriend = 140,
-            CharacterAvatar = 142
+            MapRemove = 135,
+            MapJump = 137,
+            CharacterDead = 145,
+            MapTeleportEnd = 146,
+            RelationshipsFriend = 148,
+            CharacterAvatar = 151,
+            CharacterPartnerInfo,
+            CharacterAway = 161,
+            MapPathfinding
         }
     }
 }
