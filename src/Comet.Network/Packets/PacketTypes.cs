@@ -25,6 +25,7 @@ namespace Comet.Network.Packets
         MsgFuse,
         MsgTeamAward,
         MsgGodExp = 1036,
+        MsgPing,
         MsgEnemyList = 1041,
         MsgMonsterTransform,
         MsgTeamRoll,
