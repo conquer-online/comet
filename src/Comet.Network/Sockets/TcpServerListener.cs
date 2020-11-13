@@ -126,7 +126,7 @@ namespace Comet.Network.Sockets
         {
             // Initialize multiple receive variables
             var actor = state as TActor;
-            int examined = 0;
+            int consumed = 0, examined = 0, remaining = 0;
             if (actor.Socket.Connected && !this.ShutdownToken.IsCancellationRequested)
             {
                 try
@@ -136,7 +136,7 @@ namespace Comet.Network.Sockets
                         actor.Buffer.Slice(0),
                         SocketFlags.None,
                         this.ShutdownToken.Token);
-                    if (examined == 0) return;
+                    if (examined < 9) return;
                 }
                 catch (SocketException e)
                 {
@@ -148,21 +148,51 @@ namespace Comet.Network.Sockets
                     return;
                 }
 
-                // Decrypt traffic
+                // Decrypt traffic by first discarding the first 7 bytes, as per TQ Digital's
+                // exchange protocol, then decrypting only what is necessary for the exchange.
+                // This is to prevent the next packet from being decrypted with the wrong key.
                 actor.Cipher.Decrypt(
-                    actor.Buffer.Slice(0, examined).Span,
-                    actor.Buffer.Slice(0, examined).Span);
-
-                // Process the buffer
-                if (!this.Exchanged(actor, actor.Buffer.Slice(0, examined).Span))
+                    actor.Buffer.Slice(0, 9).Span,
+                    actor.Buffer.Slice(0, 9).Span);
+                consumed = BitConverter.ToUInt16(actor.Buffer.Span.Slice(7, 2)) + 7;
+                if (consumed > examined)
                 {
                     actor.Disconnect();
                     return;
                 }
+
+                actor.Cipher.Decrypt(
+                    actor.Buffer.Slice(9, consumed - 9).Span,
+                    actor.Buffer.Slice(9, consumed - 9).Span);
+
+                // Process the exchange now that bytes are decrypted
+                if (!this.Exchanged(actor, actor.Buffer.Slice(0, consumed).Span))
+                {
+                    actor.Disconnect();
+                    return;
+                }
+
+                // Now that the key has changed, decrypt the rest of the bytes in the buffer
+                // and prepare to start receiving packets on a standard receive loop.
+                if (consumed < examined)
+                {
+                    actor.Cipher.Decrypt(
+                        actor.Buffer.Slice(consumed, examined - consumed).Span,
+                        actor.Buffer.Slice(consumed, examined - consumed).Span);
+
+                    if (!this.Splitting(actor, examined, ref consumed))
+                    {
+                        actor.Disconnect();
+                        return;
+                    }
+                    
+                    remaining = examined - consumed;
+                    actor.Buffer.Slice(consumed, examined - consumed).CopyTo(actor.Buffer);
+                }
             }
 
             // Start receiving packets
-            await ReceivingAsync(state);
+            await this.ReceivingAsync(state, remaining);
         }
 
         /// <summary>
@@ -172,11 +202,24 @@ namespace Comet.Network.Sockets
         /// </summary>
         /// <param name="state">Created actor around the accepted client socket</param>
         /// <returns>Returns task details for fault tolerance processing.</returns>
-        private async Task ReceivingAsync(object state)
+        private Task ReceivingAsync(object state)
+        {
+            return this.ReceivingAsync(state, 0);
+        }
+
+        /// <summary>
+        /// Receiving receives bytes from the accepted client socket when bytes become
+        /// available. While the client is connected and the server hasn't issued the 
+        /// shutdown signal, bytes will be received in a loop.
+        /// </summary>
+        /// <param name="state">Created actor around the accepted client socket</param>
+        /// <param name="remaining">Starting offset to receive bytes to</param>
+        /// <returns>Returns task details for fault tolerance processing.</returns>
+        private async Task ReceivingAsync(object state, int remaining)
         {
             // Initialize multiple receive variables
             var actor = state as TActor;
-            int consumed = 0, examined = 0, remaining = 0;
+            int examined = 0, consumed = 0;
             while (actor.Socket.Connected && !this.ShutdownToken.IsCancellationRequested)
             {
                 try
@@ -202,6 +245,7 @@ namespace Comet.Network.Sockets
                     actor.Buffer.Slice(remaining, examined).Span);
 
                 // Handle splitting and processing of data
+                consumed = 0;
                 if (!this.Splitting(actor, examined + remaining, ref consumed))
                 {
                     actor.Disconnect();
@@ -229,7 +273,6 @@ namespace Comet.Network.Sockets
         protected virtual bool Splitting(TActor actor, int examined, ref int consumed)
         {
             // Consume packets from the socket buffer
-            consumed = 0;
             var buffer = actor.Buffer.Span;
             while (consumed + 2 < examined)
             {
