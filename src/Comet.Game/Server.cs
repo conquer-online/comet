@@ -68,6 +68,7 @@ namespace Comet.Game
         /// </summary>
         /// <param name="actor">Server actor that represents the remote client</param>
         /// <param name="buffer">Packet buffer to be processed</param>
+        /// <returns>True if the exchange was successful.</returns>
         protected override bool Exchanged(Client actor, ReadOnlySpan<byte> buffer)
         {
             try
@@ -86,11 +87,8 @@ namespace Comet.Game
                 actor.DiffieHellman = null;
                 return true;
             }
-            catch (Exception e)
-            {
-                Console.WriteLine(e);
-                return false;
-            }
+            catch (Exception e) { Console.WriteLine(e); }
+            return false;
         }
 
         /// <summary>

@@ -32,6 +32,7 @@ namespace Comet.Network.Sockets
         /// </summary>
         /// <param name="actor">Server actor that represents the remote client</param>
         /// <param name="buffer">Packet buffer to be processed</param>
+        /// <returns>True if the exchange was successful.</returns>
         protected virtual bool Exchanged(TActor actor, ReadOnlySpan<byte> buffer)
         {
             throw new NotImplementedException();
