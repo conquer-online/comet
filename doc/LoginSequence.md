@@ -4,7 +4,7 @@ Conquer Online's login sequence is split between two stages: account and game.
 
 ## Account Authentication Stage
 
-First, the game client connects to the Account server and the server sends a password seed using a MsgEncryptCode message. This seed is used in RC5 for decrypting the player's password for verification after the client responds with a MsgAccount message containing the player's username, encrypted password, and realm name. Note: sending any plaintext or encrypted password over a network is not a good practice. This was later modified in patch 5532+ to use the Secure Remote Password protocol (SRP6A).
+First, the game client connects to the Account server and sends a MsgAccount message containing the player's username, encrypted password, and realm name. Note: sending any plaintext or encrypted password over a network is not a good practice. This was later modified in patch 5532+ to use the Secure Remote Password protocol (SRP6A).
 
 After the account server verifies the password, it sends an single-use authentication token first to the game server and then to the client in a MsgConnectEx message, which also contains the game server's IP address and port information. The game client then disconnects and reconnects to that game server.
 
