@@ -13,18 +13,18 @@ namespace Comet.Account.Database.Tests
     {
         [Theory]
         [InlineData()]
-        [InlineData("--Network:Port=9961")]
-        [InlineData("/Network:Port=9961")]
-        [InlineData("--Network:Port", "9961")]
-        [InlineData("/Network:Port", "9961")]
-        [InlineData("Network:Port=9961")]
+        [InlineData("--Network:Port=9960")]
+        [InlineData("/Network:Port=9960")]
+        [InlineData("--Network:Port", "9960")]
+        [InlineData("/Network:Port", "9960")]
+        [InlineData("Network:Port=9960")]
         public void ValidConfiguration(params string[] args)
         {
             var config = new ServerConfiguration(args);
             Assert.True(config.Valid);
             Assert.Equal("0.0.0.0", config.Network.IPAddress);
             Assert.Equal("localhost", config.Database.Hostname);
-            Assert.Equal(args.Length > 0 ? 9961 : 9960, config.Network.Port);
+            Assert.Equal(args.Length > 0 ? 9960 : 9958, config.Network.Port);
         }
     }
 }
