@@ -142,6 +142,7 @@ namespace Comet.Game.Packets
             MapEffect,
             LoginOfflineMessages,
             MapJump,
+            MapRemoveSpawn = 135,
             CharacterDead = 137,
             RelationshipsFriend = 140,
             CharacterAvatar = 142
