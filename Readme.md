@@ -8,7 +8,7 @@ The project is split between two servers: an account server and game server. The
 
 ## Getting Started
 
-Get started by cloning the repository. Select a branch based on the patch you wish to target.
+Get started by cloning the repository. Select a branch based on the patch you wish to target. You can view a sorted list of supported patches [here](https://gitlab.com/spirited/comet/-/branches/all?sort=name_asc).
 
 Before setting up the project, download and install the following:
 
