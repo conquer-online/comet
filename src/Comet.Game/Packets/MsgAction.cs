@@ -153,7 +153,7 @@ namespace Comet.Game.Packets
             LoginComplete = 132,
             MapEffect,
             LoginOfflineMessages,
-            MapRemove = 135,
+            MapRemoveSpawn = 135,
             MapJump = 137,
             CharacterDead = 145,
             MapTeleportEnd = 146,
