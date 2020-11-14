@@ -34,9 +34,7 @@ namespace Comet.Game.Packets
         public byte PreviousClass { get; set; }
         public byte Rebirths { get; set; }
         public byte AncestorClass { get; set; }
-        public uint QuizPoints { get; set; }
-        public ushort EnlightenPoints { get; set; }
-        public uint VIPLevel { get; set; }
+        public bool HasName { get; set; }
         public string CharacterName { get; set; }
         public string SpouseName { get; set; }
 
@@ -67,11 +65,9 @@ namespace Comet.Game.Packets
             this.PreviousClass = character.PreviousClass;
             this.AncestorClass = character.AncestorClass;
             this.Rebirths = character.Rebirths;
-            this.EnlightenPoints = character.EnlightenPoints;
-            this.QuizPoints = character.QuizPoints;
-            this.VIPLevel = character.VIPLevel;
             this.CharacterName = character.Name;
             this.SpouseName = "None";
+            this.HasName = true;
         }
 
         /// <summary>
@@ -105,11 +101,7 @@ namespace Comet.Game.Packets
             writer.Write(this.CurrentClass);
             writer.Write(this.PreviousClass);
             writer.Write(this.Rebirths);
-            writer.Write(this.AncestorClass);
-            writer.Write(this.QuizPoints);
-            writer.Write(this.EnlightenPoints);
-            writer.BaseStream.Seek(8, SeekOrigin.Current);
-            writer.Write((uint)this.VIPLevel);
+            writer.Write(this.HasName);
             writer.Write(new List<string>{
                 this.CharacterName,
                 this.SpouseName

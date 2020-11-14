@@ -42,12 +42,11 @@ namespace Comet.Account
         /// <returns>A new instance of a ServerActor around the client socket</returns>
         protected override async Task<Client> AcceptedAsync(Socket socket, Memory<byte> buffer)
         {
+            // Interface must specify a task returning Accept method to support MsgEncryptCode
+            // in future patches and the DH Key Exchange request on the game server.
+            
             uint partition = this.Processor.SelectPartition();
-            var client = new Client(socket, buffer, partition);
-            client.Seed = (uint)(await Kernel.NextAsync(10000, int.MaxValue));
-
-            await client.SendAsync(new MsgEncryptCode(client.Seed));
-            return client;
+            return await Task.FromResult(new Client(socket, buffer, partition));
         }
 
         /// <summary>

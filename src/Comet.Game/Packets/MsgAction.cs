@@ -14,16 +14,12 @@ namespace Comet.Game.Packets
     public sealed class MsgAction : MsgBase<Client>
     {
         // Packet Properties
+        public uint Timestamp { get; set; }
         public uint CharacterID { get; set; }
         public uint Command { get; set; }
         public ushort[] Arguments { get; set; }
-        public uint Timestamp { get; set; }
-        public ActionType Action { get; set; }
         public ushort Direction { get; set; }
-        public ushort X { get; set; }
-        public ushort Y { get; set; }
-        public uint Map { get; set; }
-        public uint Color { get; set; }
+        public ActionType Action { get; set; }
 
         /// <summary>
         /// Decodes a byte packet into the packet structure defined by this message class. 
@@ -36,18 +32,14 @@ namespace Comet.Game.Packets
             var reader = new PacketReader(bytes);
             this.Length = reader.ReadUInt16();
             this.Type = (PacketType)reader.ReadUInt16();
+            this.Timestamp = reader.ReadUInt32();
             this.CharacterID = reader.ReadUInt32();
             this.Command = reader.ReadUInt32();
             this.Arguments = new ushort[2];
             for (int i = 0; i < this.Arguments.Length; i++)
                 this.Arguments[i] = reader.ReadUInt16();
-            this.Timestamp = reader.ReadUInt32();
-            this.Action = (ActionType)reader.ReadUInt16();
             this.Direction = reader.ReadUInt16();
-            this.X = reader.ReadUInt16();
-            this.Y = reader.ReadUInt16();
-            this.Map = reader.ReadUInt32();
-            this.Color = reader.ReadUInt32();
+            this.Action = (ActionType)reader.ReadUInt16();
         }
 
         /// <summary>
@@ -60,17 +52,13 @@ namespace Comet.Game.Packets
         {
             var writer = new PacketWriter();
             writer.Write((ushort)base.Type);
+            writer.Write(this.Timestamp);
             writer.Write(this.CharacterID);
             writer.Write(this.Command);
             for (int i = 0; i < this.Arguments.Length; i++)
                 writer.Write(this.Arguments[i]);
-            writer.Write(this.Timestamp);
-            writer.Write((ushort)this.Action);
             writer.Write(this.Direction);
-            writer.Write(this.X);
-            writer.Write(this.Y);
-            writer.Write(this.Map);
-            writer.Write(this.Color);
+            writer.Write((ushort)this.Action);
             return writer.ToArray();
         }
 
@@ -88,8 +76,8 @@ namespace Comet.Game.Packets
                 case ActionType.LoginSpawn:
                     this.CharacterID = client.ID;
                     this.Command = client.Character.MapID;
-                    this.X = client.Character.X;
-                    this.Y = client.Character.Y;
+                    this.Arguments[0] = client.Character.X;
+                    this.Arguments[1] = client.Character.Y;
                     await client.SendAsync(this);
                     break;
 
@@ -150,18 +138,13 @@ namespace Comet.Game.Packets
             MapGold,
             RelationshipsEnemy = 123,
             ClientDialog = 126,
-            LoginComplete = 132,
+            LoginComplete = 130,
             MapEffect,
             LoginOfflineMessages,
-            MapRemove = 135,
-            MapJump = 137,
-            CharacterDead = 145,
-            MapTeleportEnd = 146,
-            RelationshipsFriend = 148,
-            CharacterAvatar = 151,
-            CharacterPartnerInfo,
-            CharacterAway = 161,
-            MapPathfinding
+            MapJump,
+            CharacterDead = 137,
+            RelationshipsFriend = 140,
+            CharacterAvatar = 142
         }
     }
 }

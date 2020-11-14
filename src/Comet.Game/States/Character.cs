@@ -24,7 +24,6 @@ namespace Comet.Game.States
             base.Avatar = character.Avatar;
             base.CharacterID = character.CharacterID;
             base.CurrentClass = character.CurrentClass;
-            base.EnlightenPoints = character.EnlightenPoints;
             base.Experience = character.Experience;
             base.Hairstyle = character.Hairstyle;
             base.HealthPoints = character.HealthPoints;
@@ -36,13 +35,11 @@ namespace Comet.Game.States
             base.Mesh = character.Mesh;
             base.Name = character.Name;
             base.PreviousClass = character.PreviousClass;
-            base.QuizPoints = character.QuizPoints;
             base.Rebirths = character.Rebirths;
             base.Registered = character.Registered;
             base.Silver = character.Silver;
             base.Spirit = character.Spirit;
             base.Strength = character.Strength;
-            base.VIPLevel = character.VIPLevel;
             base.Virtue = character.Virtue;
             base.Vitality = character.Vitality;
             base.X = character.X;

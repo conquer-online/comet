@@ -39,9 +39,6 @@ namespace Comet.Game.Database.Models
         public virtual ushort HealthPoints { get; set; }
         public virtual ushort ManaPoints { get; set; }
         public virtual ushort KillPoints { get; set; }
-        public virtual ushort EnlightenPoints { get; set; }
-        public virtual uint QuizPoints { get; set; }
-        public virtual uint VIPLevel { get; set; }
         public virtual DateTime Registered { get; set; }
     }
 }
