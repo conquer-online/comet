@@ -1,5 +1,8 @@
 namespace Comet.Account.Packets
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Text;
     using Comet.Account.States;
     using Comet.Network.Packets;
 
@@ -11,11 +14,33 @@ namespace Comet.Account.Packets
     /// </summary>
     public sealed class MsgConnectEx : MsgBase<Client>
     {
+        // Constants and static properties
+        private static Encoding GB2312;
+        private static Dictionary<RejectionCode, string> RejectionMessages;
+
         // Packet Properties
         public ulong Token { get; set; }
         public RejectionCode Code { get; set; }
         public string IPAddress { get; set; }
         public uint Port { get; set; }
+
+        /// <summary>
+        /// Initialize the dictionary mapping rejection codes to Chinese rejection
+        /// messages on first instantiation of the class. Since GB2312 isn't supported
+        /// in dotnet core, register the external encoding provider.
+        /// </summary>
+        static MsgConnectEx()
+        {
+            Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
+            MsgConnectEx.GB2312 = Encoding.GetEncoding("GB2312");
+
+            MsgConnectEx.RejectionMessages = new Dictionary<RejectionCode, string>();
+            MsgConnectEx.RejectionMessages.Add(RejectionCode.InvalidPassword, "帐号名或口令错");
+            MsgConnectEx.RejectionMessages.Add(RejectionCode.ServerDown, "服务器未启动");
+            MsgConnectEx.RejectionMessages.Add(RejectionCode.ServerBusy, "请稍后重新登录");
+            MsgConnectEx.RejectionMessages.Add(RejectionCode.AccountBanned, "该帐号被封号");
+            MsgConnectEx.RejectionMessages.Add(RejectionCode.UnknownError, "数据库错误");
+        }
 
         /// <summary>
         /// Instantiates a new instance of <see cref="MsgConnectEx"/> for rejecting a
@@ -58,6 +83,10 @@ namespace Comet.Account.Packets
                 // Failed login
                 writer.Write((uint)0);
                 writer.Write((uint)this.Code);
+                writer.Write(
+                    MsgConnectEx.RejectionMessages[this.Code], 
+                    MsgConnectEx.GB2312, 
+                    16);
             }
             else
             {
@@ -65,7 +94,6 @@ namespace Comet.Account.Packets
                 writer.Write(this.Token);
                 writer.Write(this.IPAddress, 16);
                 writer.Write(this.Port);
-                writer.Write((ushort)0);
             }
             
             return writer.ToArray();
@@ -81,15 +109,23 @@ namespace Comet.Account.Packets
             Clear = 0,
             InvalidPassword = 1,
             ServerDown = 10,
+            ServerBusy = 11,
             AccountBanned = 12,
-            ServerBusy = 20,
-            AccountLocked = 22,
-            AccountNotActivated = 30,
-            AccountActivationFailed = 31,
-            ServerTimedOut = 42,
-            AccountMaxLoginAttempts = 51,
-            ServerLocked = 70,
-            ServerOldProtocol = 73
+            UnknownError = 999
+        }
+
+        /// <summary>
+        /// In older patches of Conquer Online, rejection codes had to be accompanied by
+        /// a Chinese rejection message in GB2312 encoding. The Chinese encoded message is
+        /// used to map the hardcoded Chinese string to an English string from StrRes.ini.
+        /// </summary>
+        public static class RejectionMessage
+        {
+            public const string InvalidPassword = "帐号名或口令错";
+            public const string ServerDown = "服务器未启动";
+            public const string ServerBusy = "请稍后重新登录";
+            public const string AccountBanned = "该帐号被封号";
+            public const string UnknownError = "数据库错误";
         }
     }
 }

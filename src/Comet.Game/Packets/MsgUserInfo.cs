@@ -30,8 +30,8 @@ namespace Comet.Game.Packets
         public ushort KillPoints { get; set; }
         public byte Level { get; set; }
         public byte CurrentClass { get; set; }
-        public byte PreviousClass { get; set; }
         public byte Rebirths { get; set; }
+        public bool AutoAttributes { get; set; }
         public bool HasName { get; set; }
         public string CharacterName { get; set; }
         public string SpouseName { get; set; }
@@ -60,7 +60,7 @@ namespace Comet.Game.Packets
             this.KillPoints = character.KillPoints;
             this.Level = character.Level;
             this.CurrentClass = character.CurrentClass;
-            this.PreviousClass = character.PreviousClass;
+            this.AutoAttributes = character.PreviousClass == 0;
             this.Rebirths = character.Rebirths;
             this.CharacterName = character.Name;
             this.SpouseName = "None";
@@ -84,7 +84,8 @@ namespace Comet.Game.Packets
             writer.Write(this.Jewels);
             writer.Write(this.Experience);
             writer.Write((ulong)0);
-            writer.Write((ulong)0);
+            writer.Write((uint)0);
+            writer.Write((ushort)0);
             writer.Write(this.Strength);
             writer.Write(this.Agility);
             writer.Write(this.Vitality);
@@ -95,7 +96,7 @@ namespace Comet.Game.Packets
             writer.Write(this.KillPoints);
             writer.Write(this.Level);
             writer.Write(this.CurrentClass);
-            writer.Write(this.PreviousClass);
+            writer.Write(this.AutoAttributes);
             writer.Write(this.Rebirths);
             writer.Write(this.HasName);
             writer.Write(new List<string>{

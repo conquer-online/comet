@@ -15,7 +15,6 @@ namespace Comet.Game.Packets
     {
         // Packet Properties
         public uint CharacterID { get; set; }
-        public uint Command { get; set; }
         public uint Timestamp { get; set; }
         public uint Argument { get; set; }
         public ItemActionType Action { get; set; }
@@ -32,10 +31,9 @@ namespace Comet.Game.Packets
             this.Length = reader.ReadUInt16();
             this.Type = (PacketType)reader.ReadUInt16();
             this.CharacterID = reader.ReadUInt32();
-            this.Command = reader.ReadUInt32();
+            this.Argument = reader.ReadUInt32();
             this.Action = (ItemActionType)reader.ReadUInt32();
             this.Timestamp = reader.ReadUInt32();
-            this.Argument = reader.ReadUInt32();
         }
 
         /// <summary>
@@ -49,10 +47,9 @@ namespace Comet.Game.Packets
             var writer = new PacketWriter();
             writer.Write((ushort)base.Type);
             writer.Write(this.CharacterID);
-            writer.Write(this.Command);
+            writer.Write(this.Argument);
             writer.Write((uint)this.Action);
             writer.Write(this.Timestamp);
-            writer.Write(this.Argument);
             return writer.ToArray();
         }
 

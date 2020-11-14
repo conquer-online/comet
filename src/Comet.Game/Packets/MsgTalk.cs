@@ -20,9 +20,7 @@ namespace Comet.Game.Packets
         public TalkChannel Channel { get; set; }
         public TalkStyle Style { get; set; }
         public uint CharacterID { get; set; }
-        public uint RecipientMesh { get; set; }
         public string RecipientName { get; set; }
-        public uint SenderMesh { get; set; }
         public string SenderName { get; set; }
         public string Suffix { get; set; }
         public string Message { get; set; }
@@ -110,8 +108,6 @@ namespace Comet.Game.Packets
             this.Channel = (TalkChannel)reader.ReadUInt16();
             this.Style = (TalkStyle)reader.ReadUInt16();
             this.CharacterID = reader.ReadUInt32();
-            this.RecipientMesh = reader.ReadUInt32();
-            this.SenderMesh = reader.ReadUInt32();
 
             var strings = reader.ReadStrings();
             if (strings.Count > 3)
@@ -137,8 +133,6 @@ namespace Comet.Game.Packets
             writer.Write((ushort)this.Channel);
             writer.Write((ushort)this.Style);
             writer.Write(this.CharacterID);
-            writer.Write(this.RecipientMesh);
-            writer.Write(this.SenderMesh);
             writer.Write(new List<string> 
             {
                 this.SenderName,

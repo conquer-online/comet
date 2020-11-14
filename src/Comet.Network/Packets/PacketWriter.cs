@@ -49,6 +49,21 @@ namespace Comet.Network.Packets
         }
 
         /// <summary>
+        /// Writes a string to the current stream. The string is fixed with a known
+        /// string length before writing the string value encoded using the specified
+        /// encoder to the stream.
+        /// </summary>
+        /// <param name="value">String value to be written to the stream</param>
+        /// <param name="encoding">Encoding of the string to be written</param>
+        /// <param name="fixedLength">Length of the string to be written</param>
+        public void Write(string value, Encoding encoding, int fixedLength)
+        {
+            var array = new byte[fixedLength];
+            encoding.GetBytes(value).CopyTo(array, 0);
+            base.Write(array);
+        }
+
+        /// <summary>
         /// Writes a list of strings to the current stream. The string list is prefixed with
         /// the amount of strings in the list. Then, each string in the list is prefixed
         /// with the length of that string and encoded as an ASCII string.
