@@ -32,7 +32,6 @@ CREATE TABLE `character` (
   `Avatar` smallint(5) unsigned NOT NULL DEFAULT '1',
   `Hairstyle` smallint(5) unsigned NOT NULL DEFAULT '535',
   `Silver` int(10) unsigned NOT NULL DEFAULT '1000',
-  `Jewels` int(10) unsigned NOT NULL DEFAULT '0',
   `CurrentClass` tinyint(3) unsigned NOT NULL DEFAULT '10',
   `PreviousClass` tinyint(3) unsigned NOT NULL DEFAULT '0',
   `Rebirths` tinyint(3) unsigned NOT NULL DEFAULT '0',

@@ -18,7 +18,6 @@ namespace Comet.Game.Packets
         public uint Mesh { get; set; }
         public ushort Hairstyle { get; set; }
         public uint Silver { get; set; }
-        public uint Jewels { get; set; }
         public ulong Experience { get; set; }
         public ushort Strength { get; set; }
         public ushort Agility { get; set; }
@@ -48,7 +47,6 @@ namespace Comet.Game.Packets
             this.Mesh = (uint)(character.Mesh + (character.Avatar * 10000));
             this.Hairstyle = character.Hairstyle;
             this.Silver = character.Silver;
-            this.Jewels = character.Jewels;
             this.Experience = character.Experience;
             this.Strength = character.Strength;
             this.Agility = character.Agility;
@@ -80,12 +78,11 @@ namespace Comet.Game.Packets
             writer.Write(this.CharacterID);
             writer.Write(this.Mesh);
             writer.Write(this.Hairstyle);
+            writer.Write((ushort)0);
             writer.Write(this.Silver);
-            writer.Write(this.Jewels);
             writer.Write(this.Experience);
             writer.Write((ulong)0);
             writer.Write((uint)0);
-            writer.Write((ushort)0);
             writer.Write(this.Strength);
             writer.Write(this.Agility);
             writer.Write(this.Vitality);

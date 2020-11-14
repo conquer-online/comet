@@ -89,7 +89,10 @@ namespace Comet.Account.Packets
             var rc5 = new RC5();
             var password = new byte[16];
             rc5.Decrypt(buffer, password);
-            return Encoding.ASCII.GetString(password).Trim('\0');
+
+            // Older client passwords contain noise which needs to be filtered out.
+            var plaintext = Encoding.ASCII.GetString(password);
+            return plaintext.Substring(0, plaintext.IndexOf('\0'));
         }
     }
 }

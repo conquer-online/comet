@@ -20,7 +20,6 @@ namespace Comet.Game.Database.Models
         public virtual ushort Avatar { get; set; }
         public virtual ushort Hairstyle { get; set; }
         public virtual uint Silver { get; set; }
-        public virtual uint Jewels { get; set; }
         public virtual byte CurrentClass { get; set; }
         public virtual byte PreviousClass { get; set; }
         public virtual byte Rebirths { get; set; }

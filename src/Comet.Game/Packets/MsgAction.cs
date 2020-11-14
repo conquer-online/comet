@@ -18,7 +18,7 @@ namespace Comet.Game.Packets
         public uint CharacterID { get; set; }
         public uint Command { get; set; }
         public ushort[] Arguments { get; set; }
-        public ushort Direction { get; set; }
+        public uint Direction { get; set; }
         public ActionType Action { get; set; }
 
         /// <summary>
@@ -34,12 +34,12 @@ namespace Comet.Game.Packets
             this.Type = (PacketType)reader.ReadUInt16();
             this.Timestamp = reader.ReadUInt32();
             this.CharacterID = reader.ReadUInt32();
-            this.Command = reader.ReadUInt32();
             this.Arguments = new ushort[2];
             for (int i = 0; i < this.Arguments.Length; i++)
                 this.Arguments[i] = reader.ReadUInt16();
-            this.Direction = reader.ReadUInt16();
-            this.Action = (ActionType)reader.ReadUInt16();
+            this.Command = reader.ReadUInt32();
+            this.Direction = reader.ReadUInt32();
+            this.Action = (ActionType)reader.ReadUInt32();
         }
 
         /// <summary>
@@ -54,11 +54,11 @@ namespace Comet.Game.Packets
             writer.Write((ushort)base.Type);
             writer.Write(this.Timestamp);
             writer.Write(this.CharacterID);
-            writer.Write(this.Command);
             for (int i = 0; i < this.Arguments.Length; i++)
                 writer.Write(this.Arguments[i]);
+            writer.Write(this.Command);
             writer.Write(this.Direction);
-            writer.Write((ushort)this.Action);
+            writer.Write((uint)this.Action);
             return writer.ToArray();
         }
 
@@ -75,15 +75,15 @@ namespace Comet.Game.Packets
             {
                 case ActionType.LoginSpawn:
                     this.CharacterID = client.ID;
-                    this.Command = client.Character.MapID;
+                    this.Direction = client.Character.MapID;
                     this.Arguments[0] = client.Character.X;
                     this.Arguments[1] = client.Character.Y;
                     await client.SendAsync(this);
                     break;
 
-                case ActionType.LoginComplete:
-                    await client.SendAsync(this);
-                    break;
+                //case ActionType.LoginComplete:
+                //    await client.SendAsync(this);
+                //    break;
 
                 default:
                     await client.SendAsync(this);
@@ -104,47 +104,42 @@ namespace Comet.Game.Packets
         /// </summary>
         public enum ActionType
         {
-            LoginSpawn = 74,
+            CharacterDirection = 124,
+            CharacterEmote = 126,
+            MapPortal = 130,
+            MapTeleport = 131,
+            LoginSpawn = 137,
             LoginInventory,
             LoginRelationships,
-            LoginProficiencies,
-            LoginSpells,
-            CharacterDirection,
-            CharacterEmote = 81,
-            MapPortal = 85,
-            MapTeleport,
-            CharacterLevelUp = 92,
+            MapRemoveSpawn = 141,
+            MapJump,
+            SpellRemove = 144,
+            ProficiencyRemove,
+            CharacterLevelUp,
             SpellAbortXp,
             CharacterRevive,
             CharacterDelete,
+            LoginProficiencies,
+            LoginSpells,
             CharacterPkMode,
             LoginGuild,
-            MapMine = 99,
-            MapTeamLeaderStar = 101,
-            MapQuery,
-            MapSkyColor = 104,
-            MapTeamMemberStar = 106,
-            MapKickBack = 108,
-            SpellRemove,
-            ProficiencyRemove,
-            BoothSpawn,
+            CharacterDead,
+            RelationshipsFriend = 156,
+            MapMine = 159,
+            MapEffect = 162,
+            MapKickBack = 164,
+            BoothSpawn = 167,
             BoothSuspend,
             BoothResume,
             BoothLeave,
-            ClientCommand = 116,
+            ClientCommand = 172,
+            SpellAbortTransform = 174,
             CharacterObservation,
-            SpellAbortTransform,
-            SpellAbortFlight = 120,
+            SpellAbortFlight,
             MapGold,
-            RelationshipsEnemy = 123,
-            ClientDialog = 126,
-            LoginComplete = 130,
-            MapEffect,
-            LoginOfflineMessages,
-            MapJump,
-            CharacterDead = 137,
-            RelationshipsFriend = 140,
-            CharacterAvatar = 142
+            ClientDialog = 186,
+            LoginComplete = 190,
+            MapQuery = 232
         }
     }
 }

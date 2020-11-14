@@ -26,7 +26,6 @@ namespace Comet.Game.States
             base.Experience = character.Experience;
             base.Hairstyle = character.Hairstyle;
             base.HealthPoints = character.HealthPoints;
-            base.Jewels = character.Jewels;
             base.KillPoints = character.KillPoints;
             base.Level = character.Level;
             base.ManaPoints = character.ManaPoints;
