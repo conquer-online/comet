@@ -40,7 +40,7 @@ namespace Comet.Network.Packets
         /// to the stream.
         /// </summary>
         /// <param name="value">String value to be written to the stream</param>
-        /// <param name="fixedLength">Length of the string to be read</param>
+        /// <param name="fixedLength">Length of the string to be written</param>
         public void Write(string value, int fixedLength)
         {
             var array = new byte[fixedLength];
