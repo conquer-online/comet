@@ -21,9 +21,8 @@ namespace Comet.Game.Packets
 
         // Packet Properties
         public ulong Token { get; set; }
-        public ushort Patch { get; set; }
+        public string Patch { get; set; }
         public string Language { get; set; }
-        public int Version { get; set; }
 
         /// <summary>
         /// Decodes a byte packet into the packet structure defined by this message class. 
@@ -37,9 +36,8 @@ namespace Comet.Game.Packets
             this.Length = reader.ReadUInt16();
             this.Type = (PacketType)reader.ReadUInt16();
             this.Token = reader.ReadUInt64();
-            this.Patch = reader.ReadUInt16();
-            this.Language = reader.ReadString(10);
-            this.Version = Convert.ToInt32(reader.ReadInt32().ToString(), 2);
+            this.Patch = reader.ReadString(4);
+            this.Language = reader.ReadString(12);
         }
 
         /// <summary>
