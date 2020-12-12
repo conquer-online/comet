@@ -136,7 +136,7 @@ namespace Comet.Network.Sockets
                         actor.Buffer.Slice(0),
                         SocketFlags.None,
                         this.ShutdownToken.Token);
-                    if (examined < 9) return;
+                    if (examined < 9) throw new Exception("Invalid length");
                 }
                 catch (SocketException e)
                 {
@@ -145,6 +145,7 @@ namespace Comet.Network.Sockets
                         Console.WriteLine(e);
 
                     actor.Disconnect();
+                    this.Disconnecting(actor);
                     return;
                 }
 
@@ -158,6 +159,7 @@ namespace Comet.Network.Sockets
                 if (consumed > examined)
                 {
                     actor.Disconnect();
+                    this.Disconnecting(actor);
                     return;
                 }
 
@@ -169,6 +171,7 @@ namespace Comet.Network.Sockets
                 if (!this.Exchanged(actor, actor.Buffer.Slice(0, consumed).Span))
                 {
                     actor.Disconnect();
+                    this.Disconnecting(actor);
                     return;
                 }
 
@@ -183,6 +186,7 @@ namespace Comet.Network.Sockets
                     if (!this.Splitting(actor, examined, ref consumed))
                     {
                         actor.Disconnect();
+                        this.Disconnecting(actor);
                         return;
                     }
                     
