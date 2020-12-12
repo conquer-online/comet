@@ -58,6 +58,15 @@ namespace Comet.Game.Packets
                 return;
             }
 
+            // If another client has already connected using this account, disconnect
+            // that other client and permit this one to take its place.
+            if (Kernel.Clients.TryRemove(auth.AccountID, out Client observer))
+            {
+                observer.Socket.Disconnect(false);
+            }
+
+            Kernel.Clients.TryAdd(auth.AccountID, client);
+
             // Generate new keys and check for an existing character
             client.Cipher.GenerateKeys(new object[] { this.Token });
             var character = await CharactersRepository.FindAsync(auth.AccountID);

@@ -115,9 +115,11 @@ namespace Comet.Game
         protected override void Disconnected(Client actor) 
         {
             if (actor == null) return;
+            this.Processor.DeselectPartition(actor.Partition);
+            Kernel.Clients.TryRemove(actor.ID, out _);
+
             if (actor.Creation != null)
                 Kernel.Registration.Remove(actor.Creation.Token);
-            this.Processor.DeselectPartition(actor.Partition);
         }
     }
 }
