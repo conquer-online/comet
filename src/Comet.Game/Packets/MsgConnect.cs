@@ -72,7 +72,7 @@ namespace Comet.Game.Packets
 
             Kernel.Clients.TryAdd(auth.AccountID, client);
 
-            // Generate new keys and check for an existing character
+            // Check for an existing character
             var character = await CharactersRepository.FindAsync(auth.AccountID);
             if (character == null)
             {
