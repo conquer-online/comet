@@ -23,7 +23,7 @@ dotnet restore
 dotnet build
 ```
 
-After building Comet, open and modify `Comet.Account.config` and `Comet.Game.config` in the compiled bin folder with your MySQL login credentials. In MySQL, import scripts located in the repository's sql folder. Once imported, open the `realm` table from the `comet.account` database. Enter your external IP address (port forwarding required) or an internal IP address for testing (the client does not support 127.0.0.1).
+After building Comet, open and modify `Comet.Account.config` and `Comet.Game.config` in the compiled bin folder with your MySQL login credentials. In MySQL, import scripts located in the repository's sql folder. Once imported, open the `realm` table from the `comet.account` database. Enter your external IP address (port forwarding required) or an internal IP address for testing (the client does not support 127.0.0.1). Make sure your realm name matches the server name selected in the client.
 
 ## Common Questions & Answers
 
