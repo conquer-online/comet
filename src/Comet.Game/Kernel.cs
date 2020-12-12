@@ -1,7 +1,9 @@
 namespace Comet.Game
 {
+    using Comet.Game.States;
     using Comet.Network.Services;
     using System.Collections.Generic;
+    using System.Collections.Concurrent;
     using System.Runtime.Caching;
     using System.Threading.Tasks;
 
@@ -14,6 +16,7 @@ namespace Comet.Game
     public static class Kernel
     {
         // State caches
+        public static ConcurrentDictionary<uint, Client> Clients = new ConcurrentDictionary<uint, Client>();
         public static MemoryCache Logins = MemoryCache.Default;
         public static List<uint> Registration = new List<uint>();
 
