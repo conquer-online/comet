@@ -23,6 +23,7 @@ namespace Comet.Network.Sockets
         private readonly TaskFactory ReceiveTasks;
         private readonly CancellationTokenSource ShutdownToken;
         private readonly Socket Socket;
+        private TcpServerRegistry Registry;
 
         /// <summary>
         /// Instantiates a new instance of <see cref="TcpServerListener"/> with a new server
@@ -39,12 +40,13 @@ namespace Comet.Network.Sockets
             this.Socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
             this.Socket.LingerState = new LingerOption(false, 0);
             this.Socket.NoDelay = !delay;
+            this.ShutdownToken = new CancellationTokenSource();
 
             // Initialize management mechanisms
             this.AcceptanceSemaphore = new Semaphore(maxConn, maxConn);
             this.BufferPool = new ConcurrentStack<Memory<byte>>();
-            this.ShutdownToken = new CancellationTokenSource();
             this.ReceiveTasks = new TaskFactory(this.ShutdownToken.Token);
+            this.Registry = new TcpServerRegistry();
 
             // Initialize preallocated buffer pool
             for (int i = 0; i < maxConn; i++)
@@ -60,11 +62,14 @@ namespace Comet.Network.Sockets
         /// <param name="address">Interface IPv4 address the server will bind to</param>
         /// <param name="backlog">Maximum connections backlogged for acceptance</param>
         /// <returns>Returns a new task for accepting new connections.</returns>
-        public Task StartAsync(int port, string address = "0.0.0.0", int backlog = 100)
+        public async Task StartAsync(int port, string address = "0.0.0.0", int backlog = 100)
         {
             this.Socket.Bind(new IPEndPoint(IPAddress.Parse(address), port));
             this.Socket.Listen(backlog);
-            return this.AcceptingAsync();
+            
+            // Start the background registry cleaner and accepting clients
+            await this.Registry.StartAsync(this.ShutdownToken.Token);
+            await this.AcceptingAsync();
         }
 
         /// <summary>
@@ -82,9 +87,18 @@ namespace Comet.Network.Sockets
                 // and a new client can be accepted. Check shutdown every 5 seconds.
                 if (this.AcceptanceSemaphore.WaitOne(TimeSpan.FromSeconds(5)))
                 {
-                    // Pop a preallocated buffer and accept a client
-                    this.BufferPool.TryPop(out var buffer);
+                    // Pop a preallocated buffer and check the connection
                     var socket = await this.Socket.AcceptAsync();
+                    var ip = (socket.RemoteEndPoint as IPEndPoint).Address.MapToIPv4().ToString();
+                    if (!this.Registry.AddActiveClient(ip))
+                    {
+                        socket.Disconnect(false);
+                        this.AcceptanceSemaphore.Release();
+                        continue;
+                    }
+                    
+                    // Construct the client before receiving data
+                    this.BufferPool.TryPop(out var buffer);
                     var actor = this.Accepted(socket, buffer);
 
                     // Start receiving data from the client connection
@@ -187,6 +201,7 @@ namespace Comet.Network.Sockets
             actor.Buffer.Span.Clear();
             this.BufferPool.Push(actor.Buffer);
             this.AcceptanceSemaphore.Release();
+            this.Registry.RemoveActiveClient(actor.IPAddress);
 
             // Complete processing for disconnect
             this.Disconnected(actor);
