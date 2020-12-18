@@ -17,6 +17,9 @@ namespace Comet.Network.Sockets
     public abstract class TcpServerListener<TActor> : TcpServerEvents<TActor>
         where TActor : TcpServerActor
     {
+        // Constants
+        private const int ReceiveTimeoutSeconds = 30;
+
         // Fields and properties
         private readonly Semaphore AcceptanceSemaphore;
         private readonly ConcurrentStack<Memory<byte>> BufferPool;
@@ -120,18 +123,28 @@ namespace Comet.Network.Sockets
         {
             // Initialize multiple receive variables
             var actor = state as TActor;
+            var timeout = new CancellationTokenSource();
             int consumed = 0, examined = 0, remaining = 0;
+
             while (actor.Socket.Connected && !this.ShutdownToken.IsCancellationRequested)
             {
                 try
                 {
-                    // Receive data from the client socket
-                    examined = await actor.Socket.ReceiveAsync(
-                        actor.Buffer.Slice(remaining),
-                        SocketFlags.None,
-                        this.ShutdownToken.Token);
-                    if (examined == 0) break;
+                    using (var cancellation = CancellationTokenSource.CreateLinkedTokenSource(
+                        timeout.Token, this.ShutdownToken.Token))
+                    {
+                        // Receive data from the client socket
+                        var receiveOperation = actor.Socket.ReceiveAsync(
+                            actor.Buffer.Slice(remaining),
+                            SocketFlags.None,
+                            cancellation.Token);
+
+                        timeout.CancelAfter(TimeSpan.FromSeconds(ReceiveTimeoutSeconds));
+                        examined = await receiveOperation;
+                        if (examined == 0) break;
+                    }
                 }
+                catch (OperationCanceledException) { break; }
                 catch (SocketException e)
                 {
                     if (e.SocketErrorCode < SocketError.ConnectionAborted ||
