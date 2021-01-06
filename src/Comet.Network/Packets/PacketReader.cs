@@ -21,7 +21,6 @@ namespace Comet.Network.Packets
         /// <param name="bytes">Packet bytes to be read in</param>
         public PacketReader(byte[] bytes) : base(new MemoryStream(bytes))
         {
-
         }
 
         /// <summary>
@@ -32,8 +31,7 @@ namespace Comet.Network.Packets
         /// <returns>Returns the resulting string from the read.</returns>
         public override string ReadString()
         {
-            var length = base.ReadByte();
-            return Encoding.ASCII.GetString(base.ReadBytes(length)).TrimEnd('\0');
+            return base.ReadString().TrimEnd('\0');
         }
 
         /// <summary>
