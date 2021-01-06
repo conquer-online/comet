@@ -24,17 +24,6 @@ namespace Comet.Network.Packets
         }
 
         /// <summary>
-        /// Writes a string to the current stream. The string is prefixed with the byte
-        /// length and encoded as an ASCII string.
-        /// </summary>
-        /// <param name="value">String value to be written to the stream</param>
-        public override void Write(string value)
-        {
-            base.Write((byte)value.Length);
-            base.Write(value);
-        }
-
-        /// <summary>
         /// Writes a string to the current stream. The string is fixed with a known
         /// string length before writing the string value encoded as an ASCII string
         /// to the stream.
