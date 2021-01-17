@@ -26,7 +26,7 @@ namespace Comet.Game.Packets
 
         // Registration constants
         private static readonly byte[] Hairstyles = new byte[] {
-            10, 11, 13, 14, 15, 24, 30, 35, 37, 38, 39, 40
+            10, 11, 12, 13, 14, 15, 16, 17
         };
 
         /// <summary>
