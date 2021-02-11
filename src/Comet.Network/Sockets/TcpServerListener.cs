@@ -192,7 +192,7 @@ namespace Comet.Network.Sockets
             {
                 var length = BitConverter.ToUInt16(buffer.Slice(consumed, 2));
                 var expected = consumed + length;
-                if (expected > buffer.Length) return false;
+                if (length > buffer.Length) return false;
                 if (expected > examined) break;
 
                 this.Received(actor, buffer.Slice(consumed, length));
