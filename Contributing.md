@@ -24,6 +24,10 @@ REPEAT STEPS
 If you'd like to take the project in a new direction or perform a section of work, then I highly recommend forking the project. You can fork the repository using the "Fork" button on the front page of the GitLab repository. This copies the project repository and all commits to your own GitLab profile. If you choose to make your fork public, it also allows others to find your modified version of the project more easily through GitLab.
 
 ## Merge Requests
+Code submitted for merging should follow general style guidelines for the language used by the project. Commit summary names should also follow general practices. Writing descriptive commit messages keeps the repository well managed and makes it easy to navigate through the commit log. Your commit message should be short, in present tense and explicitly say why you made the change.
+
+In terms of the procedure for creating merge requests:
+
 1. Ensure that the project builds and the client can log in
 2. Update the readme with any changes, if necessary
 3. Update public API documentation with any changes, if necessary
