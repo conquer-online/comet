@@ -113,7 +113,7 @@ CREATE TABLE `account_authority` (
 
 LOCK TABLES `account_authority` WRITE;
 /*!40000 ALTER TABLE `account_authority` DISABLE KEYS */;
-INSERT INTO `account_authority` VALUES (5,'Administrator'),(3,'Game Master'),(2,'Moderator'),(1,'Player'),(4,'Project Manager');
+INSERT INTO `account_authority` VALUES (5,'Administrator'),(4,'Project Manager'),(3,'Game Manager'),(2,'Moderator'),(1,'Player');
 /*!40000 ALTER TABLE `account_authority` ENABLE KEYS */;
 UNLOCK TABLES;
 
