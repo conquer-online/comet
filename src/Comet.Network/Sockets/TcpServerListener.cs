@@ -191,6 +191,7 @@ namespace Comet.Network.Sockets
             while (consumed + 2 < examined)
             {
                 var length = BitConverter.ToUInt16(buffer.Slice(consumed, 2));
+                if (length == 0) return false;
                 var expected = consumed + length;
                 if (length > buffer.Length) return false;
                 if (expected > examined) break;
