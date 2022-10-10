@@ -10,6 +10,11 @@ The project is split between two servers: an account server and game server. The
 
 Get started by cloning the repository. Select a branch based on the patch you wish to target. You can view a sorted list of supported patches [here](https://gitlab.com/spirited/comet/-/branches/all?sort=name_asc).
 
+```
+git clone https://gitlab.com/spirited/comet.git
+git switch <patch_number> 
+```
+
 Before setting up the project, download and install the following:
 
 * [.NET Core 3.1 or higher](https://dotnet.microsoft.com/download) - Primary language compiler
