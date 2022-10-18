@@ -1,12 +1,5 @@
 # Comet
 
-__4274__: [![pipeline status](https://gitlab.com/spirited/comet/badges/4274/pipeline.svg)](https://gitlab.com/spirited/comet/-/commits/4274)
-__4294__: [![pipeline status](https://gitlab.com/spirited/comet/badges/4294/pipeline.svg)](https://gitlab.com/spirited/comet/-/commits/4294)
-__4343__: [![pipeline status](https://gitlab.com/spirited/comet/badges/4343/pipeline.svg)](https://gitlab.com/spirited/comet/-/commits/4343)
-__5017__: [![pipeline status](https://gitlab.com/spirited/comet/badges/5017/pipeline.svg)](https://gitlab.com/spirited/comet/-/commits/5017)
-__5065__: [![pipeline status](https://gitlab.com/spirited/comet/badges/5065/pipeline.svg)](https://gitlab.com/spirited/comet/-/commits/5065)
-__5187__: [![pipeline status](https://gitlab.com/spirited/comet/badges/5187/pipeline.svg)](https://gitlab.com/spirited/comet/-/commits/5187)
-
 Comet is a simple, educational game networking project targeting the Conquer Online game client.
 
 The project is split between two servers: an account server and game server. The account server authenticates players, while the game server services players in the game world. This simple two-server architecture acts as a good introduction into server programming and concurrency patterns. The server is interoperable with the Conquer Online game client, but a modified client will not be provided.
@@ -16,6 +9,15 @@ The project is split between two servers: an account server and game server. The
 ## Getting Started
 
 Get started by cloning the repository. Select a branch based on the patch you wish to target. You can view a sorted list of supported patches [here](https://gitlab.com/spirited/comet/-/branches/all?sort=name_asc).
+
+| Patch | Pipeline Status | Description |
+| ----- | --------------- | ----------- |
+| __4274__ | [![pipeline status](https://gitlab.com/spirited/comet/badges/4274/pipeline.svg)](https://gitlab.com/spirited/comet/-/commits/4274) | One of the last stable patches for Conquer 1.0 with the legacy brown wood interface. |
+| __4294__ | [![pipeline status](https://gitlab.com/spirited/comet/badges/4294/pipeline.svg)](https://gitlab.com/spirited/comet/-/commits/4294) | One of the first stable patches for Conquer 2.0 with the blue fabric and stone interface. |
+| __4343__ | [![pipeline status](https://gitlab.com/spirited/comet/badges/4343/pipeline.svg)](https://gitlab.com/spirited/comet/-/commits/4343) | Adds potency and new currency, but does not include the pay-to-win shopping mall. |
+| __5017__ | [![pipeline status](https://gitlab.com/spirited/comet/badges/5017/pipeline.svg)](https://gitlab.com/spirited/comet/-/commits/5017) | Adds pay-to-win shopping mall, +12 items, WuXing Oven, new fonts, and more. |
+| __5065__ | [![pipeline status](https://gitlab.com/spirited/comet/badges/5065/pipeline.svg)](https://gitlab.com/spirited/comet/-/commits/5065) | Adds new watercolor client, new hairstyles, new equipment, and more. |
+| __5187__ | [![pipeline status](https://gitlab.com/spirited/comet/badges/5187/pipeline.svg)](https://gitlab.com/spirited/comet/-/commits/5187) | Adds talismans, ninjas, enlightenment, quiz show, mounts, clans, arena, and more. |
 
 ```
 git clone https://gitlab.com/spirited/comet.git
