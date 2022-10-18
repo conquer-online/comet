@@ -24,8 +24,7 @@
             Console.Title = "Comet, Account Server";
             Console.WriteLine();
             Console.WriteLine("  Comet: Account Server");
-            Console.WriteLine("  Copyright 2018-2020 Gareth Jensen \"Spirited\"");
-            Console.WriteLine("  All Rights Reserved");
+            Console.WriteLine("  Spirited © All Rights Reserved");
             Console.WriteLine();
 
             // Read configuration file and command-line arguments
