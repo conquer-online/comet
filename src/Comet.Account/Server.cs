@@ -19,6 +19,7 @@ namespace Comet.Account
     {
         // Fields and Properties
         private readonly PacketProcessor<Client> Processor;
+        private readonly Task ProcessorTask;
 
         /// <summary>
         /// Instantiates a new instance of <see cref="Server"/> by initializing the 
@@ -29,7 +30,7 @@ namespace Comet.Account
         public Server(ServerConfiguration config) : base(maxConn: config.Network.MaxConn)
         {
             this.Processor = new PacketProcessor<Client>(this.ProcessAsync);
-            this.Processor.StartAsync(CancellationToken.None).ConfigureAwait(false);
+            this.ProcessorTask = this.Processor.StartAsync(CancellationToken.None);
         }
 
         /// <summary>
