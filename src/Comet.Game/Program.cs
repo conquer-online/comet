@@ -26,7 +26,8 @@
             Console.Title = "Comet, Game Server";
             Console.WriteLine();
             Console.WriteLine("  Comet: Game Server");
-            Console.WriteLine("  Spirited © All Rights Reserved");
+            Console.WriteLine("  Spirited (C) All Rights Reserved");
+            Console.WriteLine("  Patch 5065");
             Console.WriteLine();
 
             // Read configuration file and command-line arguments
