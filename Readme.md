@@ -1,5 +1,12 @@
 # Comet
 
+__4274__: [![pipeline status](https://gitlab.com/spirited/comet/badges/4274/pipeline.svg)](https://gitlab.com/spirited/comet/-/commits/4274)
+__4294__: [![pipeline status](https://gitlab.com/spirited/comet/badges/4294/pipeline.svg)](https://gitlab.com/spirited/comet/-/commits/4294)
+__4343__: [![pipeline status](https://gitlab.com/spirited/comet/badges/4343/pipeline.svg)](https://gitlab.com/spirited/comet/-/commits/4343)
+__5017__: [![pipeline status](https://gitlab.com/spirited/comet/badges/5017/pipeline.svg)](https://gitlab.com/spirited/comet/-/commits/5017)
+__5065__: [![pipeline status](https://gitlab.com/spirited/comet/badges/5065/pipeline.svg)](https://gitlab.com/spirited/comet/-/commits/5065)
+__5187__: [![pipeline status](https://gitlab.com/spirited/comet/badges/5187/pipeline.svg)](https://gitlab.com/spirited/comet/-/commits/5187)
+
 Comet is a simple, educational game networking project targeting the Conquer Online game client.
 
 The project is split between two servers: an account server and game server. The account server authenticates players, while the game server services players in the game world. This simple two-server architecture acts as a good introduction into server programming and concurrency patterns. The server is interoperable with the Conquer Online game client, but a modified client will not be provided.
