@@ -35,7 +35,7 @@ namespace Comet.Game
         {
             // Generate the access token
             var bytes = new byte[8];
-            var rng = RNGCryptoServiceProvider.Create();
+            var rng = RandomNumberGenerator.Create();
             rng.GetBytes(bytes);
             var token = BitConverter.ToUInt64(bytes);
 

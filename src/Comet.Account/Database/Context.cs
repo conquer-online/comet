@@ -34,7 +34,8 @@ namespace Comet.Account.Database
                 ServerDbContext.Configuration.Hostname, 
                 ServerDbContext.Configuration.Schema,
                 ServerDbContext.Configuration.Username, 
-                ServerDbContext.Configuration.Password));
+                ServerDbContext.Configuration.Password),
+                MySqlServerVersion.LatestSupportedServerVersion);
         }
 
         /// <summary>
