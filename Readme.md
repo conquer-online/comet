@@ -17,7 +17,7 @@ git switch <patch_number>
 
 Before setting up the project, download and install the following:
 
-* [.NET Core 3.1 or higher](https://dotnet.microsoft.com/download) - Primary language compiler
+* [.NET 6](https://dotnet.microsoft.com/download) - Primary language compiler
 * [MariaDB](https://mariadb.org/) - Recommended flavor of MySQL for project databases 
 * [Visual Studio Code](https://code.visualstudio.com/) - Recommended editor for modifying and building project files
 
