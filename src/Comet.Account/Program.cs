@@ -24,7 +24,8 @@
             Console.Title = "Comet, Account Server";
             Console.WriteLine();
             Console.WriteLine("  Comet: Account Server");
-            Console.WriteLine("  Spirited © All Rights Reserved");
+            Console.WriteLine("  Spirited (C) All Rights Reserved");
+            Console.WriteLine("  Patch 4343");
             Console.WriteLine();
 
             // Read configuration file and command-line arguments
