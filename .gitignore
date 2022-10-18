@@ -29,3 +29,6 @@ msbuild.wrn
 
 # Visual Studio 2015
 .vs/
+
+# Docker volumes
+sql/data
