@@ -58,7 +58,8 @@ namespace Comet.Network.Sockets
                 try 
                 {
                     this.Cipher.Encrypt(packet, encrypted);
-                    return this.Socket?.SendAsync(encrypted, SocketFlags.None) ?? Task.CompletedTask;
+                    this.Socket?.Send(encrypted, SocketFlags.None);
+                    return Task.CompletedTask;
                 }
                 catch (SocketException e)
                 {
@@ -77,9 +78,9 @@ namespace Comet.Network.Sockets
         /// and sending data. 
         /// </summary>
         /// <param name="packet">Packet to be encrypted and sent to the client</param>
-        public virtual Task SendAsync(IPacket packet)
+        public virtual async Task SendAsync(IPacket packet)
         {
-            return this.SendAsync(packet.Encode());
+            await this.SendAsync(packet.Encode());
         }
 
         /// <summary>
