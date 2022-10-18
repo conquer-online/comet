@@ -1,0 +1,46 @@
+version: '3.8'
+
+networks:
+  backend:
+    driver: bridge
+  frontend:
+    driver: bridge
+
+services:
+  db:
+    container_name: comet-db
+    image: mariadb
+    restart: always
+    environment:
+      MARIADB_ROOT_PASSWORD: password
+    networks:
+      - backend
+    volumes:
+      - ./sql/data:/var/lib/mysql
+
+  account:
+    container_name: comet-account
+    image: comet/server
+    entrypoint: dotnet ./Comet.Account/Comet.Account.dll /Database:Hostname=comet-db
+    build: 
+      context: .
+      args:
+        - release
+    networks:
+      - backend
+      - frontend
+    ports:
+      - 9958:9958
+
+  game:
+    image: comet/server
+    entrypoint: dotnet ./Comet.Game/Comet.Game.dll /Database:Hostname=comet-db
+    build: 
+      context: .
+      args:
+        - release
+    networks:
+      - backend
+      - frontend
+    ports:
+      - 5816:5816
