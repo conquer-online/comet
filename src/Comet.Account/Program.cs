@@ -15,7 +15,7 @@
     /// </summary>
     internal static class Program
     {
-        private static void Main(string[] args)
+        private static async Task Main(string[] args)
         {
             // Copyright notice may not be commented out. If adding your own copyright or
             // claim of ownership, you may include a second copyright above the existing
@@ -48,23 +48,23 @@
             // Recover caches from the database
             var tasks = new List<Task>();
             tasks.Add(RealmsRepository.LoadAsync());
-            Task.WaitAll(tasks.ToArray());
+            await Task.WhenAll(tasks.ToArray());
             
             // Start background services
             tasks = new List<Task>();
             tasks.Add(Kernel.Services.Randomness.StartAsync(CancellationToken.None));
-            Task.WaitAll(tasks.ToArray());
+            await Task.WhenAll(tasks.ToArray());
             
             // Start the server listener
             Console.WriteLine("Launching server listener...");
             var server = new Server(config);
-            server.StartAsync(config.Network.Port, config.Network.IPAddress)
-                .ConfigureAwait(false);
+            var serverTask = server.StartAsync(config.Network.Port, config.Network.IPAddress);
 
             // Output all clear and wait for user input
             Console.WriteLine("Listening for new connections");
             Console.WriteLine();
-            Thread.Sleep(Timeout.Infinite);
+            
+            await serverTask;
         }
     }
 }

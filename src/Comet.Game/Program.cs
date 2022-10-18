@@ -17,7 +17,7 @@
     /// </summary>
     internal static class Program
     {
-        private static void Main(string[] args)
+        private static async Task Main(string[] args)
         {
             // Copyright notice may not be commented out. If adding your own copyright or
             // claim of ownership, you may include a second copyright above the existing
@@ -48,31 +48,27 @@
                 return;
             }
 
-            // Recover caches from the database
-            var tasks = new List<Task>();
-            Task.WaitAll(tasks.ToArray());
-
             // Start background services
-            tasks = new List<Task>();
+            var tasks = new List<Task>();
             tasks.Add(Kernel.Services.Randomness.StartAsync(CancellationToken.None));
             tasks.Add(DiffieHellman.ProbablePrimes.StartAsync(CancellationToken.None));
-            Task.WaitAll(tasks.ToArray());
+            await Task.WhenAll(tasks.ToArray());
             
             // Start the RPC server listener
             Console.WriteLine("Launching server listeners...");
-            var rpcserver = new RpcServerListener(new Remote());
-            rpcserver.StartAsync(config.RpcNetwork.Port, config.RpcNetwork.IPAddress)
-                .ConfigureAwait(false);
+            var rpcServer = new RpcServerListener(new Remote());
+            var rpcServerTask = rpcServer.StartAsync(config.RpcNetwork.Port, config.RpcNetwork.IPAddress);
 
             // Start the game server listener
             var server = new Server(config);
-            server.StartAsync(config.GameNetwork.Port, config.GameNetwork.IPAddress)
-                .ConfigureAwait(false);
+            var serverTask = server.StartAsync(config.GameNetwork.Port, config.GameNetwork.IPAddress);
 
             // Output all clear and wait for user input
             Console.WriteLine("Listening for new connections");
             Console.WriteLine();
-            Thread.Sleep(Timeout.Infinite);
+            
+            await rpcServerTask;
+            await serverTask;
         }
     }
 }
