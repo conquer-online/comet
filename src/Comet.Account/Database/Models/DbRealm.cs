@@ -13,7 +13,7 @@ namespace Comet.Account.Database.Models
     public partial class DbRealm
     {
         // Column Properties
-        public uint RealmID { get; set; }
+        public uint RealmID { get; private set; }
         public string Name { get; set; }
         public ushort AuthorityID { get; set; }
         public string GameIPAddress { get; set; }
