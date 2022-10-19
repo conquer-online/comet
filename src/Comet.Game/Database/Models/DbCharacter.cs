@@ -1,7 +1,6 @@
 namespace Comet.Game.Database.Models
 {
     using System;
-    using System.Collections.Generic;
     using System.ComponentModel.DataAnnotations.Schema;
 
     /// <summary>
@@ -12,10 +11,34 @@ namespace Comet.Game.Database.Models
     [Table("character")]
     public partial class DbCharacter
     {
+        /// <summary>
+        /// Instantiates a new instance of DbCharacter with readonly properties.
+        /// </summary>
+        /// <param name="accountID">The owning player's account ID</param>
+        /// <param name="name">The name of the character</param>
+        public DbCharacter(uint accountID, string name)
+        {
+            this.AccountID = accountID;
+            this.Name = name;
+        }
+
+        /// <summary>
+        /// Instantiates a new instance of DbCharacter with readonly properties.
+        /// </summary>
+        /// <param name="accountID">The owning player's account ID</param>
+        /// <param name="characterID">The generated character ID</param>
+        /// <param name="name">The name of the character</param>
+        public DbCharacter(uint accountID, uint characterID, string name)
+        {
+            this.AccountID = accountID;
+            this.CharacterID = characterID;
+            this.Name = name;
+        }
+
         // Column Properties
-        public virtual uint CharacterID { get; set; }
-        public virtual uint AccountID { get; set; }
-        public virtual string Name { get; set; }
+        public virtual uint CharacterID { get; private set; }
+        public virtual uint AccountID { get; private set; }
+        public virtual string Name { get; private set; }
         public virtual uint Mesh { get; set; }
         public virtual ushort Avatar { get; set; }
         public virtual ushort Hairstyle { get; set; }
