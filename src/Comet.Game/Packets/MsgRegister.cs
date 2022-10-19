@@ -82,9 +82,7 @@ namespace Comet.Game.Packets
             }
 
             // Create the character
-            var character = new DbCharacter();
-            character.AccountID = client.Creation.AccountID;
-            character.Name = this.CharacterName;
+            var character = new DbCharacter(client.Creation.AccountID, this.CharacterName);
             character.CurrentClass = (byte)this.Class;
             character.Mesh = this.Mesh;
             character.Silver = 1000;
