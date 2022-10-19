@@ -12,6 +12,9 @@ namespace Comet.Game.Database.Repositories
     /// </summary>
     public static class CharactersRepository
     {
+        // Constants for throttling frequent saves
+        public const uint ThrottleMilliseconds = 500;
+
         /// <summary>
         /// Fetches a character record from the database using the character's name as a
         /// unique key for selecting a single record. Character name is indexed for fast
@@ -62,6 +65,25 @@ namespace Comet.Game.Database.Repositories
             using (var db = new ServerDbContext())
             {
                 db.Characters.Add(character);
+                await db.SaveChangesAsync();
+            }
+        }
+
+        /// <summary>
+        /// Saves the full character model. If the character does not exist when saving, then
+        /// the update will fail.
+        /// </summary>
+        /// <remarks>
+        /// This method could be broken up into multiple stored procedures to save chunks of
+        /// character data with different throttles; however, Comet is an introductory server,
+        /// so it'll be kept to one method for simplicity. 
+        /// </remarks>
+        /// <param name="character">Character model to be saved</param>
+        public static async Task SaveAsync(DbCharacter character)
+        {
+            using (var db = new ServerDbContext())
+            {
+                db.Characters.Update(character);
                 await db.SaveChangesAsync();
             }
         }
