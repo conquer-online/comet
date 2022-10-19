@@ -102,7 +102,7 @@ namespace Comet.Game.Packets
                 + (character.Spirit * 3)
                 + (character.Vitality * 24));
             character.ManaPoints = (ushort)(character.Spirit * 5);
-            character.Registered = DateTime.Now;
+            character.Registered = DateTime.UtcNow;
 
             // Generate a random look for the character
             character.Avatar = (ushort)(character.Mesh < 1005 
