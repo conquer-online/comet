@@ -26,6 +26,20 @@ git clone https://gitlab.com/spirited/comet.git
 git switch <patch_number> 
 ```
 
+After selecting a branch to work with, you have two options for building and running Comet.
+
+### Option 1: Running in Docker Containers
+
+If you have [docker](https://www.docker.com/products/docker-desktop/) installed, then you may build and run Comet using containers. 
+
+In [Visual Studio Code](https://code.visualstudio.com/): right click `compose.debug.yml`, select "Compose Up - Select Services", and then select `db` and `db-admin`. 
+
+Once built and launched, open http://localhost:8081 for phpMyAdmin. In MySQL, import scripts located in the repository's sql folder. Once imported, open the `realm` table from the `comet.account` database. Enter your external IP address (port forwarding required) or an internal IP address for testing (the client does not support 127.0.0.1). Change the RpcIpAddress to `comet-game-1` and make sure your realm name matches the server name selected in the client.
+
+Finally, go back to Visual Studio code, right click `compose.debug.yml`, and select "Compose Up".
+
+### Option 2: Building Locally
+
 Before setting up the project, download and install the following:
 
 * [.NET 6](https://dotnet.microsoft.com/download) - Primary language compiler
