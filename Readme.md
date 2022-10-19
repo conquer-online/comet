@@ -44,6 +44,7 @@ Before setting up the project, download and install the following:
 
 * [.NET 6](https://dotnet.microsoft.com/download) - Primary language compiler
 * [MariaDB](https://mariadb.org/) - Recommended flavor of MySQL for project databases 
+* [MySQL Workbench](https://dev.mysql.com/downloads/workbench/) - Recommended SQL editor and database importer
 * [Visual Studio Code](https://code.visualstudio.com/) - Recommended editor for modifying and building project files
 
 In a terminal, run the following commands to build the project (or build with Shift+Ctrl+B):
