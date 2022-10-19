@@ -122,7 +122,7 @@ namespace Comet.Network.Sockets
                 count++;
                 if (count > this.MaxActiveConnections)
                 {
-                    this.Blocks.TryAdd(ip, DateTime.Now.AddMinutes(this.BanMinutes));
+                    this.Blocks.TryAdd(ip, DateTime.UtcNow.AddMinutes(this.BanMinutes));
                     return false;
                 }
 
@@ -160,7 +160,7 @@ namespace Comet.Network.Sockets
             lock (AttemptsMutex) 
                 this.Attempts.Clear();
 
-            DateTime now = DateTime.Now;
+            DateTime now = DateTime.UtcNow;
             foreach (var blockedConnection in this.Blocks)
             {
                 if (blockedConnection.Value < now)
