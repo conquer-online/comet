@@ -14,12 +14,12 @@ Get started by cloning the repository. Select a branch based on the patch you wi
 
 | Patch | Pipeline Status | Description |
 | ----- | --------------- | ----------- |
-| __4274__ | [![pipeline status](https://gitlab.com/spirited/comet/badges/4274/pipeline.svg)](https://gitlab.com/spirited/comet/-/commits/4274) | One of the last stable patches for Conquer 1.0 with the legacy brown wood interface. |
-| __4294__ | [![pipeline status](https://gitlab.com/spirited/comet/badges/4294/pipeline.svg)](https://gitlab.com/spirited/comet/-/commits/4294) | One of the first stable patches for Conquer 2.0 with the blue fabric and stone interface. |
-| __4343__ | [![pipeline status](https://gitlab.com/spirited/comet/badges/4343/pipeline.svg)](https://gitlab.com/spirited/comet/-/commits/4343) | Adds potency and new currency, but does not include the pay-to-win shopping mall. |
-| __5017__ | [![pipeline status](https://gitlab.com/spirited/comet/badges/5017/pipeline.svg)](https://gitlab.com/spirited/comet/-/commits/5017) | Adds pay-to-win shopping mall, +12 items, WuXing Oven, new fonts, and more. |
-| __5065__ | [![pipeline status](https://gitlab.com/spirited/comet/badges/5065/pipeline.svg)](https://gitlab.com/spirited/comet/-/commits/5065) | Adds new watercolor client, new hairstyles, new equipment, and more. |
-| __5187__ | [![pipeline status](https://gitlab.com/spirited/comet/badges/5187/pipeline.svg)](https://gitlab.com/spirited/comet/-/commits/5187) | Adds talismans, ninjas, enlightenment, quiz show, mounts, clans, arena, and more. |
+| [__4274__](https://gitlab.com/spirited/comet/-/tree/4274) | [![pipeline status](https://gitlab.com/spirited/comet/badges/4274/pipeline.svg)](https://gitlab.com/spirited/comet/-/commits/4274) | One of the last stable patches for Conquer 1.0 with the legacy brown wood interface. |
+| [__4294__](https://gitlab.com/spirited/comet/-/tree/4294) | [![pipeline status](https://gitlab.com/spirited/comet/badges/4294/pipeline.svg)](https://gitlab.com/spirited/comet/-/commits/4294) | One of the first stable patches for Conquer 2.0 with the blue fabric and stone interface. |
+| [__4343__](https://gitlab.com/spirited/comet/-/tree/4343) | [![pipeline status](https://gitlab.com/spirited/comet/badges/4343/pipeline.svg)](https://gitlab.com/spirited/comet/-/commits/4343) | Adds potency and new currency, but does not include the pay-to-win shopping mall. |
+| [__5017__](https://gitlab.com/spirited/comet/-/tree/5017) | [![pipeline status](https://gitlab.com/spirited/comet/badges/5017/pipeline.svg)](https://gitlab.com/spirited/comet/-/commits/5017) | Adds pay-to-win shopping mall, +12 items, WuXing Oven, new fonts, and more. |
+| [__5065__](https://gitlab.com/spirited/comet/-/tree/5065) | [![pipeline status](https://gitlab.com/spirited/comet/badges/5065/pipeline.svg)](https://gitlab.com/spirited/comet/-/commits/5065) | Adds new watercolor client, new hairstyles, new equipment, and more. |
+| [__5187__](https://gitlab.com/spirited/comet/-/tree/5187) | [![pipeline status](https://gitlab.com/spirited/comet/badges/5187/pipeline.svg)](https://gitlab.com/spirited/comet/-/commits/5187) | Adds talismans, ninjas, enlightenment, quiz show, mounts, clans, arena, and more. |
 
 ```
 git clone https://gitlab.com/spirited/comet.git
