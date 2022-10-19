@@ -21,7 +21,7 @@
         }
 
         // Column Properties
-        public uint AccountID { get; set; }
+        public uint AccountID { get; private set; }
         public string Username { get; set; }
         public string Password { get; set; }
         public string Salt { get; set; }
