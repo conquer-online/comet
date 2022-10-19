@@ -1,27 +1,32 @@
 namespace Comet.Game.States
 {
+    using System;
+    using System.Threading.Tasks;
     using Comet.Game.Database.Models;
+    using Comet.Game.Database.Repositories;
 
     /// <summary>
     /// Character class defines a database record for a player's character. This allows
     /// for easy saving of character information, as well as means for wrapping character
     /// data for spawn packet maintenance, interface update pushes, etc.
     /// </summary>
-    public class Character : DbCharacter
+    public sealed class Character : DbCharacter
     {
+        // Fields and properties
+        private DateTime LastSaveTimestamp { get; set; }
+
         /// <summary>
         /// Instantiates a new instance of <see cref="Character"/> using a database fetched
         /// <see cref="DbCharacter"/>. Copies attributes over to the base class of this
         /// class, which will then be used to save the character from the game world. 
         /// </summary>
         /// <param name="character">Database character information</param>
-        public Character(DbCharacter character) : base()
+        public Character(DbCharacter character) 
+            : base(character.AccountID, character.CharacterID, character.Name)
         {
-            base.AccountID = character.AccountID;
             base.Agility = character.Agility;
             base.AttributePoints = character.AttributePoints;
             base.Avatar = character.Avatar;
-            base.CharacterID = character.CharacterID;
             base.CurrentClass = character.CurrentClass;
             base.Experience = character.Experience;
             base.Hairstyle = character.Hairstyle;
@@ -32,7 +37,6 @@ namespace Comet.Game.States
             base.ManaPoints = character.ManaPoints;
             base.MapID = character.MapID;
             base.Mesh = character.Mesh;
-            base.Name = character.Name;
             base.PreviousClass = character.PreviousClass;
             base.Rebirths = character.Rebirths;
             base.Registered = character.Registered;
@@ -43,6 +47,23 @@ namespace Comet.Game.States
             base.Vitality = character.Vitality;
             base.X = character.X;
             base.Y = character.Y;
+
+            // Initialize local properties
+            this.LastSaveTimestamp = DateTime.UtcNow;
+        }
+
+        /// <summary>
+        /// Saves the character to persistent storage.
+        /// </summary>
+        /// <param name="force">True if the change is important to save immediately.</param>
+        public async Task SaveAsync(bool force = false)
+        {
+            DateTime now = DateTime.UtcNow;
+            if (force || this.LastSaveTimestamp.AddMilliseconds(CharactersRepository.ThrottleMilliseconds) < now)
+            {
+                this.LastSaveTimestamp = now;
+                await CharactersRepository.SaveAsync(this);
+            }
         }
     }
 
