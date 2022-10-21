@@ -19,6 +19,7 @@ namespace Comet.Network.Sockets
         public readonly Memory<byte> Buffer;
         public readonly ICipher Cipher;
         public readonly Socket Socket;
+        public readonly string IPAddress;
         public readonly byte[] PacketFooter;
         public readonly uint Partition;
         private readonly object SendLock;
@@ -42,6 +43,7 @@ namespace Comet.Network.Sockets
             this.Buffer = buffer;
             this.Cipher = cipher;
             this.Socket = socket;
+            this.IPAddress = (socket.RemoteEndPoint as IPEndPoint).Address.MapToIPv4().ToString();
             this.PacketFooter = Encoding.ASCII.GetBytes(packetFooter);
             this.Partition = partition;
             this.SendLock = new object();
@@ -99,11 +101,5 @@ namespace Comet.Network.Sockets
         {
             this.Socket?.Disconnect(false);
         }
-
-        /// <summary>
-        /// Returns the remote IP address of the connected client.
-        /// </summary>
-        public string IPAddress => 
-            (this.Socket.RemoteEndPoint as IPEndPoint).Address.MapToIPv4().ToString();
     }    
 }
