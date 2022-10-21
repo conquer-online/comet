@@ -62,7 +62,12 @@ namespace Comet.Network.Security
         /// <summary>Computes the public key for sending to the client.</summary>
         public async Task ComputePublicKeyAsync()
         {
-            this.Modulus = await DiffieHellman.ProbablePrimes.NextAsync();
+            // Check for null to allow for testability from unit tests.
+            if (this.Modulus == null)
+            {
+                this.Modulus = await DiffieHellman.ProbablePrimes.NextAsync();
+            }
+
             this.PublicKey = this.Generator.ModPow(this.Modulus, this.PrimeRoot);
         }
 
