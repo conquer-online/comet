@@ -1,6 +1,7 @@
 namespace Comet.Game
 {
     using System;
+    using System.Collections.Generic;
     using System.Net.Sockets;
     using System.Threading;
     using System.Threading.Tasks;
@@ -47,10 +48,12 @@ namespace Comet.Game
         {
             var partition = this.Processor.SelectPartition();
             var client = new Client(socket, buffer, partition);
-            await client.DiffieHellman.ComputePublicKeyAsync();
+            var tasks = new List<Task>();
 
-            await Kernel.NextBytesAsync(client.DiffieHellman.DecryptionIV);
-            await Kernel.NextBytesAsync(client.DiffieHellman.EncryptionIV);
+            tasks.Add(client.DiffieHellman.ComputePublicKeyAsync());
+            tasks.Add(Kernel.NextBytesAsync(client.DiffieHellman.DecryptionIV));
+            tasks.Add(Kernel.NextBytesAsync(client.DiffieHellman.EncryptionIV));
+            await Task.WhenAll(tasks);
 
             var handshakeRequest = new MsgHandshake(
                 client.DiffieHellman, 
