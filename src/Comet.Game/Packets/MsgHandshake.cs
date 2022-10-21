@@ -52,7 +52,7 @@ namespace Comet.Game.Packets
         /// <summary>Randomizes padding for the message.</summary>
         public async Task RandomizeAsync()
         {
-            this.Padding = new byte[await Kernel.NextAsync(24, 48)];
+            this.Padding = new byte[23];
             await Kernel.NextBytesAsync(this.Padding);
         }
 

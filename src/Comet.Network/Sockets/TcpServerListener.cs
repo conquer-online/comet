@@ -161,6 +161,12 @@ namespace Comet.Network.Sockets
                             
                         timeout.CancelAfter(TimeSpan.FromSeconds(ReceiveTimeoutSeconds));
                         examined = await receiveOperation;
+                        if (examined == 0) 
+                        {
+                            actor.Disconnect();
+                            this.Disconnecting(actor);
+                            return; 
+                        }
                         if (examined < 9) throw new Exception("Invalid length");
                     }
                 }
@@ -281,6 +287,10 @@ namespace Comet.Network.Sockets
                         e.SocketErrorCode > SocketError.Shutdown)
                         Console.WriteLine(e);
                     break;
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e);
                 }
 
                 // Decrypt traffic
