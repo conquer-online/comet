@@ -155,7 +155,7 @@ namespace Comet.Network.Sockets
                     {
                         // Receive data from the client socket
                         var receiveOperation = actor.Socket.ReceiveAsync(
-                            actor.Buffer.Slice(0),
+                            actor.Buffer[..],
                             SocketFlags.None,
                             cancellation.Token);
                             
@@ -189,8 +189,8 @@ namespace Comet.Network.Sockets
                 // exchange protocol, then decrypting only what is necessary for the exchange.
                 // This is to prevent the next packet from being decrypted with the wrong key.
                 actor.Cipher.Decrypt(
-                    actor.Buffer.Slice(0, 9).Span,
-                    actor.Buffer.Slice(0, 9).Span);
+                    actor.Buffer[..9].Span,
+                    actor.Buffer[..9].Span);
                 consumed = BitConverter.ToUInt16(actor.Buffer.Span.Slice(7, 2)) + 7;
                 if (consumed > examined)
                 {
@@ -200,11 +200,11 @@ namespace Comet.Network.Sockets
                 }
 
                 actor.Cipher.Decrypt(
-                    actor.Buffer.Slice(9, consumed - 9).Span,
-                    actor.Buffer.Slice(9, consumed - 9).Span);
+                    actor.Buffer[9..(consumed)].Span,
+                    actor.Buffer[9..(consumed)].Span);
 
                 // Process the exchange now that bytes are decrypted
-                if (!this.Exchanged(actor, actor.Buffer.Slice(0, consumed).Span))
+                if (!this.Exchanged(actor, actor.Buffer[..consumed].Span))
                 {
                     actor.Disconnect();
                     this.Disconnecting(actor);
@@ -216,8 +216,8 @@ namespace Comet.Network.Sockets
                 if (consumed < examined)
                 {
                     actor.Cipher.Decrypt(
-                        actor.Buffer.Slice(consumed, examined - consumed).Span,
-                        actor.Buffer.Slice(consumed, examined - consumed).Span);
+                        actor.Buffer[consumed..examined].Span,
+                        actor.Buffer[consumed..examined].Span);
 
                     if (!this.Splitting(actor, examined, ref consumed))
                     {
@@ -227,7 +227,7 @@ namespace Comet.Network.Sockets
                     }
                     
                     remaining = examined - consumed;
-                    actor.Buffer.Slice(consumed, examined - consumed).CopyTo(actor.Buffer);
+                    actor.Buffer[consumed..examined].CopyTo(actor.Buffer);
                 }
             }
 
@@ -271,7 +271,7 @@ namespace Comet.Network.Sockets
                     {
                         // Receive data from the client socket
                         var receiveOperation = actor.Socket.ReceiveAsync(
-                            actor.Buffer.Slice(remaining),
+                            actor.Buffer[remaining..],
                             SocketFlags.None,
                             cancellation.Token);
 
@@ -330,7 +330,7 @@ namespace Comet.Network.Sockets
             var buffer = actor.Buffer.Span;
             while (consumed + 2 < examined)
             {
-                var length = BitConverter.ToUInt16(buffer.Slice(consumed, 2));
+                var length = BitConverter.ToUInt16(buffer[consumed..]);
                 if (length == 0) return false;
                 var expected = consumed + length + this.FooterLength;
                 if (length > buffer.Length) return false;
