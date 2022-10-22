@@ -23,11 +23,11 @@ namespace Comet.Account.Database.Repositories
         /// <returns>Returns account details from the database.</returns>
         public static async Task<DbAccount> FindAsync(string username)
         {
-            using (var db = new ServerDbContext())
-                return await db.Accounts.Include(x => x.Authority)
-                    .Include(x => x.Status)
-                    .Where(x => x.Username == username)
-                    .SingleOrDefaultAsync();
+            using var db = new ServerDbContext();
+            return await db.Accounts.Include(x => x.Authority)
+                .Include(x => x.Status)
+                .Where(x => x.Username == username)
+                .SingleOrDefaultAsync();
         }
 
         /// <summary>
@@ -41,11 +41,9 @@ namespace Comet.Account.Database.Repositories
         /// <returns>Returns true if the password is correct.</returns>
         public static bool CheckPassword(string input, string hash, string salt)
         {
-            byte[] inputHashed;
-            using (var sha1 = SHA1.Create())
-                inputHashed = sha1.ComputeHash(Encoding.ASCII.GetBytes(input + salt));
-            var final = Hex.ToHexString(inputHashed);
-            return final.Equals(hash);
+            using var sha1 = SHA1.Create();
+            var inputHashed = sha1.ComputeHash(Encoding.ASCII.GetBytes(input + salt));
+            return Hex.ToHexString(inputHashed).Equals(hash);
         }
     } 
 }
