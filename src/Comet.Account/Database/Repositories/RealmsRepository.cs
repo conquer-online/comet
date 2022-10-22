@@ -23,10 +23,10 @@ namespace Comet.Account.Database.Repositories
         public static async Task LoadAsync()
         {
             // Load realm connection information
-            using (var db = new ServerDbContext())
-                Kernel.Realms = await db.Realms
-                    .Include(x => x.Authority)
-                    .ToDictionaryAsync(x => x.Name);
+            using var db = new ServerDbContext();
+            Kernel.Realms = await db.Realms
+                .Include(x => x.Authority)
+                .ToDictionaryAsync(x => x.Name);
 
             // Connect to each realm's RPC server
             foreach (var realm in Kernel.Realms.Values)
