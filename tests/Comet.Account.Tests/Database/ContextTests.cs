@@ -18,9 +18,7 @@ namespace Comet.Account.Database.Tests
             ServerDbContext.Configuration = config.Database;
             try 
             {
-                using (var db = new ServerDbContext())
-                {
-                }
+                using var db = new ServerDbContext();
             }
             catch (Exception ex) { Assert.Null(ex); }
         }

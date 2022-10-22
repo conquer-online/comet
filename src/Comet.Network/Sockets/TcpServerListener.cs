@@ -129,20 +129,18 @@ namespace Comet.Network.Sockets
             while (actor.Socket.Connected && !this.ShutdownToken.IsCancellationRequested)
             {
                 try
-                {
-                    using (var cancellation = CancellationTokenSource.CreateLinkedTokenSource(
-                        timeout.Token, this.ShutdownToken.Token))
-                    {
-                        // Receive data from the client socket
-                        var receiveOperation = actor.Socket.ReceiveAsync(
-                            actor.Buffer[remaining..],
-                            SocketFlags.None,
-                            cancellation.Token);
+                {                        
+                    // Receive data from the client socket
+                    using var cancellation = CancellationTokenSource.CreateLinkedTokenSource(
+                        timeout.Token, this.ShutdownToken.Token);
+                    var receiveOperation = actor.Socket.ReceiveAsync(
+                        actor.Buffer[remaining..],
+                        SocketFlags.None,
+                        cancellation.Token);
 
-                        timeout.CancelAfter(TimeSpan.FromSeconds(ReceiveTimeoutSeconds));
-                        examined = await receiveOperation;
-                        if (examined == 0) break;
-                    }
+                    timeout.CancelAfter(TimeSpan.FromSeconds(ReceiveTimeoutSeconds));
+                    examined = await receiveOperation;
+                    if (examined == 0) break;
                 }
                 catch (OperationCanceledException) { break; }
                 catch (SocketException e)
