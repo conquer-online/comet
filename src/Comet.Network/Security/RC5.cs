@@ -83,16 +83,16 @@ namespace Comet.Network.Security
             // Decrypt the buffer
             for (int word = 0; word < length; word++)
             {
-                uint a = BitConverter.ToUInt32(dst.Slice(8 * word));
-                uint b = BitConverter.ToUInt32(dst.Slice((8 * word) + 4));
+                uint a = BitConverter.ToUInt32(dst[(8 * word)..]);
+                uint b = BitConverter.ToUInt32(dst[(8 * word + 4)..]);
                 for (int round = RC5.Rounds; round > 0; round--)
                 {
                     b = (b - this.Sub[2 * round + 1]).RotateRight((int)a) ^ a;
                     a = (a - this.Sub[2 * round]).RotateRight((int)b) ^ b;
                 }
 
-                BitConverter.GetBytes(a - this.Sub[0]).CopyTo(dst.Slice(8 * word));
-                BitConverter.GetBytes(b - this.Sub[1]).CopyTo(dst.Slice(8 * word + 4));
+                BitConverter.GetBytes(a - this.Sub[0]).CopyTo(dst[(8 * word)..]);
+                BitConverter.GetBytes(b - this.Sub[1]).CopyTo(dst[(8 * word + 4)..]);
             }
         }
 
@@ -109,21 +109,21 @@ namespace Comet.Network.Security
             var length = src.Length / 8;
             if (src.Length % 8 > 0) length = length + 1;
             dst = new byte[length * 8];
-            src.CopyTo(dst.Slice(0, src.Length));
+            src.CopyTo(dst[..src.Length]);
 
             // Decrypt the buffer
             for (int word = 0; word < length; word++)
             {
-                uint a = BitConverter.ToUInt32(dst.Slice(8 * word)) + this.Sub[0];
-                uint b = BitConverter.ToUInt32(dst.Slice((8 * word) + 4)) + this.Sub[1];
+                uint a = BitConverter.ToUInt32(dst[(8 * word)..]) + this.Sub[0];
+                uint b = BitConverter.ToUInt32(dst[(8 * word + 4)..]) + this.Sub[1];
                 for (int round = 1; round <= RC5.Rounds; round++)
                 {
                     a = (a ^ b).RotateLeft((int)b) + this.Sub[2 * round];
                     b = (b ^ a).RotateLeft((int)a) + this.Sub[2 * round + 1];
                 }
 
-                BitConverter.GetBytes(a).CopyTo(dst.Slice(8 * word));
-                BitConverter.GetBytes(b).CopyTo(dst.Slice(8 * word + 4));
+                BitConverter.GetBytes(a).CopyTo(dst[(8 * word)..]);
+                BitConverter.GetBytes(b).CopyTo(dst[(8 * word + 4)..]);
             }
         }
     }
