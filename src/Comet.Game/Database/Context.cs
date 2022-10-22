@@ -52,8 +52,8 @@ namespace Comet.Game.Database
         {
             try 
             {
-                using (ServerDbContext ctx = new ServerDbContext())
-                    return ctx.Database.CanConnect();
+                using ServerDbContext ctx = new ServerDbContext();
+                return ctx.Database.CanConnect();
             }
             catch { return false; }
         }
