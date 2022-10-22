@@ -135,7 +135,7 @@ namespace Comet.Network.Sockets
                     {
                         // Receive data from the client socket
                         var receiveOperation = actor.Socket.ReceiveAsync(
-                            actor.Buffer.Slice(remaining),
+                            actor.Buffer[remaining..],
                             SocketFlags.None,
                             cancellation.Token);
 
@@ -190,7 +190,7 @@ namespace Comet.Network.Sockets
             var buffer = actor.Buffer.Span;
             while (consumed + 2 < examined)
             {
-                var length = BitConverter.ToUInt16(buffer.Slice(consumed, 2));
+                var length = BitConverter.ToUInt16(buffer[consumed..]);
                 if (length == 0) return false;
                 var expected = consumed + length;
                 if (length > buffer.Length) return false;
